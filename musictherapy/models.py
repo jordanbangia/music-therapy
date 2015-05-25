@@ -14,7 +14,8 @@ class UserInfo(models.Model):
 
 	name = models.CharField(max_length=200)
 	location = models.CharField(max_length=100, choices=LOCATION_CHOICES)
-	date_of_birth = models.DateTimeField('DOB')
+	date_of_birth = models.DateField('DOB')
+	diagnosis = models.CharField(max_length=300, blank=True)
 	history = models.CharField(max_length=300)
 	country_of_origin = models.CharField(max_length=100)
 	language_spoken = models.CharField(max_length=100)

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+
+	<head>
+		<link rel="stylesheet" href="{% static 'musictherapy/themes/blue/style.css' %}" media="print, projection, screen"/>
+		<script type = "text/javascript" src ="{% static 'musictherapy/jquery-1.11.3.min.js' %}" ></script>
+		<script type = "text/javascript" src="{% static 'musictherapy/jquery.tablesorter.min.js' %}"></script>
+	</head>
+
+	<body>
+		{% if user_info_list %}
+		<table id="userTable" class = "tablesorter">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Location</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in user_info_list %}
+				<tr>
+					<td><a href="{% url 'musictherapy:user_detail' user.id %}"> {{user.name}}</a></td>
+					<td>{{user.location}}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% else %}
+		<p> No users available. </p>
+		{% endif %}
+
+
+		<script type="text/javascript">
+			$(document).ready(function()
+			{
+				$("#myTable").tablesorter();
+			});
+		</script>
+
+	</body>
+
+</html>

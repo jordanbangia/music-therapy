@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'multiselectfield',
-    'musictherapy'
+    'musictherapy',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -72,6 +72,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hellodjango.wsgi.application'
 
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
