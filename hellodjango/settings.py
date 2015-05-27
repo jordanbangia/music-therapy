@@ -39,6 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'multiselectfield',
     'musictherapy',
+    'crispy_forms',
+    'annoying'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -84,7 +86,7 @@ DATABASES = {
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
-DATABASES['default'] =  dj_database_url.config()
+# DATABASES['default'] =  dj_database_url.config()
 
 
 # Internationalization
@@ -92,7 +94,7 @@ DATABASES['default'] =  dj_database_url.config()
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Toronto'
 
 USE_I18N = True
 
@@ -125,4 +127,6 @@ STATICFILES_DIRS = (
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage' 
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'

@@ -1,1 +1,61 @@
-{{ user_info }}
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <style type="text/css">
+            .forms-wrapper{
+                margin: 20px;
+            }
+        </style>
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                console.log("hello");
+                var url = document.location.toString();
+                if (url.match('#')) {
+                    console.log(url.split('#')[1]);
+                    $('.nav-tabs a[href=#'+url.split('#')[1]+']').tab('show');
+
+                }
+
+                $('.nav-tabs a').on('shown.bs.tab', function (e) {
+                    window.location.hash = e.target.hash;
+                })
+
+            });
+        </script>
+    </head>
+
+    <body>
+        <div class="forms-wrapper">
+            {% load crispy_forms_tags %}
+
+            <ul class ="nav nav-tabs" id="tabs">
+                <li class="active"><a data-toggle="tab" href="#basicinfo">Basic Inforamation</a></li>
+                <li><a data-toggle="tab" href="#musicpref">Musical Preference</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="basicinfo" class="tab-pane fade in active">
+                    {% crispy user_info_form %}
+
+                    <p>Last updated {{ user_last_updated }} </p>
+                </div>
+                <div id ="musicpref" class="tab-pane fade">
+                    {% crispy musical_pref_form %}
+
+                    {% if musicpref_last_updated %}
+                    <p>Last updated {{ musicpref_last_updated }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>
