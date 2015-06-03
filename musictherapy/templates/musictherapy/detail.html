@@ -38,15 +38,23 @@
 
             <ul class ="nav nav-tabs" id="tabs">
                 <li class="active"><a data-toggle="tab" href="#basicinfo">Basic Inforamation</a></li>
+                {% if musical_pref_form %}
                 <li><a data-toggle="tab" href="#musicpref">Musical Preference</a></li>
+                {% endif %}
+                {% if initial_com_form %}
+                <li><a data-toggle="tab" href="#communicationskills">Communication Skills</a></li>
+                {% endif %}
             </ul>
 
             <div class="tab-content">
                 <div id="basicinfo" class="tab-pane fade in active">
                     {% crispy user_info_form %}
 
+                    {% if user_last_update %}
                     <p>Last updated {{ user_last_updated }} </p>
+                    {% endif %}
                 </div>
+                {% if musical_pref_form %}
                 <div id ="musicpref" class="tab-pane fade">
                     {% crispy musical_pref_form %}
 
@@ -54,6 +62,40 @@
                     <p>Last updated {{ musicpref_last_updated }}</p>
                     {% endif %}
                 </div>
+                {% endif %}
+                {% if initial_com_form %}
+                <div id="communicationskills" class="tab-pane fade">
+                    <p>Initial Communication Skills Assessment</p>
+                    {% crispy initial_com_form %}
+
+
+                    {% if com_updates %}
+                    <p>Previous Session Communication Skills Goals Measurables</p>
+                    <table class = "table table-bordered">
+                        <tr>
+                            <th>Date</th>
+                            <th>Verbal Participation with Verbal Prompt</th>
+                            <th>Verbal Participation without Verbal Prompt</th>
+                            <th>Feelings were Articulated</th>
+                            <th>Opinions Given</th>
+                        </tr>
+                        {% for update in com_updates %}
+                        <tr>
+                            <td>{{update.updated}}</td>
+                            <td>{{update.verbal_part_with_verbal_prompt}}</td>
+                            <td>{{update.verbal_part_without_verbal_prompt}}</td>
+                            <td>{{update.feelings_were_articulated}}</td>
+                            <td>{{update.opinions_given}}</td>
+                        </tr>
+                        {% endfor %}
+
+                    </table>
+                    {% endif %}
+
+                    <p>Submit new Communication Skills Goals Measurables</p>
+                    {% crispy com_skills_form %}
+                </div>
+                {% endif %}
             </div>
         </div>
     </body>

@@ -1,7 +1,18 @@
 from django.db import models
+from django.core.validators import MaxValueValidator
 from multiselectfield import MultiSelectField
 
 # Create your models here.
+NONE = 0
+LOW = 1
+MEDIUM = 2
+HIGH = 3
+SKILLS_SCALE = {
+    (NONE, 'None/ Never'),
+    (LOW, 'Low/ Rarely'),
+    (MEDIUM, 'Medium/ Sometimes'),
+    (HIGH, 'High/ Always')
+}
 
 class UserInfo(models.Model):
     LOCATION_CHOICES = (
@@ -26,7 +37,6 @@ class UserInfo(models.Model):
 
     def __unicode__(self):
         return self.name
-
 
 class MusicalPreference(models.Model):
     STYLES_CHOICES = (
@@ -60,3 +70,50 @@ class MusicalPreference(models.Model):
     fav_instrument = models.CharField(max_length=200)
     preferred_style = MultiSelectField(choices=STYLES_CHOICES, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
+
+class InitialCommunicationSkills(models.Model):
+    user = models.OneToOneField(UserInfo, primary_key=True)
+
+    #verbal skills
+    verbalize_choices = models.IntegerField(choices=SKILLS_SCALE)
+    fill_in_the_blank = models.IntegerField(choices=SKILLS_SCALE)
+    engage_in_conv = models.IntegerField(choices=SKILLS_SCALE)
+    answer_questions = models.IntegerField(choices=SKILLS_SCALE)
+    song_writing = models.IntegerField(choices=SKILLS_SCALE)
+    communicated_with_single_words = models.IntegerField(choices=SKILLS_SCALE)
+    communicated_with_phrases = models.IntegerField(choices=SKILLS_SCALE)
+    communicated_with_sentences = models.IntegerField(choices=SKILLS_SCALE)
+    disjointed_response = models.IntegerField(choices=SKILLS_SCALE)
+    appropriate_rate_of_speech = models.IntegerField(choices=SKILLS_SCALE)
+    word_finding_difficulty = models.IntegerField(choices=SKILLS_SCALE)
+    imitate_therapist = models.IntegerField(choices=SKILLS_SCALE)
+
+    #receptive language
+    follow_directions = models.IntegerField(choices=SKILLS_SCALE)
+    response_to_verbal_instr = models.IntegerField(choices=SKILLS_SCALE)
+    respond_to_name_song = models.IntegerField(choices=SKILLS_SCALE)
+    respond_to_hello_goodbye = models.IntegerField(choices=SKILLS_SCALE)
+
+    #singing/vocal skills
+    call_and_response = models.IntegerField(choices=SKILLS_SCALE)
+    singing_familiar_songs = models.IntegerField(choices=SKILLS_SCALE)
+
+    #vocalization
+    sing_familiar_songs_syllables = models.IntegerField(choices=SKILLS_SCALE)
+
+    #interactive speech
+    greet_others = models.IntegerField(choices=SKILLS_SCALE)
+
+    #choice making
+    make_choice_in_song = models.IntegerField(choices=SKILLS_SCALE)
+
+class CommunicationGoalsUpdate(models.Model):
+    user = models.ForeignKey(UserInfo)
+    updated = models.DateTimeField(auto_now=True)
+
+    #increase level of communication
+    verbal_part_with_verbal_prompt = models.PositiveIntegerField(validators=[MaxValueValidator(10)])
+    verbal_part_without_verbal_prompt = models.PositiveIntegerField(validators=[MaxValueValidator(10)])
+    #increase self-expression
+    feelings_were_articulated = models.PositiveIntegerField(validators=[MaxValueValidator(10)])
+    opinions_given = models.PositiveIntegerField(validators=[MaxValueValidator(10)])
