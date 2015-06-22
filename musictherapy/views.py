@@ -4,23 +4,11 @@ from django.template import RequestContext, loader
 from django.views import generic
 from django.utils import timezone
 
-from .models import UserInfo, MusicalPreference, InitialCommunicationSkills, CommunicationGoalsUpdate
-from .forms import UserInfoForm, MusicalPrefForm, InitialCommunicationAssessmentForm, CommunicationSkillsForm
+from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals
+from .forms import UserInfoForm, MusicalPrefForm, CommunicationAssessmentForm, CommunicationSkillsForm, GoalsForm
+from .goals import Goals
 
 from annoying.functions import get_object_or_None
-# Create your views here.
-
-
-# class IndexView(generic.ListView):
-# 	template_name = 'musictherapy/index.html'
-# 	context_object_name = 'user_info_list'
-
-# 	def get_queryset(self):
-# 		return UserInfo.objects.all()
-
-# class DetailView(generic.DetailView):
-# 	model = UserInfo
-# 	template = 'musictherapy/detail.html'
 
 def index(request):
     user_info_list = UserInfo.objects.all()
@@ -29,31 +17,37 @@ def index(request):
     }
     return render(request, 'musictherapy/index.html', context)
 
-
 def user_detail(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
     user_form = UserInfoForm(instance = user)
+    goals_form = GoalsForm(instance=user)
     user_last_updated = user.updated
 
     musicpref = get_object_or_None(MusicalPreference, pk=user_id)
     musicpref_form = MusicalPrefForm(instance = musicpref)
     musicpref_last_updated = musicpref.updated if musicpref else None
 
-    initial_com_skills = get_object_or_None(InitialCommunicationSkills, pk=user_id)
-    initial_com_form = InitialCommunicationAssessmentForm(instance=initial_com_skills)
-    com_updates = CommunicationGoalsUpdate.objects.filter(user=user).order_by('updated')
-    com_update_form = CommunicationSkillsForm()
+    com_assessments = CommunicationAssessment.objects.filter(user=user).order_by('updated')
+    com_assessment_form = CommunicationAssessmentForm()
+    com_updates = CommunicationGoals.objects.filter(user=user).order_by('updated')
+    com_update_form = CommunicationSkillsForm(user=user)
+    user_com_skills = CommunicationAssessment.objects.latest('updated')
+    has_com_goals = Goals.has_communication_goals(user)
 
     return render(request, 'musictherapy/detail.html', {
         'user_info_form': user_form,
+        'goals_form' : goals_form,
         'user_last_updated' : user_last_updated,
+        'user_com_skills' : user_com_skills,
 
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated' : musicpref_last_updated,
 
-        'initial_com_form' : initial_com_form,
+        'com_assessment_form' : com_assessment_form,
+        'com_assessments' : com_assessments,
         'com_updates': com_updates,
         'com_skills_form' : com_update_form,
+        'has_com_goals' : has_com_goals
     })
 
 def save_basic_info(request, user_id):
@@ -72,23 +66,23 @@ def save_music_pref(request, user_id):
             musicpref_form.save()
             return redirect('/musictherapy/' + user_id)
 
-def save_initial_com_skills(request, user_id):
-    initialcomskills = get_object_or_None(InitialCommunicationSkills, pk=user_id)
+def save_com_assess(request, user_id):
     if request.method == 'POST':
-        initialcomskills_form = InitialCommunicationAssessmentForm(request.POST, instance=initialcomskills)
-        if initialcomskills_form.is_valid():
-            initialcomskills_form.save()
+        com_assessment_form = CommunicationAssessmentForm(request.POST)
+        if com_assessment_form.is_valid():
+            com_assessment = com_assessment_form.save(commit=False)
+            com_assessment.fill_measurables()
+            com_assessment.user = get_object_or_404(UserInfo, pk=user_id)
+            com_assessment.save()
             return redirect('/musictherapy/' + user_id)
 
-
-def save_com_skills_update(request, user_id):
+def save_com_goals(request, user_id):
     if request.method == 'POST':
-        update_form = CommunicationSkillsForm(request.POST)
-        if update_form.is_valid():
-            update = update_form.save(commit=False)
+        com_skills_form = CommunicationSkillsForm(request.POST)
+        if com_skills_form.is_valid():
+            update = com_skills_form.save(commit=False)
             update.user = get_object_or_404(UserInfo, pk=user_id)
             update.save()
-            # update_form.save()
             return redirect('/musictherapy/' + user_id)
 
 
@@ -115,3 +109,11 @@ def delete_user(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
     user.delete()
     return redirect('/musictherapy/')
+
+def save_user_goals(request, user_id):
+    user = get_object_or_404(UserInfo, pk=user_id)
+    if request.method == 'POST':
+        goals_form = GoalsForm(request.POST, instance=user)
+        if goals_form.is_valid():
+            goals_form.save()
+            return redirect('/musictherapy/' + user_id)
