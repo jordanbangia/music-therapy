@@ -31,7 +31,10 @@ def user_detail(request, user_id):
     com_assessment_form = CommunicationAssessmentForm()
     com_updates = CommunicationGoals.objects.filter(user=user).order_by('updated')
     com_update_form = CommunicationSkillsForm(user=user)
-    user_com_skills = CommunicationAssessment.objects.latest('updated')
+    try:
+        user_com_skills = CommunicationAssessment.objects.latest('updated')
+    except:
+        user_com_skills = None
     has_com_goals = Goals.has_communication_goals(user)
 
     return render(request, 'musictherapy/detail.html', {
