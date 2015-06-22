@@ -139,7 +139,9 @@
                     </table>
 
 
+                    {% if com_assessment_form %}
                     {% crispy com_assessment_form %}
+                    {% endif %}
 
                     {% if has_com_goals %}
                     <p>Submit new Communication Skills Goals Measurables</p>
