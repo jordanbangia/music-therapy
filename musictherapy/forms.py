@@ -1,5 +1,6 @@
 from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, \
-    PsychoSocialAssessment, PsychoSocialGoals, MotorSkillsAssessment, MotorSkillsGoals
+    PsychoSocialAssessment, PsychoSocialGoals, MotorSkillsAssessment, MotorSkillsGoals, \
+    CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals
 from .extras import SelectDateWidget
 from .goals import Goals
 from django.forms import ModelForm
@@ -26,6 +27,7 @@ class GoalsForm(ModelForm):
         self.helper.form_action = 'submit_goals/#goals'
         self.helper.add_input(Submit('submit', 'Save'))
 
+
 class UserInfoForm(ModelForm):
     class Meta:
         model = UserInfo
@@ -47,6 +49,7 @@ class UserInfoForm(ModelForm):
         self.helper.form_action = 'submit_userinfo/#basicinfo'
         self.helper.add_input(Submit('submit', 'Save'))
 
+
 class MusicalPrefForm(ModelForm):
     class Meta:
         model = MusicalPreference
@@ -63,6 +66,7 @@ class MusicalPrefForm(ModelForm):
         self.helper.form_post = 'post'
         self.helper.form_action = 'submit_musicpref/#musicpref'
         self.helper.add_input(Submit('submit', 'Save'))
+
 
 class CommunicationAssessmentForm(ModelForm):
     class Meta:
@@ -98,6 +102,7 @@ class CommunicationAssessmentForm(ModelForm):
             )
         )
 
+
 class CommunicationSkillsForm(ModelForm):
     class Meta:
         model = CommunicationGoals
@@ -126,6 +131,7 @@ class CommunicationSkillsForm(ModelForm):
                 del self.fields['feelings_were_articulated']
                 del self.fields['opinions_given']
 
+
 class PsychoSocialSkillsAssessmentForm(ModelForm):
     class Meta:
         model = PsychoSocialAssessment
@@ -148,6 +154,7 @@ class PsychoSocialSkillsAssessmentForm(ModelForm):
                                'display_range_of_affect', 'self_esteem_confidence', 'sense_of_humour')
             )
         )
+
 
 class PsychoSocialSkillsForm(ModelForm):
     class Meta:
@@ -223,6 +230,7 @@ class MotorSkillsAssessmentForm(ModelForm):
             )
         )
 
+
 class MotorSkillsForm(ModelForm):
     class Meta:
         model = MotorSkillsGoals
@@ -252,3 +260,72 @@ class MotorSkillsForm(ModelForm):
                 del self.fields['gross_motor_activity']
             if Goals.MTR_COORDINATION not in user_goals:
                 del self.fields['coordination_activity']
+
+
+class CognitiveSkillsAssessmentForm(ModelForm):
+    class Meta:
+        model = CognitiveMemorySkillsAssessment
+        fields = ('recalls_own_name', 'recalls_name_familiar_persons', 'recalls_melody_familiar_songs', 'recalls_lyrics_familiar_songs', 'play_instruments',
+                  'recognize_error_self_correct', 'read_song_sheet_book', 'organize_thoughts', 'remains_on_task', 'starts_stops_correct', 'maintains_synchrony_with_another',
+                  'follow_verbal_directions', 'follow_non_verbal_directions', 'follows_hand_over_hand_directions', 'long_term_memory', 'short_term_memory', 'oriented_time',
+                  'oriented_place')
+
+    def __init__(self, *args, **kwargs):
+        super(CognitiveSkillsAssessmentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.helper.form_id = 'id-cogassessment'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_cogassess/#cognitiveskills'
+        self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
+        self.helper.layout = Layout(
+            Accordion(
+                AccordionGroup('Cognitive Skills Assessment',
+                               'recalls_own_name', 'recalls_name_familiar_persons', 'recalls_melody_familiar_songs', 'recalls_lyrics_familiar_songs', 'play_instruments',
+                               'recognize_error_self_correct', 'read_song_sheet_book', 'organize_thoughts', 'remains_on_task', 'starts_stops_correct', 'maintains_synchrony_with_another',
+                               'follow_verbal_directions', 'follow_non_verbal_directions', 'follows_hand_over_hand_directions', 'long_term_memory', 'short_term_memory',
+                               'oriented_time', 'oriented_place')
+            )
+        )
+
+
+class CognitiveSkillsForm(ModelForm):
+    class Meta:
+        model = CognitionMemorySkillsGoals
+        fields = ('choice_made_verbally', 'choice_made_nonverbally', 'reaction_to_vocal_stimuli', 'reaction_to_recorded_stimuli', 'reactions_to_instrumental_stimuli', 'questions_were_answered',
+                  'long_term_memory_retrieved', 'short_term_memory_retrieved', 'occurrences_confusion_disorientation', 'willing_participation', 'encouraged_participation')
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(CognitiveSkillsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.helper.form_id = 'id-coggoals'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_coggoals/#cognitiveskills'
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+        if user:
+            user_goals = Goals.get_cognitive_memory_goals(user)
+            if Goals.COG_CHOICE_MAKING not in user_goals:
+                del self.fields['choice_made_verbally']
+                del self.fields['choice_made_nonverbally']
+            if Goals.COG_SENSORY_STIMULATION not in user_goals:
+                del self.fields['reaction_to_vocal_stimuli']
+                del self.fields['reaction_to_recorded_stimuli']
+                del self.fields['reactions_to_instrumental_stimuli']
+            if Goals.COG_MAINTAIN_FUNCTION not in user_goals:
+                del self.fields['questions_were_answered']
+                del self.fields['long_term_memory_retrieved']
+                del self.fields['short_term_memory_retrieved']
+            if Goals.COG_DECREASE_CONFUSION not in user_goals:
+                del self.fields['occurrences_confusion_disorientation']
+            if Goals.COG_INCREASE_LEVEL_PART not in user_goals:
+                del self.fields['willing_participation']
+                del self.fields['encouraged_participation']

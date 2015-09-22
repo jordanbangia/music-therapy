@@ -148,3 +148,7 @@ class Goals:
     @staticmethod
     def get_motor_goals(user):
         return Goals.intersection(user.goals, Goals.MOTOR_GOALS)
+
+    @staticmethod
+    def get_cognitive_memory_goals(user):
+        return Goals.intersection(user.goals, Goals.COG_GOALS)

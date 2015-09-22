@@ -5,9 +5,10 @@ from django.views import generic
 from django.utils import timezone
 
 from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, PsychoSocialAssessment, PsychoSocialGoals, \
-    MotorSkillsAssessment, MotorSkillsGoals
+    MotorSkillsAssessment, MotorSkillsGoals, CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals
 from .forms import UserInfoForm, MusicalPrefForm, CommunicationAssessmentForm, CommunicationSkillsForm, GoalsForm, \
-    PsychoSocialSkillsAssessmentForm, PsychoSocialSkillsForm, MotorSkillsAssessmentForm, MotorSkillsForm
+    PsychoSocialSkillsAssessmentForm, PsychoSocialSkillsForm, MotorSkillsAssessmentForm, MotorSkillsForm, \
+    CognitiveSkillsAssessmentForm, CognitiveSkillsForm
 from .goals import Goals
 
 from annoying.functions import get_object_or_None
@@ -59,6 +60,16 @@ def user_detail(request, user_id):
         user_motor_skills = None
     has_motor_goals = Goals.has_motor_goals(user)
 
+    cog_assessments = CognitiveMemorySkillsAssessment.objects.filter(user=user).order_by('updated')
+    cog_assessment_form = CognitiveSkillsAssessmentForm()
+    cog_updates = CognitionMemorySkillsGoals.objects.filter(user=user).order_by('updated')
+    cog_update_form = CognitiveSkillsForm(user=user)
+    try:
+        user_cog_skills = CognitiveMemorySkillsAssessment.objects.latest('updated')
+    except:
+        user_cog_skills = None
+    has_cog_goals = Goals.has_motor_goals(user)
+
 
     return render(request, 'musictherapy/detail.html', {
         'user_info_form': user_form,
@@ -68,6 +79,7 @@ def user_detail(request, user_id):
         'user_com_skills' : user_com_skills,
         'user_pss_skills' : user_pss_skills,
         'user_motor_skills' :  user_motor_skills,
+        'user_cog_skills' : user_cog_skills,
 
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated' : musicpref_last_updated,
@@ -89,6 +101,12 @@ def user_detail(request, user_id):
         'motor_updates' : motor_updates,
         'motor_skills_form' : motor_update_form,
         'has_motor_goals' : has_motor_goals,
+
+        'cog_assessment_form' : cog_assessment_form,
+        'cog_assessments' : cog_assessments,
+        'cog_updates' : cog_updates,
+        'cog_skills_form' : cog_update_form,
+        'has_cog_goals' : has_cog_goals,
     })
 
 def save_basic_info(request, user_id):
@@ -128,15 +146,23 @@ def save_pss_goals(request, user_id):
 
 
 def save_motor_assess(request, user_id):
-    print('hello')
     if request.method == 'POST':
-        print('hi')
         return save_assess_form(MotorSkillsAssessmentForm(request.POST), user_id)
 
 
 def save_motor_goals(request, user_id):
     if request.method == 'POST':
         return save_skills_form(MotorSkillsForm(request.POST), user_id)
+
+
+def save_cog_assess(request, user_id):
+    if request.method == 'POST':
+        return save_assess_form(CognitiveSkillsAssessmentForm(request.POST), user_id)
+
+
+def save_cog_goals(request, user_id):
+    if request.method == 'POST':
+        return save_skills_form(CognitiveSkillsForm(request.POST), user_id)
 
 
 def save_skills_form(form, user_id):
