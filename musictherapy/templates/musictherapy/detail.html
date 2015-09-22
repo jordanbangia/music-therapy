@@ -37,7 +37,7 @@
             {% load crispy_forms_tags %}
 
             <ul class ="nav nav-tabs" id="tabs">
-                <li class="active"><a data-toggle="tab" href="#basicinfo">Basic Inforamation</a></li>
+                <li class="active"><a data-toggle="tab" href="#basicinfo">Basic Information</a></li>
                 {% if goals_form %}
                 <li><a data-toggle="tab" href="#goals">Goals</a></li>
                 {% endif %}
@@ -45,6 +45,7 @@
                 <li><a data-toggle="tab" href="#musicpref">Musical Preference</a></li>
                 {% endif %}
                 <li><a data-toggle="tab" href="#communicationskills">Communication Skills</a></li>
+                <li><a data-toggle="tab" href="#psychosocialskills">Psycho-Social Skills</a></li>
             </ul>
 
             <div class="tab-content">
@@ -55,37 +56,53 @@
                     <p>Last updated {{ user_last_updated }} </p>
                     {% endif %}
 
+                    {%if user_pss_skills %}
+                    <h3>Psycho-Social Skills</h3>
+                    <div class="row">
+                        <div class="span4">
+                            <div class="row">
+                                <div class="col-md-4">Mood/Affect</div>
+                                <div class="col-md-4">{{user_pss_skills.mood_affect|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <b><div class="col-md-4">Total</div>
+                                <div class="col-md-4">{{user_pss_skills.total|floatformat:2}}</div></b>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
                     {% if user_com_skills %}
                     <h3>Communication Skills</h3>
                     <div class="row">
                         <div class="span4">
                             <div class="row">
                                 <div class="col-md-4">Verbal Skills</div>
-                                <div class="col-md-4">{{user_com_skills.verbal_skills|floatformat:2}}%</div>
+                                <div class="col-md-4">{{user_com_skills.verbal_skills|floatformat:2}}</div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">Receptive Language</div>
-                                <div class="col-md-4">{{user_com_skills.receptive_language|floatformat:2}}%</div>
+                                <div class="col-md-4">{{user_com_skills.receptive_language|floatformat:2}}</div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">Singing/Vocal Skills</div>
-                                <div class="col-md-4">{{user_com_skills.singing_vocal_skills|floatformat:2}}%</div>
+                                <div class="col-md-4">{{user_com_skills.singing_vocal_skills|floatformat:2}}</div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">Vocalization</div>
-                                <div class="col-md-4">{{user_com_skills.vocalization|floatformat:2}}%</div>
+                                <div class="col-md-4">{{user_com_skills.vocalization|floatformat:2}}</div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">Interactive Speech</div>
-                                <div class="col-md-4">{{user_com_skills.interactive_speech|floatformat:2}}%</div>
+                                <div class="col-md-4">{{user_com_skills.interactive_speech|floatformat:2}}</div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">Choice Making</div>
-                                <div class="col-md-4">{{user_com_skills.choice_making|floatformat:2}}%</div>
+                                <div class="col-md-4">{{user_com_skills.choice_making|floatformat:2}}</div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4">Total</div>
-                                <div class="col-md-4">{{user_com_skills.total|floatformat:2}}%</div>
+                                <b><div class="col-md-4">Total</div>
+                                <div class="col-md-4">{{user_com_skills.total|floatformat:2}}</div></b>
                             </div>
                         </div>
 
@@ -126,18 +143,17 @@
                         {% for assessment in com_assessments %}
                         <tr>
                             <td>{{assessment.updated}}</td>
-                            <td>{{assessment.verbal_skills|floatformat:2}}%</td>
-                            <td>{{assessment.receptive_language|floatformat:2}}%</td>
-                            <td>{{assessment.singing_vocal_skills|floatformat:2}}%</td>
-                            <td>{{assessment.vocalization|floatformat:2}}%</td></td>
-                            <td>{{assessment.interactive_speech|floatformat:2}}%</td>
-                            <td>{{assessment.choice_making|floatformat:2}}%</td>
-                            <td>{{assessment.total|floatformat:2}}%</td>
+                            <td>{{assessment.verbal_skills|floatformat:2}}</td>
+                            <td>{{assessment.receptive_language|floatformat:2}}</td>
+                            <td>{{assessment.singing_vocal_skills|floatformat:2}}</td>
+                            <td>{{assessment.vocalization|floatformat:2}}</td></td>
+                            <td>{{assessment.interactive_speech|floatformat:2}}</td>
+                            <td>{{assessment.choice_making|floatformat:2}}</td>
+                            <td>{{assessment.total|floatformat:2}}</td>
                         </tr>
                         {% endfor %}
                         {% endif %}
                     </table>
-
 
                     {% if com_assessment_form %}
                     {% crispy com_assessment_form %}
@@ -146,6 +162,35 @@
                     {% if has_com_goals %}
                     <p>Submit new Communication Skills Goals Measurables</p>
                     {% crispy com_skills_form %}
+                    {% endif %}
+                </div>
+
+                <div id="psychosocialskills" class="tab-pane fade">
+                    <p>Past Psycho-Social Skills Assessments</p>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Date</th>
+                            <th>Mood/Affect</th>
+                            <th>Total</th>
+                        </tr>
+                        {% if pss_assessments %}
+                        {% for assessment in pss_assessments %}
+                        <tr>
+                            <td>{{assessment.updated}}</td>
+                            <td>{{assessment.mood_affect|floatformat:2}}</td>
+                            <td>{{assessment.total|floatformat:2}}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </table>
+
+                    {% if pss_assessment_form %}
+                    {% crispy pss_assessment_form %}
+                    {% endif %}
+
+                    {% if has_pss_goals %}
+                    <p>Submit new Psycho-Social Skills Goals Measurables</p>
+                    {% crispy pss_skills_form %}
                     {% endif %}
                 </div>
             </div>

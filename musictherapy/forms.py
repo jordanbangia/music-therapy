@@ -1,4 +1,4 @@
-from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals
+from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, PsychoSocialAssessment, PsychoSocialGoals
 from .extras import SelectDateWidget
 from .goals import Goals
 from django.forms import ModelForm
@@ -118,10 +118,76 @@ class CommunicationSkillsForm(ModelForm):
 
         if user:
             user_goals = Goals.get_communication_goals(user)
-            print(user_goals)
             if Goals.COM_INCREASE_LEVEL not in user_goals:
                 del self.fields['verbal_part_with_verbal_prompt']
                 del self.fields['verbal_part_without_verbal_prompt']
             if Goals.COM_INCREASE_SELF_EXPRESSION not in  user_goals:
                 del self.fields['feelings_were_articulated']
                 del self.fields['opinions_given']
+
+class PsychoSocialSkillsAssessmentForm(ModelForm):
+    class Meta:
+        model = PsychoSocialAssessment
+        fields = ('display_range_of_affect', 'self_esteem_confidence', 'sense_of_humour')
+
+    def __init__(self, *args, **kwargs):
+        super(PsychoSocialSkillsAssessmentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.helper.form_id = 'id-psychosocialassessment'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_pssassess/#psychosocialskills'
+        self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
+        self.helper.layout = Layout(
+            Accordion(
+                AccordionGroup('Psycho-Social Skills Assessment',
+                               'display_range_of_affect', 'self_esteem_confidence', 'sense_of_humour')
+            )
+        )
+
+class PsychoSocialSkillsForm(ModelForm):
+    class Meta:
+        model = PsychoSocialGoals
+        fields = ('smiled', 'frowned', 'made_negative_comments_self', 'made_positive_comments_self', 'refused_to_lead_activity',
+                  'lead_activity', 'left_program', 'complained_of_pain', 'destructive_behaviour_number_of_occurrences', 'displayed_depressive_symptoms',
+                  'frustration_tolerance_number_of_occurrences', 'demonstrated_anxiety')
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(PsychoSocialSkillsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.helper.form_id = 'id-psychosocialgoals'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_pssgoals/#psychosocialskills'
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+        if user:
+            user_goals = Goals.get_psycho_social_goals(user)
+            if Goals.PSS_RANGE_OF_AFFECT not in user_goals:
+                del self.fields['smiled']
+                del self.fields['frowned']
+            if Goals.PSS_SELF_ESTEEM not in user_goals:
+                del self.fields['made_negative_comments_self']
+                del self.fields['made_positive_comments_self']
+            if Goals.PSS_LEADERSHIP not in user_goals:
+                del self.fields['refused_to_lead_activity']
+                del self.fields['lead_activity']
+            if Goals.PSS_RESTLESSNESS not in user_goals:
+                del self.fields['left_program']
+            if Goals.PSS_PAIN_MANAGMENT not in user_goals:
+                del self.fields['complained_of_pain']
+            if Goals.PSS_DECREASE_COMPULSIVE not in user_goals:
+                del self.fields['destructive_behaviour_number_of_occurrences']
+            if Goals.PSS_DECREASE_DEPRESSIVE:
+                del self.fields['displayed_depressive_symptoms']
+            if Goals.PSS_INCREASE_TOLERANCE:
+                del self.fields['frustration_tolerance_number_of_occurrences']
+            if Goals.PSS_INCREASE_ANXIETY_CONTROL:
+                del self.fields['demonstrated_anxiety']

@@ -4,8 +4,9 @@ from django.template import RequestContext, loader
 from django.views import generic
 from django.utils import timezone
 
-from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals
-from .forms import UserInfoForm, MusicalPrefForm, CommunicationAssessmentForm, CommunicationSkillsForm, GoalsForm
+from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, PsychoSocialAssessment, PsychoSocialGoals
+from .forms import UserInfoForm, MusicalPrefForm, CommunicationAssessmentForm, CommunicationSkillsForm, GoalsForm, \
+    PsychoSocialSkillsAssessmentForm, PsychoSocialSkillsForm
 from .goals import Goals
 
 from annoying.functions import get_object_or_None
@@ -37,11 +38,24 @@ def user_detail(request, user_id):
         user_com_skills = None
     has_com_goals = Goals.has_communication_goals(user)
 
+    pss_assessments = PsychoSocialAssessment.objects.filter(user=user).order_by('updated')
+    pss_assessment_form = PsychoSocialSkillsAssessmentForm()
+    pss_updates = PsychoSocialGoals.objects.filter(user=user).order_by('updated')
+    pss_update_form = PsychoSocialSkillsForm(user=user)
+    try:
+        user_pss_skills = PsychoSocialAssessment.objects.latest('updated')
+    except:
+        user_pss_skills = None
+    has_pss_goals = Goals.has_psycho_social_goals(user)
+
+    print(has_pss_goals)
+
     return render(request, 'musictherapy/detail.html', {
         'user_info_form': user_form,
         'goals_form' : goals_form,
         'user_last_updated' : user_last_updated,
         'user_com_skills' : user_com_skills,
+        'user_pss_skills' : user_pss_skills,
 
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated' : musicpref_last_updated,
@@ -50,7 +64,13 @@ def user_detail(request, user_id):
         'com_assessments' : com_assessments,
         'com_updates': com_updates,
         'com_skills_form' : com_update_form,
-        'has_com_goals' : has_com_goals
+        'has_com_goals' : has_com_goals,
+
+        'pss_assessment_form' : pss_assessment_form,
+        'pss_assessments' : pss_assessments,
+        'pss_updates' : pss_updates,
+        'pss_skills_form' : pss_update_form,
+        'has_pss_goals' : has_pss_goals,
     })
 
 def save_basic_info(request, user_id):
@@ -84,6 +104,25 @@ def save_com_goals(request, user_id):
         com_skills_form = CommunicationSkillsForm(request.POST)
         if com_skills_form.is_valid():
             update = com_skills_form.save(commit=False)
+            update.user = get_object_or_404(UserInfo, pk=user_id)
+            update.save()
+            return redirect('/musictherapy/' + user_id)
+
+def save_pss_assess(request, user_id):
+    if request.method == 'POST':
+        pss_assessment_form = PsychoSocialSkillsAssessmentForm(request.POST)
+        if pss_assessment_form.is_valid():
+            pss_assessment = pss_assessment_form.save(commit=False)
+            pss_assessment.fill_measurables()
+            pss_assessment.user = get_object_or_404(UserInfo, pk=user_id)
+            pss_assessment.save()
+            return redirect('/musictherapy/' + user_id)
+
+def save_pss_goals(request, user_id):
+    if request.method == 'POST':
+        pss_skills_form = PsychoSocialSkillsForm(request.POST)
+        if pss_skills_form.is_valid():
+            update = pss_skills_form.save(commit=False)
             update.user = get_object_or_404(UserInfo, pk=user_id)
             update.save()
             return redirect('/musictherapy/' + user_id)
