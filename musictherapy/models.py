@@ -74,6 +74,51 @@ class MusicalPreference(models.Model):
     preferred_style = MultiSelectField(choices=STYLES_CHOICES, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
+class ObservableBehaviours(models.Model):
+    BEHAVIOUR_CHOICES = (
+        ('Abusive to others (physically)', 'Abusive to others (physically)'),
+        ('Abusive to others (verbally)', 'Abusive to others (verbally)'),
+        ('Agitation', 'Agitation'),
+        ('Amivalent/detached', 'Ambivalent/detached'),
+        ('Assertive', 'Assertive'),
+        ('Crying', 'Crying'),
+        ('Delusions', 'Delusions'),
+        ('Depressed', 'Depressed'),
+        ('Disruptive', 'Disruptive'),
+        ('Exit Seeking', 'Exit Seeking'),
+        ('Fearful', 'Fearful'),
+        ('Flat affect', 'Flat affect'),
+        ('Hallucinations', 'Hallucinations'),
+        ('Hoarding', 'Hoarding'),
+        ('Impulsive', 'Impulsive'),
+        ('Isolative', 'Isolative'),
+        ('Labile', 'Labile'),
+        ('Manipulative', 'Manipulative'),
+        ('Oral Fixation', 'Oral Fixation'),
+        ('Passive', 'Passive'),
+        ('Physically Perseverative', 'Physically Perseveration'),
+        ('Questioning', 'Questioning'),
+        ('Repetitive', 'Repetitive'),
+        ('Resistive', 'Resistive'),
+        ('Restless', 'Restless'),
+        ('Self-abusive', 'Self-abusive'),
+        ('Self-stimulative', 'Self-stimulative'),
+        ('Sleeping', 'Sleeping'),
+        ('Territorial', 'Territorial'),
+        ('Uncooperative', 'Uncooperative'),
+        ('Wanders', 'Wanders'),
+        ('Withdrawn', 'Withdrawn')
+    )
+
+    user = models.OneToOneField(UserInfo, primary_key=True)
+    observable_behaviours = MultiSelectField(choices=BEHAVIOUR_CHOICES, null=True, blank=True)
+    obsessions = models.CharField(max_length=400, blank=True, null=True)
+    catastrophic_reactions = models.CharField(max_length=400, blank=True, null=True)
+    inappropriate_verbal_behaviour = models.CharField(max_length=400, blank=True, null=True)
+    inappropriate_nonverbal_behaviour = models.CharField(max_length=400, blank=True, null=True)
+    expresses_exhibits_pain = models.CharField(max_length=400, blank=True, null=True)
+    comments = models.CharField(max_length=600, blank=True, null=True)
+
 class CommunicationAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
     updated = models.DateTimeField(auto_now=True)
@@ -182,9 +227,7 @@ class PsychoSocialGoals(models.Model):
     #decrease depressive symptoms
     displayed_depressive_symptoms = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     #increase frustration tolerance
-    depressive_symptoms_number_of_occurences = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
-    #increase frustration tolerance
-    frustration_tolerance_number_of_occurences = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    frustration_tolerance_number_of_occurrences = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     #decrease level of anxiety
     demonstrated_anxiety = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
 
@@ -281,8 +324,9 @@ class CognitiveMemorySkillsAssessment(models.Model):
                                      self.follows_hand_over_hand_directions) / float(14 * 4)
         self.memory = 100 * float(self.long_term_memory + self.short_term_memory + self.oriented_time +
                                   self.oriented_place) / float(4 * 3)
+        self.total = float(self.cognition + self.memory) / float(2)
 
-class CognitionMemorySkillsGoalsMeasurables(models.Model):
+class CognitionMemorySkillsGoals(models.Model):
     user = models.ForeignKey(UserInfo)
     updated = models.DateTimeField(auto_now=True)
 
@@ -303,3 +347,97 @@ class CognitionMemorySkillsGoalsMeasurables(models.Model):
     willing_participation = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     encouraged_participation = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
 
+class SocialSkillsAssessment(models.Model):
+    user = models.ForeignKey(UserInfo)
+    updated = models.DateTimeField(auto_now=True)
+    total = models.FloatField(validators=[MaxValueValidator(101)], default = 0)
+
+    interactions = models.FloatField(validators=[MaxValueValidator(101)], default=0)
+    engage_imitation = models.IntegerField(choices=SKILLS_SCALE)
+    passing_sharing_instruments = models.IntegerField(choices=SKILLS_SCALE)
+    converse_others = models.IntegerField(choices=SKILLS_SCALE)
+    dancing_others = models.IntegerField(choices=SKILLS_SCALE)
+
+    attending_skills = models.FloatField(validators=[MaxValueValidator(101)], default=0)
+    make_maintain_eye_contact = models.IntegerField(choices=SKILLS_SCALE)
+    attend_task = models.IntegerField(choices=SKILLS_SCALE)
+
+    sharing_turn_taking = models.FloatField(validators=[MaxValueValidator(101)], default=0)
+    pass_exchange_instrument = models.IntegerField(choices=SKILLS_SCALE)
+    play_response_name = models.IntegerField(choices=SKILLS_SCALE)
+
+    participation_group_music = models.FloatField(validators=[MaxValueValidator(101)], default=0)
+    active_in_session = models.IntegerField(choices=SKILLS_SCALE)
+    remain_in_group = models.IntegerField(choices=SKILLS_SCALE)
+    accept_leadership = models.IntegerField(choices=SKILLS_SCALE)
+
+    def fill_measurable(self):
+        self.interactions = 100 * float(self.engage_imitation + self.passing_sharing_instruments + self.converse_others + self.dancing_others) / float(4 * 3)
+        self.attending_skills = 100 * float(self.make_maintain_eye_contact + self.attend_task) / float(2 * 3)
+        self.sharing_turn_taking = 100 * float(self.pass_exchange_instrument + self.play_response_name) / float(2 * 3)
+        self.participation_group_music = 100 * float(self.active_in_session + self.remain_in_group + self.accept_leadership) /float(3 * 3)
+        self.total = float(self.interactions + self.attending_skills + self.sharing_turn_taking + self.participation_group_music) / float(4)
+
+class SocialSkillsGoals(models.Model):
+    user = models.ForeignKey(UserInfo)
+    updated = models.DateTimeField(auto_now=True)
+
+    #increase attention span
+    redirection_required = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    encouragement_to_stay_required = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+
+    #decrease isolation
+    participation_in_program = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    joining_of_program = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+
+    #increase social interaction
+    interactions_with_staff = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    interactions_with_peers = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    therapist = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+
+class MusicSkillsAssessment(models.Model):
+    user = models.ForeignKey(UserInfo)
+    updated = models.DateTimeField(auto_now=True)
+    total = models.FloatField(validators=[MaxValueValidator(101)], default = 0)
+
+    rhythm_beat = models.FloatField(validators=[MaxValueValidator(101)], default=0)
+    match_rhythm = models.IntegerField(choices=SKILLS_SCALE)
+    keep_steady_beat = models.IntegerField(choices=SKILLS_SCALE)
+    adapt_to_rhythmic_changes = models.IntegerField(choices=SKILLS_SCALE)
+
+    melody_tonal = models.FloatField(validators=[MaxValueValidator(101)], default=0)
+    match_pitch = models.IntegerField(choices=SKILLS_SCALE)
+    discriminates_dynamics = models.IntegerField(choices=SKILLS_SCALE)
+    discriminates_duration = models.IntegerField(choices=SKILLS_SCALE)
+    sing_familiar_songs = models.IntegerField(choices=SKILLS_SCALE)
+    finish_musical_phrase = models.IntegerField(choices=SKILLS_SCALE)
+
+    instrument_exploration = models.FloatField(validators=[MaxValueValidator(101)], default=0)
+    choose_instrument_play = models.IntegerField(choices=SKILLS_SCALE)
+
+    interest_preference = models.FloatField(validators=[MaxValueValidator(101)], default=0)
+    response_to_music = models.IntegerField(choices=SKILLS_SCALE)
+    choose_song_style = models.IntegerField(choices=SKILLS_SCALE)
+    familiar_song_title_melody = models.IntegerField(choices=SKILLS_SCALE)
+    familiar_song_title_lyrics = models.IntegerField(choices=SKILLS_SCALE)
+
+    def fill_measurable(self):
+        self.rhythm_beat = 100 * float(self.match_rhythm + self.keep_steady_beat + self.adapt_to_rhythmic_changes) / float(3 * 3)
+        self.melody_tonal = 100 * float(self.match_pitch + self.discriminates_dynamics + self.discriminates_duration + self.sing_familiar_songs + self.finish_musical_phrase) / float(5 * 3)
+        self.instrument_exploration = 100 * float(self.choose_instrument_play) / float (1 * 3)
+        self.interest_preference = 100 * float(self.response_to_music + self.choose_song_style + self.familiar_song_title_lyrics + self.familiar_song_title_melody) / float(4 * 3)
+        self.total = float(self.rhythm_beat + self.melody_tonal + self.instrument_exploration + self.interest_preference) / float(4)
+
+class MusicSkillsGoals(models.Model):
+    user = models.ForeignKey(UserInfo)
+    updated = models.DateTimeField(auto_now=True)
+
+    #maintain current knowledge of music
+    music_trivia_answered_correctly = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    song_known_without_lyrics = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    song_known_without_title = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    song_known = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+
+    #maintain current music skills
+    music_skill_demonstrated = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    opinions_given = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
