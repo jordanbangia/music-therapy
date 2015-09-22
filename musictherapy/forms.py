@@ -1,4 +1,5 @@
-from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, PsychoSocialAssessment, PsychoSocialGoals
+from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, \
+    PsychoSocialAssessment, PsychoSocialGoals, MotorSkillsAssessment, MotorSkillsGoals
 from .extras import SelectDateWidget
 from .goals import Goals
 from django.forms import ModelForm
@@ -191,3 +192,63 @@ class PsychoSocialSkillsForm(ModelForm):
                 del self.fields['frustration_tolerance_number_of_occurrences']
             if Goals.PSS_INCREASE_ANXIETY_CONTROL:
                 del self.fields['demonstrated_anxiety']
+
+
+class MotorSkillsAssessmentForm(ModelForm):
+    class Meta:
+        model = MotorSkillsAssessment
+        fields = ('independent_mobility', 'gait', 'endurance', 'structure_dance', 'grasped_instruments_mallets',
+                  'demonstrated_finger_independence', 'turn_pages_of_songbook', 'demonstrated_upper_extremity_control',
+                  'range_of_motion', 'crosses_midline', 'reach_for_instrument', 'demonstrates_adequate_eye_hand_coordination',
+                  'demonstrated_adequate_body_coordination', 'full_hearing', 'full_sight')
+
+    def __init__(self, *args, **kwargs):
+        super(MotorSkillsAssessmentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.helper.form_id = 'id-motorassessment'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_motorassess/#motorskills'
+        self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
+        self.helper.layout = Layout(
+            Accordion(
+                AccordionGroup('Motor Skills Assessment',
+                               'independent_mobility', 'gait', 'endurance', 'structure_dance', 'grasped_instruments_mallets',
+                               'demonstrated_finger_independence', 'turn_pages_of_songbook', 'demonstrated_upper_extremity_control',
+                               'range_of_motion', 'crosses_midline', 'reach_for_instrument', 'demonstrates_adequate_eye_hand_coordination',
+                               'demonstrated_adequate_body_coordination', 'full_hearing', 'full_sight')
+            )
+        )
+
+class MotorSkillsForm(ModelForm):
+    class Meta:
+        model = MotorSkillsGoals
+        fields = ('mobility_activity', 'fine_motor_activity', 'gross_motor_activity', 'coordination_activity')
+
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(MotorSkillsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.helper.form_id = 'id-motorgoals'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_motorgoals/#motorskills'
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+        if user:
+            user_goals = Goals.get_motor_goals(user)
+            if Goals.MTR_FINE not in user_goals:
+                del self.fields['fine_motor_activity']
+            if Goals.MTR_MOBILITY not in user_goals:
+                del self.fields['mobility_activity']
+            if Goals.MTR_GROSS not in user_goals:
+                del self.fields['gross_motor_activity']
+            if Goals.MTR_COORDINATION not in user_goals:
+                del self.fields['coordination_activity']

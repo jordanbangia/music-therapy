@@ -144,3 +144,7 @@ class Goals:
     @staticmethod
     def get_psycho_social_goals(user):
         return Goals.intersection(user.goals, Goals.PSS_GOALS)
+
+    @staticmethod
+    def get_motor_goals(user):
+        return Goals.intersection(user.goals, Goals.MOTOR_GOALS)

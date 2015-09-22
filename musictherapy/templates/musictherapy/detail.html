@@ -46,6 +46,7 @@
                 {% endif %}
                 <li><a data-toggle="tab" href="#communicationskills">Communication Skills</a></li>
                 <li><a data-toggle="tab" href="#psychosocialskills">Psycho-Social Skills</a></li>
+                <li><a data-toggle="tab" href="#motorskills">Motor Skills</a></li>
             </ul>
 
             <div class="tab-content">
@@ -54,6 +55,38 @@
 
                     {% if user_last_update %}
                     <p>Last updated {{ user_last_updated }} </p>
+                    {% endif %}
+
+                    {% if user_motor_skills %}
+                    <h3>Motor Skills</h3>
+                    <div class="row">
+                        <div class="span4">
+                            <div class="row">
+                                <div class="col-md-4">Mobility</div>
+                                <div class="col-md-4">{{user_motor_skills.mobility|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Fine Motor</div>
+                                <div class="col-md-4">{{user_motor_skills.fine_motor|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Gross Motor</div>
+                                <div class="col-md-4">{{user_motor_skills.gross_motor|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Coordination</div>
+                                <div class="col-md-4">{{user_motor_skills.coordination|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Limitations</div>
+                                <div class="col-md-4">{{user_motor_skills.limitations|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <b><div class="col-md-4">Total</div>
+                                <div class="col-md-4">{{user_motor_skills.total|floatformat:2}}</div></b>
+                            </div>
+                        </div>
+                    </div>
                     {% endif %}
 
                     {%if user_pss_skills %}
@@ -105,7 +138,6 @@
                                 <div class="col-md-4">{{user_com_skills.total|floatformat:2}}</div></b>
                             </div>
                         </div>
-
                     </div>
                     {% endif %}
                 </div>
@@ -191,6 +223,43 @@
                     {% if has_pss_goals %}
                     <p>Submit new Psycho-Social Skills Goals Measurables</p>
                     {% crispy pss_skills_form %}
+                    {% endif %}
+                </div>
+
+                <div id="motorskills" class="tab-pane fade">
+                    <p>Past Motor Skills Assessments</p>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Date</th>
+                            <th>Mobility</th>
+                            <th>Fine Motor</th>
+                            <th>Gross Motor</th>
+                            <th>Coordination</th>
+                            <th>Limitations</th>
+                            <th>Total</th>
+                        </tr>
+                        {% if motor_assessments %}
+                        {% for assessment in motor_assessments %}
+                        <tr>
+                            <td>{{assessment.updated}}</td>
+                            <td>{{assessment.mobility|floatformat:2}}</td>
+                            <td>{{assessment.fine_motor|floatformat:2}}</td>
+                            <td>{{assessment.gross_motor|floatformat:2}}</td>
+                            <td>{{assessment.coordination|floatformat:2}}</td>
+                            <td>{{assessment.limitations|floatformat:2}}</td>
+                            <td>{{assessment.total|floatformat:2}}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </table>
+
+                    {% if motor_assessment_form %}
+                    {% crispy motor_assessment_form %}
+                    {% endif %}
+
+                    {% if has_motor_goals %}
+                    <p>Submit new Motor Skills Goals Measurables</p>
+                    {% crispy motor_skills_form %}
                     {% endif %}
                 </div>
             </div>

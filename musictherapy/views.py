@@ -4,9 +4,10 @@ from django.template import RequestContext, loader
 from django.views import generic
 from django.utils import timezone
 
-from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, PsychoSocialAssessment, PsychoSocialGoals
+from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, PsychoSocialAssessment, PsychoSocialGoals, \
+    MotorSkillsAssessment, MotorSkillsGoals
 from .forms import UserInfoForm, MusicalPrefForm, CommunicationAssessmentForm, CommunicationSkillsForm, GoalsForm, \
-    PsychoSocialSkillsAssessmentForm, PsychoSocialSkillsForm
+    PsychoSocialSkillsAssessmentForm, PsychoSocialSkillsForm, MotorSkillsAssessmentForm, MotorSkillsForm
 from .goals import Goals
 
 from annoying.functions import get_object_or_None
@@ -48,14 +49,25 @@ def user_detail(request, user_id):
         user_pss_skills = None
     has_pss_goals = Goals.has_psycho_social_goals(user)
 
-    print(has_pss_goals)
+    motor_assessments = MotorSkillsAssessment.objects.filter(user=user).order_by('updated')
+    motor_assessment_form = MotorSkillsAssessmentForm()
+    motor_updates = MotorSkillsGoals.objects.filter(user=user).order_by('updated')
+    motor_update_form = MotorSkillsForm(user=user)
+    try:
+        user_motor_skills = MotorSkillsAssessment.objects.latest('updated')
+    except:
+        user_motor_skills = None
+    has_motor_goals = Goals.has_motor_goals(user)
+
 
     return render(request, 'musictherapy/detail.html', {
         'user_info_form': user_form,
         'goals_form' : goals_form,
         'user_last_updated' : user_last_updated,
+
         'user_com_skills' : user_com_skills,
         'user_pss_skills' : user_pss_skills,
+        'user_motor_skills' :  user_motor_skills,
 
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated' : musicpref_last_updated,
@@ -71,6 +83,12 @@ def user_detail(request, user_id):
         'pss_updates' : pss_updates,
         'pss_skills_form' : pss_update_form,
         'has_pss_goals' : has_pss_goals,
+
+        'motor_assessment_form' : motor_assessment_form,
+        'motor_assessments' : motor_assessments,
+        'motor_updates' : motor_updates,
+        'motor_skills_form' : motor_update_form,
+        'has_motor_goals' : has_motor_goals,
     })
 
 def save_basic_info(request, user_id):
@@ -91,42 +109,52 @@ def save_music_pref(request, user_id):
 
 def save_com_assess(request, user_id):
     if request.method == 'POST':
-        com_assessment_form = CommunicationAssessmentForm(request.POST)
-        if com_assessment_form.is_valid():
-            com_assessment = com_assessment_form.save(commit=False)
-            com_assessment.fill_measurables()
-            com_assessment.user = get_object_or_404(UserInfo, pk=user_id)
-            com_assessment.save()
-            return redirect('/musictherapy/' + user_id)
+        return save_assess_form(CommunicationAssessmentForm(request.POST), user_id)
+
 
 def save_com_goals(request, user_id):
     if request.method == 'POST':
-        com_skills_form = CommunicationSkillsForm(request.POST)
-        if com_skills_form.is_valid():
-            update = com_skills_form.save(commit=False)
-            update.user = get_object_or_404(UserInfo, pk=user_id)
-            update.save()
-            return redirect('/musictherapy/' + user_id)
+        return save_skills_form(CommunicationSkillsForm(request.POST), user_id)
+
 
 def save_pss_assess(request, user_id):
     if request.method == 'POST':
-        pss_assessment_form = PsychoSocialSkillsAssessmentForm(request.POST)
-        if pss_assessment_form.is_valid():
-            pss_assessment = pss_assessment_form.save(commit=False)
-            pss_assessment.fill_measurables()
-            pss_assessment.user = get_object_or_404(UserInfo, pk=user_id)
-            pss_assessment.save()
-            return redirect('/musictherapy/' + user_id)
+        return save_assess_form(PsychoSocialSkillsAssessmentForm(request.POST), user_id)
+
 
 def save_pss_goals(request, user_id):
     if request.method == 'POST':
-        pss_skills_form = PsychoSocialSkillsForm(request.POST)
-        if pss_skills_form.is_valid():
-            update = pss_skills_form.save(commit=False)
-            update.user = get_object_or_404(UserInfo, pk=user_id)
-            update.save()
-            return redirect('/musictherapy/' + user_id)
+        return save_skills_form(PsychoSocialSkillsForm(request.POST), user_id)
 
+
+def save_motor_assess(request, user_id):
+    print('hello')
+    if request.method == 'POST':
+        print('hi')
+        return save_assess_form(MotorSkillsAssessmentForm(request.POST), user_id)
+
+
+def save_motor_goals(request, user_id):
+    if request.method == 'POST':
+        return save_skills_form(MotorSkillsForm(request.POST), user_id)
+
+
+def save_skills_form(form, user_id):
+    if form.is_valid():
+        update = form.save(commit=False)
+        update.user = get_object_or_404(UserInfo, pk=user_id)
+        update.save()
+        return redirect('/musictherapy/' + user_id)
+
+
+def save_assess_form(form, user_id):
+    if form.is_valid():
+        print('what up')
+        update = form.save(commit=False)
+        update.fill_measurables()
+        update.user = get_object_or_404(UserInfo, pk=user_id)
+        update.save()
+        return redirect('/musictherapy/' + user_id)
 
 def create_user(request):
     user_form = UserInfoForm()
@@ -134,6 +162,7 @@ def create_user(request):
         'user_info_form' : user_form,
         'new' : True
     })
+
 
 def save_new_basic(request):
     if request.method == 'POST':
@@ -147,10 +176,12 @@ def save_new_basic(request):
             print("From was not valid")
             return HttpResponse(404)
 
+
 def delete_user(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
     user.delete()
     return redirect('/musictherapy/')
+
 
 def save_user_goals(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
