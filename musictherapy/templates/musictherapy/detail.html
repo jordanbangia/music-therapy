@@ -48,6 +48,7 @@
                 <li><a data-toggle="tab" href="#psychosocialskills">Psycho-Social Skills</a></li>
                 <li><a data-toggle="tab" href="#motorskills">Motor Skills</a></li>
                 <li><a data-toggle="tab" href="#cognitiveskills">Cognitive and Memory Skills</a></li>
+                <li><a data-toggle="tab" href="#socialskills">Social Skills</a></li>
             </ul>
 
             <div class="tab-content">
@@ -162,8 +163,37 @@
                         </div>
                     </div>
                     {% endif %}
+
+                    {% if user_social_skills %}
+                    <h3>Social Skills</h3>
+                    <div class="row">
+                        <div class="span4">
+                            <div class="row">
+                                <div class="col-md-4">Interactions</div>
+                                <div class="col-md-4">{{user_social_skills.interactions|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Attending Skills</div>
+                                <div class="col-md-4">{{user_social_skills.attending_skills|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Sharing and Turn-Taking</div>
+                                <div class="col-md-4">{{user_social_skills.sharing_turn_taking|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Participation in Group Music Therapy</div>
+                                <div class="col-md-4">{{user_social_skills.participation_group_music|floatformat:2}}</div>
+                            </div>
+                            </div>
+                            <div class="row">
+                                <b><div class="col-md-4">Total</div>
+                                <div class="col-md-4">{{user_social_skills.total|floatformat:2}}</div></b>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
 
+kkk
                 {% if goals_form %}
                 <div id="goals" class="tab-pane fade">
                     {% crispy goals_form %}
@@ -313,6 +343,41 @@
                     {% if has_cog_goals %}
                     <p>Submit new Cognitive and Memory Skills Goals Measurables</p>
                     {% crispy cog_skills_form %}
+                    {% endif %}
+                </div>
+
+                <div id="socialskills" class="tab-pane fade">
+                    <p>Past Social Skills Assessments</p>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Date</th>
+                            <th>Interactions</th>
+                            <th>Attending Skills</th>
+                            <th>Sharing and Turn-Taking</th>
+                            <th>Participation in Group Music Therapy</th>
+                            <th>Total</th>
+                        </tr>
+                        {% if social_assessments %}
+                        {% for assessment in social_assessments %}
+                        <tr>
+                            <td>{{assessment.updated}}</td>
+                            <td>{{assessment.interactions}}</td>
+                            <td>{{assessment.attending_skills}}</td>
+                            <td>{{assessment.sharing_turn_taking}}</td>
+                            <td>{{assessment.participation_group_music}}</td>
+                            <td>{{assessment.total}}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </table>
+
+                    {% if social_assessment_form %}
+                    {% crispy social_assessment_form %}
+                    {% endif %}
+
+                    {% if has_social_goals %}
+                    <p>Submit new Social Skills Goals Measurables</p>
+                    {% crispy social_skills_form %}
                     {% endif %}
                 </div>
             </div>

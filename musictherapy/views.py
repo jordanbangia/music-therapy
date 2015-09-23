@@ -5,10 +5,10 @@ from django.views import generic
 from django.utils import timezone
 
 from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, PsychoSocialAssessment, PsychoSocialGoals, \
-    MotorSkillsAssessment, MotorSkillsGoals, CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals
+    MotorSkillsAssessment, MotorSkillsGoals, CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals, SocialSkillsAssessment, SocialSkillsGoals
 from .forms import UserInfoForm, MusicalPrefForm, CommunicationAssessmentForm, CommunicationSkillsForm, GoalsForm, \
     PsychoSocialSkillsAssessmentForm, PsychoSocialSkillsForm, MotorSkillsAssessmentForm, MotorSkillsForm, \
-    CognitiveSkillsAssessmentForm, CognitiveSkillsForm
+    CognitiveSkillsAssessmentForm, CognitiveSkillsForm, SocialSkillsAssessmentForm, SocialSkillsForm
 from .goals import Goals
 
 from annoying.functions import get_object_or_None
@@ -70,6 +70,16 @@ def user_detail(request, user_id):
         user_cog_skills = None
     has_cog_goals = Goals.has_motor_goals(user)
 
+    social_assessments = SocialSkillsAssessment.objects.filter(user=user).order_by('updated')
+    social_assessment_form = SocialSkillsAssessmentForm()
+    social_updates = SocialSkillsGoals.objects.filter(user=user).order_by('updated')
+    social_update_form = SocialSkillsGoals(user=user)
+    try:
+        user_social_skills = SocialSkillsAssessment.objects.latest('updated')
+    except:
+        user_social_skills = None
+    has_social_goals = Goals.has_social_goals(user)
+
 
     return render(request, 'musictherapy/detail.html', {
         'user_info_form': user_form,
@@ -80,6 +90,7 @@ def user_detail(request, user_id):
         'user_pss_skills' : user_pss_skills,
         'user_motor_skills' :  user_motor_skills,
         'user_cog_skills' : user_cog_skills,
+        'user_social_skills' : user_social_skills,
 
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated' : musicpref_last_updated,
@@ -107,6 +118,12 @@ def user_detail(request, user_id):
         'cog_updates' : cog_updates,
         'cog_skills_form' : cog_update_form,
         'has_cog_goals' : has_cog_goals,
+
+        'social_assessment_form' : social_assessment_form,
+        'social_assessments' : social_assessments,
+        'social_updates' : social_updates,
+        'social_skills_form' : social_update_form,
+        'has_social_goals' : has_social_goals,
     })
 
 def save_basic_info(request, user_id):
@@ -165,6 +182,16 @@ def save_cog_goals(request, user_id):
         return save_skills_form(CognitiveSkillsForm(request.POST), user_id)
 
 
+def save_social_assess(request, user_id):
+    if request.method == 'POST':
+        return save_assess_form(SocialSkillsAssessmentForm(request.POST), user_id)
+
+
+def save_social_goals(request, user_id):
+    if request.method == 'POST':
+        return save_skills_form(SocialSkillsForm(request.POST), user_id)
+
+
 def save_skills_form(form, user_id):
     if form.is_valid():
         update = form.save(commit=False)
@@ -181,6 +208,7 @@ def save_assess_form(form, user_id):
         update.user = get_object_or_404(UserInfo, pk=user_id)
         update.save()
         return redirect('/musictherapy/' + user_id)
+
 
 def create_user(request):
     user_form = UserInfoForm()

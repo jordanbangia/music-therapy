@@ -371,7 +371,7 @@ class SocialSkillsAssessment(models.Model):
     remain_in_group = models.IntegerField(choices=SKILLS_SCALE)
     accept_leadership = models.IntegerField(choices=SKILLS_SCALE)
 
-    def fill_measurable(self):
+    def fill_measurables(self):
         self.interactions = 100 * float(self.engage_imitation + self.passing_sharing_instruments + self.converse_others + self.dancing_others) / float(4 * 3)
         self.attending_skills = 100 * float(self.make_maintain_eye_contact + self.attend_task) / float(2 * 3)
         self.sharing_turn_taking = 100 * float(self.pass_exchange_instrument + self.play_response_name) / float(2 * 3)
@@ -421,7 +421,7 @@ class MusicSkillsAssessment(models.Model):
     familiar_song_title_melody = models.IntegerField(choices=SKILLS_SCALE)
     familiar_song_title_lyrics = models.IntegerField(choices=SKILLS_SCALE)
 
-    def fill_measurable(self):
+    def fill_measurables(self):
         self.rhythm_beat = 100 * float(self.match_rhythm + self.keep_steady_beat + self.adapt_to_rhythmic_changes) / float(3 * 3)
         self.melody_tonal = 100 * float(self.match_pitch + self.discriminates_dynamics + self.discriminates_duration + self.sing_familiar_songs + self.finish_musical_phrase) / float(5 * 3)
         self.instrument_exploration = 100 * float(self.choose_instrument_play) / float (1 * 3)

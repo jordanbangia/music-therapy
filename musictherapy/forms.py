@@ -1,6 +1,6 @@
 from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, \
     PsychoSocialAssessment, PsychoSocialGoals, MotorSkillsAssessment, MotorSkillsGoals, \
-    CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals
+    CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals, SocialSkillsAssessment, SocialSkillsGoals
 from .extras import SelectDateWidget
 from .goals import Goals
 from django.forms import ModelForm
@@ -329,3 +329,61 @@ class CognitiveSkillsForm(ModelForm):
             if Goals.COG_INCREASE_LEVEL_PART not in user_goals:
                 del self.fields['willing_participation']
                 del self.fields['encouraged_participation']
+
+
+class SocialSkillsAssessmentForm(ModelForm):
+    class Meta:
+        model = SocialSkillsAssessment
+        fields = ('engage_imitation', 'passing_sharing_instruments', 'converse_others', 'dancing_others', 'make_maintain_eye_contact', 'attend_task', 'pass_exchange_instrument', 'play_response_name',
+                  'active_in_session', 'remain_in_group', 'accept_leadership')
+
+    def __init__(self, *args, **kwargs):
+        super(SocialSkillsAssessmentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.helper.form_id = 'id-socialassessment'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_socialassess/#socialskills'
+        self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
+        self.helper.layout = Layout(
+            Accordion(
+                AccordionGroup('Social Skills Assessment',
+                               'engage_imitation', 'passing_sharing_instruments', 'converse_others', 'dancing_others', 'make_maintain_eye_contact', 'attend_task', 'pass_exchange_instrument',
+                               'play_response_name', 'active_in_session', 'remain_in_group', 'accept_leadership')
+            )
+        )
+
+class SocialSkillsForm(ModelForm):
+    class Meta:
+        model = SocialSkillsGoals
+        fields = ('redirection_required', 'encouragement_to_stay_required', 'participation_in_program', 'joining_of_program', 'interactions_with_staff',
+                  'interactions_with_peers', 'therapist')
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(SocialSkillsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.helper.form_id = 'id-socialgoals'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_socialgoals/#socialskills'
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+        if user:
+            user_goals = Goals.get_social_goals(user)
+            if Goals.SOC_ATTENTION_SPAN not in user_goals:
+                del self.fields['redirection_required']
+                del self.fields['encouragement_to_stay_required']
+            if Goals.SOC_ISOLATION not in user_goals:
+                del self.fields['participation_in_program']
+                del self.fields['joining_of_program']
+            if Goals.SOC_INTERACTION not in user_goals:
+                del self.fields['interactions_with_staff']
+                del self.fields['interactions_with_peers']
+                del self.fields['therapist']
