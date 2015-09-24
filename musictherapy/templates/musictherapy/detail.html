@@ -49,9 +49,25 @@
                 <li><a data-toggle="tab" href="#motorskills">Motor Skills</a></li>
                 <li><a data-toggle="tab" href="#cognitiveskills">Cognitive and Memory Skills</a></li>
                 <li><a data-toggle="tab" href="#socialskills">Social Skills</a></li>
+                <li><a data-toggle="tab" href="#musicskills">Music Skills</a></li>
             </ul>
 
             <div class="tab-content">
+                <div id="goals" class="tab-pane fade">
+                    {% crispy goals_form %}
+                </div>
+
+                {% if goals_form %}
+                <div id ="musicpref" class="tab-pane fade">
+                    {% crispy musical_pref_form %}
+
+                    {% if musicpref_last_updated %}
+                    <p>Last updated {{ musicpref_last_updated }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if musical_pref_form %}
                 <div id="basicinfo" class="tab-pane fade in active">
                     {% crispy user_info_form %}
 
@@ -59,10 +75,11 @@
                     <p>Last updated {{ user_last_updated }} </p>
                     {% endif %}
 
-                    {% if user_motor_skills %}
-                    <h3>Motor Skills</h3>
+
                     <div class="row">
-                        <div class="span4">
+                        <div class="col-md-6">
+                            {% if user_motor_skills %}
+                            <h3>Motor Skills</h3>
                             <div class="row">
                                 <div class="col-md-4">Mobility</div>
                                 <div class="col-md-4">{{user_motor_skills.mobility|floatformat:2}}</div>
@@ -85,16 +102,14 @@
                             </div>
                             <div class="row">
                                 <b><div class="col-md-4">Total</div>
-                                <div class="col-md-4">{{user_motor_skills.total|floatformat:2}}</div></b>
+                                    <div class="col-md-4">{{user_motor_skills.total|floatformat:2}}</div></b>
                             </div>
+                            {% endif %}
                         </div>
-                    </div>
-                    {% endif %}
 
-                    {% if user_cog_skills %}
-                    <h3>Cognitive and Memory Skills</h3>
-                    <div class="row">
-                        <div class="span4">
+                        <div class="col-md-6">
+                            {% if user_cog_skills %}
+                            <h3>Cognitive and Memory Skills</h3>
                             <div class="row">
                                 <div class="col-md-4">Cognition</div>
                                 <div class="col-md-4">{{user_cog_skills.cognition|floatformat:2}}</div>
@@ -105,33 +120,29 @@
                             </div>
                             <div class="row">
                                 <b><div class="col-md-4">Total</div>
-                                <div class="col-md-4">{{user_cog_skills.total|floatformat:2}}</div></b>
+                                    <div class="col-md-4">{{user_cog_skills.total|floatformat:2}}</div></b>
                             </div>
+                            {% endif %}
                         </div>
                     </div>
-                    {% endif %}
-
-
-                    {%if user_pss_skills %}
-                    <h3>Psycho-Social Skills</h3>
                     <div class="row">
-                        <div class="span4">
+                        <div class="col-md-6">
+                            {%if user_pss_skills %}
+                            <h3>Psycho-Social Skills</h3>
                             <div class="row">
                                 <div class="col-md-4">Mood/Affect</div>
                                 <div class="col-md-4">{{user_pss_skills.mood_affect|floatformat:2}}</div>
                             </div>
                             <div class="row">
                                 <b><div class="col-md-4">Total</div>
-                                <div class="col-md-4">{{user_pss_skills.total|floatformat:2}}</div></b>
+                                    <div class="col-md-4">{{user_pss_skills.total|floatformat:2}}</div></b>
                             </div>
                         </div>
-                    </div>
-                    {% endif %}
+                        {% endif %}
 
-                    {% if user_com_skills %}
-                    <h3>Communication Skills</h3>
-                    <div class="row">
-                        <div class="span4">
+                        <div class="col-md-6">
+                            {% if user_com_skills %}
+                            <h3>Communication Skills</h3>
                             <div class="row">
                                 <div class="col-md-4">Verbal Skills</div>
                                 <div class="col-md-4">{{user_com_skills.verbal_skills|floatformat:2}}</div>
@@ -158,16 +169,15 @@
                             </div>
                             <div class="row">
                                 <b><div class="col-md-4">Total</div>
-                                <div class="col-md-4">{{user_com_skills.total|floatformat:2}}</div></b>
+                                    <div class="col-md-4">{{user_com_skills.total|floatformat:2}}</div></b>
                             </div>
+                            {% endif %}
                         </div>
                     </div>
-                    {% endif %}
-
-                    {% if user_social_skills %}
-                    <h3>Social Skills</h3>
                     <div class="row">
-                        <div class="span4">
+                        <div class="col-md-6">
+                            {% if user_social_skills %}
+                            <h3>Social Skills</h3>
                             <div class="row">
                                 <div class="col-md-4">Interactions</div>
                                 <div class="col-md-4">{{user_social_skills.interactions|floatformat:2}}</div>
@@ -184,29 +194,39 @@
                                 <div class="col-md-4">Participation in Group Music Therapy</div>
                                 <div class="col-md-4">{{user_social_skills.participation_group_music|floatformat:2}}</div>
                             </div>
-                            </div>
                             <div class="row">
                                 <b><div class="col-md-4">Total</div>
-                                <div class="col-md-4">{{user_social_skills.total|floatformat:2}}</div></b>
+                                    <div class="col-md-4">{{user_social_skills.total|floatformat:2}}</div></b>
                             </div>
+                            {% endif %}
                         </div>
-                    {% endif %}
-                </div>
 
-kkk
-                {% if goals_form %}
-                <div id="goals" class="tab-pane fade">
-                    {% crispy goals_form %}
-                </div>
-                {% endif %}
-
-                {% if musical_pref_form %}
-                <div id ="musicpref" class="tab-pane fade">
-                    {% crispy musical_pref_form %}
-
-                    {% if musicpref_last_updated %}
-                    <p>Last updated {{ musicpref_last_updated }}</p>
-                    {% endif %}
+                        <div class="col-md-6">
+                            {% if user_music_skills %}
+                            <h3>Music Skills</h3>
+                            <div class="row">
+                                <div class="col-md-4">Rhythm/Beat</div>
+                                <div class="col-md-4">{{user_music_skills.rhythm_beat|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Melody/Tonal</div>
+                                <div class="col-md-4">{{user_music_skills.melody_tonal|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Instrument Exploration</div>
+                                <div class="col-md-4">{{user_music_skills.instrument_exploration|floatformat:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Interest/Preference</div>
+                                <div class="col-md-4">{{user_music_skills.interest_preference|floatformat:2}}</div>
+                            </div>
+                            <b><div class="row">
+                                <div class="col-md-4">Total</div>
+                                <div class="col-md-4">{{user_music_skills.total|floatformat:2}}</div>
+                            </div></b>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
                 {% endif %}
 
@@ -361,11 +381,11 @@ kkk
                         {% for assessment in social_assessments %}
                         <tr>
                             <td>{{assessment.updated}}</td>
-                            <td>{{assessment.interactions}}</td>
-                            <td>{{assessment.attending_skills}}</td>
-                            <td>{{assessment.sharing_turn_taking}}</td>
-                            <td>{{assessment.participation_group_music}}</td>
-                            <td>{{assessment.total}}</td>
+                            <td>{{assessment.interactions|floatformat:2}}</td>
+                            <td>{{assessment.attending_skills|floatformat:2}}</td>
+                            <td>{{assessment.sharing_turn_taking|floatformat:2}}</td>
+                            <td>{{assessment.participation_group_music|floatformat:2}}</td>
+                            <td>{{assessment.total|floatformat:2}}</td>
                         </tr>
                         {% endfor %}
                         {% endif %}
@@ -378,6 +398,41 @@ kkk
                     {% if has_social_goals %}
                     <p>Submit new Social Skills Goals Measurables</p>
                     {% crispy social_skills_form %}
+                    {% endif %}
+                </div>
+
+                <div id="musicskills" class="tab-pane fade">
+                    <p>Past Music Skills Assessments</p>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Date</th>
+                            <th>Rhythm/Beat</th>
+                            <th>Melody/Tonal</th>
+                            <th>Instrument Exploration</th>
+                            <th>Interest/Preference</th>
+                            <th>Total</th>
+                        </tr>
+                        {% if music_assessments %}
+                        {% for assessment in music_assessments %}
+                        <tr>
+                            <td>{{assessment.updated}}</td>
+                            <td>{{assessment.rhythm_beat|floatformat:2}}</td>
+                            <td>{{assessment.melody_tonal|floatformat:2}}</td>
+                            <td>{{assessment.instrument_exploration|floatformat:2}}</td>
+                            <td>{{assessment.interest_preference|floatformat:2}}</td>
+                            <td>{{assessment.total|floatformat:2}}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </table>
+
+                    {% if music_assessment_form %}
+                    {% crispy music_assessment_form %}
+                    {% endif %}
+
+                    {% if has_music_goals %}
+                    <p>Submit new Music Skills Goals Measurables</p>
+                    {% crispy music_skills_form %}
                     {% endif %}
                 </div>
             </div>

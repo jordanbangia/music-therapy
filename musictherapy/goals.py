@@ -156,3 +156,7 @@ class Goals:
     @staticmethod
     def get_social_goals(user):
         return Goals.intersection(user.goals, Goals.SOC_GOALS)
+
+    @staticmethod
+    def get_music_goals(user):
+        return Goals.intersection(user.goals, Goals.MUS_GOALS)

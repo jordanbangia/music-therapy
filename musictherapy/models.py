@@ -395,6 +395,7 @@ class SocialSkillsGoals(models.Model):
     interactions_with_peers = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     therapist = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
 
+
 class MusicSkillsAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
     updated = models.DateTimeField(auto_now=True)
@@ -427,6 +428,7 @@ class MusicSkillsAssessment(models.Model):
         self.instrument_exploration = 100 * float(self.choose_instrument_play) / float (1 * 3)
         self.interest_preference = 100 * float(self.response_to_music + self.choose_song_style + self.familiar_song_title_lyrics + self.familiar_song_title_melody) / float(4 * 3)
         self.total = float(self.rhythm_beat + self.melody_tonal + self.instrument_exploration + self.interest_preference) / float(4)
+
 
 class MusicSkillsGoals(models.Model):
     user = models.ForeignKey(UserInfo)

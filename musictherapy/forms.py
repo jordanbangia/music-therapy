@@ -1,6 +1,7 @@
 from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, \
     PsychoSocialAssessment, PsychoSocialGoals, MotorSkillsAssessment, MotorSkillsGoals, \
-    CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals, SocialSkillsAssessment, SocialSkillsGoals
+    CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals, SocialSkillsAssessment, \
+    SocialSkillsGoals, MusicSkillsAssessment, MusicSkillsGoals
 from .extras import SelectDateWidget
 from .goals import Goals
 from django.forms import ModelForm
@@ -387,3 +388,60 @@ class SocialSkillsForm(ModelForm):
                 del self.fields['interactions_with_staff']
                 del self.fields['interactions_with_peers']
                 del self.fields['therapist']
+
+
+class MusicSkillsAssessmentForm(ModelForm):
+    class Meta:
+        model = MusicSkillsAssessment
+        fields = ('match_rhythm', 'keep_steady_beat', 'adapt_to_rhythmic_changes', 'match_pitch', 'discriminates_dynamics', 'discriminates_duration', 'sing_familiar_songs', 'finish_musical_phrase',
+                  'choose_instrument_play', 'response_to_music', 'choose_song_style', 'familiar_song_title_melody', 'familiar_song_title_lyrics')
+
+
+    def __init__(self, *args, **kwargs):
+        super(MusicSkillsAssessmentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.helper.form_id = 'id-musicassessment'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_musicassess/#musicskills'
+        self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
+        self.helper.layout = Layout(
+            Accordion(
+                AccordionGroup('Music Skills Assessment',
+                               'match_rhythm', 'keep_steady_beat', 'adapt_to_rhythmic_changes', 'match_pitch', 'discriminates_dynamics', 'discriminates_duration', 'sing_familiar_songs', 'finish_musical_phrase',
+                               'choose_instrument_play', 'response_to_music', 'choose_song_style', 'familiar_song_title_melody', 'familiar_song_title_lyrics')
+            )
+        )
+
+class MusicSkillsForm(ModelForm):
+    class Meta:
+        model = MusicSkillsGoals
+        fields = ('music_trivia_answered_correctly', 'song_known_without_lyrics', 'song_known_without_title', 'song_known', 'music_skill_demonstrated', 'opinions_given')
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(MusicSkillsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.helper.form_id = 'id-musicgoals'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_musicgoals/#musicskills'
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+        if user:
+            user_goals = Goals.get_music_goals(user)
+            if Goals.MUS_MAINTAIN_KNOWLEDGE not in user_goals:
+                del self.fields['music_trivia_answered_correctly']
+                del self.fields['song_known_without_lyrics']
+                del self.fields['song_known_without_title']
+                del self.fields['song_known']
+            if Goals.MUS_MAINTAIN_SKILLS not in user_goals:
+                del self.fields['music_skill_demonstrated']
+                del self.fields['opinions_given']
+

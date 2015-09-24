@@ -5,10 +5,11 @@ from django.views import generic
 from django.utils import timezone
 
 from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, PsychoSocialAssessment, PsychoSocialGoals, \
-    MotorSkillsAssessment, MotorSkillsGoals, CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals, SocialSkillsAssessment, SocialSkillsGoals
+    MotorSkillsAssessment, MotorSkillsGoals, CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals, SocialSkillsAssessment, SocialSkillsGoals, \
+    MusicSkillsAssessment, MusicSkillsGoals
 from .forms import UserInfoForm, MusicalPrefForm, CommunicationAssessmentForm, CommunicationSkillsForm, GoalsForm, \
     PsychoSocialSkillsAssessmentForm, PsychoSocialSkillsForm, MotorSkillsAssessmentForm, MotorSkillsForm, \
-    CognitiveSkillsAssessmentForm, CognitiveSkillsForm, SocialSkillsAssessmentForm, SocialSkillsForm
+    CognitiveSkillsAssessmentForm, CognitiveSkillsForm, SocialSkillsAssessmentForm, SocialSkillsForm, MusicSkillsAssessmentForm, MusicSkillsForm
 from .goals import Goals
 
 from annoying.functions import get_object_or_None
@@ -80,6 +81,15 @@ def user_detail(request, user_id):
         user_social_skills = None
     has_social_goals = Goals.has_social_goals(user)
 
+    music_assessments = MusicSkillsAssessment.objects.filter(user=user).order_by('updated')
+    music_assessment_form = MusicSkillsAssessmentForm()
+    music_updates = MusicSkillsGoals.objects.filter(user=user).order_by('updated')
+    music_updates_form = MusicSkillsForm(user=user)
+    try:
+        user_music_skills = MusicSkillsAssessment.objects.latest('updated')
+    except:
+        user_music_skills = None
+    has_music_goals = Goals.has_music_goals(user)
 
     return render(request, 'musictherapy/detail.html', {
         'user_info_form': user_form,
@@ -91,6 +101,7 @@ def user_detail(request, user_id):
         'user_motor_skills' :  user_motor_skills,
         'user_cog_skills' : user_cog_skills,
         'user_social_skills' : user_social_skills,
+        'user_music_skills' : user_music_skills,
 
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated' : musicpref_last_updated,
@@ -124,6 +135,12 @@ def user_detail(request, user_id):
         'social_updates' : social_updates,
         'social_skills_form' : social_update_form,
         'has_social_goals' : has_social_goals,
+
+        'music_assessment_form' : music_assessment_form,
+        'music_assessments' : music_assessments,
+        'music_updates' : music_updates,
+        'music_skills_form' : music_updates_form,
+        'has_music_goals' : has_music_goals
     })
 
 def save_basic_info(request, user_id):
@@ -190,6 +207,16 @@ def save_social_assess(request, user_id):
 def save_social_goals(request, user_id):
     if request.method == 'POST':
         return save_skills_form(SocialSkillsForm(request.POST), user_id)
+
+
+def save_music_goals(request, user_id):
+    if request.method == 'POST':
+        return save_skills_form(MusicSkillsForm(request.POST), user_id)
+
+
+def save_music_assess(request, user_id):
+    if request.method == 'POST':
+        return save_assess_form(MusicSkillsAssessmentForm(request.POST), user_id)
 
 
 def save_skills_form(form, user_id):
