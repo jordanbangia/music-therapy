@@ -189,6 +189,7 @@ class CommunicationGoals(models.Model):
     #increase self-expression
     feelings_were_articulated = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     opinions_given = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    notes = models.TextField(default="")
 
 class PsychoSocialAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -230,6 +231,7 @@ class PsychoSocialGoals(models.Model):
     frustration_tolerance_number_of_occurrences = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     #decrease level of anxiety
     demonstrated_anxiety = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    notes = models.TextField(default="")
 
 class MotorSkillsAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -286,6 +288,7 @@ class MotorSkillsGoals(models.Model):
     gross_motor_activity = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     #stimulate and maintain coordination
     coordination_activity = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    notes = models.TextField(default="")
 
 class CognitiveMemorySkillsAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -346,6 +349,7 @@ class CognitionMemorySkillsGoals(models.Model):
     #increase level of participation
     willing_participation = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     encouraged_participation = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    notes = models.TextField(default="")
 
 class SocialSkillsAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -394,7 +398,7 @@ class SocialSkillsGoals(models.Model):
     interactions_with_staff = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     interactions_with_peers = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     therapist = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
-
+    notes = models.TextField(default="")
 
 class MusicSkillsAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -429,7 +433,6 @@ class MusicSkillsAssessment(models.Model):
         self.interest_preference = 100 * float(self.response_to_music + self.choose_song_style + self.familiar_song_title_lyrics + self.familiar_song_title_melody) / float(4 * 3)
         self.total = float(self.rhythm_beat + self.melody_tonal + self.instrument_exploration + self.interest_preference) / float(4)
 
-
 class MusicSkillsGoals(models.Model):
     user = models.ForeignKey(UserInfo)
     updated = models.DateTimeField(auto_now=True)
@@ -443,3 +446,4 @@ class MusicSkillsGoals(models.Model):
     #maintain current music skills
     music_skill_demonstrated = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     opinions_given = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
+    notes = models.TextField(default="")

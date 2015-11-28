@@ -108,7 +108,7 @@ class CommunicationSkillsForm(ModelForm):
     class Meta:
         model = CommunicationGoals
         fields = ('verbal_part_with_verbal_prompt', 'verbal_part_without_verbal_prompt', 'feelings_were_articulated',
-                  'opinions_given')
+                  'opinions_given', 'notes')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -162,7 +162,7 @@ class PsychoSocialSkillsForm(ModelForm):
         model = PsychoSocialGoals
         fields = ('smiled', 'frowned', 'made_negative_comments_self', 'made_positive_comments_self', 'refused_to_lead_activity',
                   'lead_activity', 'left_program', 'complained_of_pain', 'destructive_behaviour_number_of_occurrences', 'displayed_depressive_symptoms',
-                  'frustration_tolerance_number_of_occurrences', 'demonstrated_anxiety')
+                  'frustration_tolerance_number_of_occurrences', 'demonstrated_anxiety', 'notes')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -235,7 +235,7 @@ class MotorSkillsAssessmentForm(ModelForm):
 class MotorSkillsForm(ModelForm):
     class Meta:
         model = MotorSkillsGoals
-        fields = ('mobility_activity', 'fine_motor_activity', 'gross_motor_activity', 'coordination_activity')
+        fields = ('mobility_activity', 'fine_motor_activity', 'gross_motor_activity', 'coordination_activity', 'notes')
 
 
     def __init__(self, *args, **kwargs):
@@ -297,7 +297,7 @@ class CognitiveSkillsForm(ModelForm):
     class Meta:
         model = CognitionMemorySkillsGoals
         fields = ('choice_made_verbally', 'choice_made_nonverbally', 'reaction_to_vocal_stimuli', 'reaction_to_recorded_stimuli', 'reactions_to_instrumental_stimuli', 'questions_were_answered',
-                  'long_term_memory_retrieved', 'short_term_memory_retrieved', 'occurrences_confusion_disorientation', 'willing_participation', 'encouraged_participation')
+                  'long_term_memory_retrieved', 'short_term_memory_retrieved', 'occurrences_confusion_disorientation', 'willing_participation', 'encouraged_participation', 'notes')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -357,11 +357,12 @@ class SocialSkillsAssessmentForm(ModelForm):
             )
         )
 
+
 class SocialSkillsForm(ModelForm):
     class Meta:
         model = SocialSkillsGoals
         fields = ('redirection_required', 'encouragement_to_stay_required', 'participation_in_program', 'joining_of_program', 'interactions_with_staff',
-                  'interactions_with_peers', 'therapist')
+                  'interactions_with_peers', 'therapist', 'notes')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -416,10 +417,11 @@ class MusicSkillsAssessmentForm(ModelForm):
             )
         )
 
+
 class MusicSkillsForm(ModelForm):
     class Meta:
         model = MusicSkillsGoals
-        fields = ('music_trivia_answered_correctly', 'song_known_without_lyrics', 'song_known_without_title', 'song_known', 'music_skill_demonstrated', 'opinions_given')
+        fields = ('music_trivia_answered_correctly', 'song_known_without_lyrics', 'song_known_without_title', 'song_known', 'music_skill_demonstrated', 'opinions_given', 'notes')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
