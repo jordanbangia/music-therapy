@@ -38,6 +38,7 @@
 
             <ul class ="nav nav-tabs" id="tabs">
                 <li class="active"><a data-toggle="tab" href="#basicinfo">Basic Information</a></li>
+                <li><a data-toggle="tab" href="#summary">Summary</a></li>
                 {% if goals_form %}
                 <li><a data-toggle="tab" href="#goals">Goals</a></li>
                 {% endif %}
@@ -57,7 +58,7 @@
                     {% crispy goals_form %}
                 </div>
 
-                {% if goals_form %}
+                {% if musical_pref_form %}
                 <div id ="musicpref" class="tab-pane fade">
                     {% crispy musical_pref_form %}
 
@@ -67,15 +68,15 @@
                 </div>
                 {% endif %}
 
-                {% if musical_pref_form %}
                 <div id="basicinfo" class="tab-pane fade in active">
                     {% crispy user_info_form %}
 
                     {% if user_last_update %}
                     <p>Last updated {{ user_last_updated }} </p>
                     {% endif %}
+                </div>
 
-
+                <div id="summary" class="tab-pane fade">
                     <div class="row">
                         <div class="col-md-6">
                             {% if user_motor_skills %}
@@ -137,8 +138,9 @@
                                 <b><div class="col-md-4">Total</div>
                                     <div class="col-md-4">{{user_pss_skills.total|floatformat:2}}</div></b>
                             </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
+
 
                         <div class="col-md-6">
                             {% if user_com_skills %}
@@ -169,7 +171,7 @@
                             </div>
                             <div class="row">
                                 <b><div class="col-md-4">Total</div>
-                                    <div class="col-md-4">{{user_com_skills.total|floatformat:2}}</div></b>
+                                <div class="col-md-4">{{user_com_skills.total|floatformat:2}}</div></b>
                             </div>
                             {% endif %}
                         </div>
@@ -228,7 +230,6 @@
                         </div>
                     </div>
                 </div>
-                {% endif %}
 
                 <div id="communicationskills" class="tab-pane fade">
                     <p>Past Communication Assessments</p>
