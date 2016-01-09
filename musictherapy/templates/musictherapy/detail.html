@@ -16,7 +16,6 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                console.log("hello");
                 var url = document.location.toString();
                 if (url.match('#')) {
                     console.log(url.split('#')[1]);
@@ -30,6 +29,9 @@
 
             });
         </script>
+
+        <!-- PyGal scripts -->
+        <script type="text/javascript" src="http://kozea.github.com/pygal.js/latest/pygal-tooltips.min.js"></script>
     </head>
 
     <body>
@@ -264,6 +266,10 @@
                     {% crispy com_assessment_form %}
                     {% endif %}
 
+                    {% if com_chart %}
+                    {% include "musictherapy/chart.html" with type="Communication" chart=com_chart pre="com"%}
+                    {% endif %}
+
                     {% if has_com_goals %}
                     <p>Submit new Communication Skills Goals Measurables</p>
                     {% crispy com_skills_form %}
@@ -291,6 +297,10 @@
 
                     {% if pss_assessment_form %}
                     {% crispy pss_assessment_form %}
+                    {% endif %}
+
+                    {% if pss_chart %}
+                    {% include "musictherapy/chart.html" with type="Psycho-Social Skills" chart=pss_chart pre="pss"%}
                     {% endif %}
 
                     {% if has_pss_goals %}
@@ -330,6 +340,10 @@
                     {% crispy motor_assessment_form %}
                     {% endif %}
 
+                    {% if motor_chart %}
+                    {% include "musictherapy/chart.html" with type="Motor" chart=motor_chart pre="motor"%}
+                    {% endif %}
+
                     {% if has_motor_goals %}
                     <p>Submit new Motor Skills Goals Measurables</p>
                     {% crispy motor_skills_form %}
@@ -359,6 +373,10 @@
 
                     {% if cog_assessment_form %}
                     {% crispy cog_assessment_form %}
+                    {% endif %}
+
+                    {% if cog_chart %}
+                    {% include "musictherapy/chart.html" with type="Cognitive and Memory" chart=cog_chart pre="cog"%}
                     {% endif %}
 
                     {% if has_cog_goals %}
@@ -396,6 +414,10 @@
                     {% crispy social_assessment_form %}
                     {% endif %}
 
+                    {% if social_chart %}
+                    {% include "musictherapy/chart.html" with type="Social" chart=social_chart pre="social"%}
+                    {% endif %}
+
                     {% if has_social_goals %}
                     <p>Submit new Social Skills Goals Measurables</p>
                     {% crispy social_skills_form %}
@@ -429,6 +451,10 @@
 
                     {% if music_assessment_form %}
                     {% crispy music_assessment_form %}
+                    {% endif %}
+
+                    {% if music_chart %}
+                    {% include "musictherapy/chart.html" with type="Music" chart=music_chart pre="music"%}
                     {% endif %}
 
                     {% if has_music_goals %}

@@ -1,0 +1,14 @@
+<div class="panel-group" id="accordion-socialchart">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{pre}}chart" href="#{{pre}}-chart" aria-expanded="true">{{type}} Goals Chart</a>
+            </h4>
+        </div>
+        <div id="{{pre}}-chart" class="panel-collapse collapse in" aria-expanded="true">
+            <div class="panel-body">
+                <figure style="width:60%;height:60%">{{ chart|safe }}</figure>
+            </div>
+        </div>
+    </div>
+</div>
