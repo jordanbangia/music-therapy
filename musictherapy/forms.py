@@ -11,6 +11,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout
 from crispy_forms.bootstrap import Accordion, AccordionGroup
 
+
 class GoalsForm(ModelForm):
     class Meta:
         model = UserInfo
@@ -113,6 +114,7 @@ class CommunicationSkillsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(CommunicationSkillsForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-communicationgoals'
@@ -167,6 +169,7 @@ class PsychoSocialSkillsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(PsychoSocialSkillsForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-psychosocialgoals'
@@ -241,6 +244,7 @@ class MotorSkillsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(MotorSkillsForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-motorgoals'
@@ -302,6 +306,7 @@ class CognitiveSkillsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(CognitiveSkillsForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-coggoals'
@@ -367,6 +372,7 @@ class SocialSkillsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(SocialSkillsForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-socialgoals'
@@ -426,6 +432,7 @@ class MusicSkillsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(MusicSkillsForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-musicgoals'
