@@ -16,6 +16,7 @@ SKILLS_SCALE = {
     (HIGH, 'High/ Always')
 }
 
+
 class UserInfo(models.Model):
     LOCATION_CHOICES = (
         ('Brampton', 'Brampton'),
@@ -40,6 +41,7 @@ class UserInfo(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class MusicalPreference(models.Model):
     STYLES_CHOICES = (
@@ -73,6 +75,7 @@ class MusicalPreference(models.Model):
     fav_instrument = models.CharField(max_length=200)
     preferred_style = MultiSelectField(choices=STYLES_CHOICES, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
+
 
 class ObservableBehaviours(models.Model):
     BEHAVIOUR_CHOICES = (
@@ -119,12 +122,13 @@ class ObservableBehaviours(models.Model):
     expresses_exhibits_pain = models.CharField(max_length=400, blank=True, null=True)
     comments = models.CharField(max_length=600, blank=True, null=True)
 
+
 class CommunicationAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
     updated = models.DateTimeField(auto_now=True)
-    total = models.FloatField(validators=[MaxValueValidator(101)], default = 0)
+    total = models.FloatField(validators=[MaxValueValidator(101)], default=0)
 
-    #verbal skills
+    # verbal skills
     verbal_skills = models.FloatField(validators=[MaxValueValidator(101)], default=0)
     verbalize_choices = models.IntegerField(choices=SKILLS_SCALE)
     fill_in_the_blank = models.IntegerField(choices=SKILLS_SCALE)
@@ -139,29 +143,31 @@ class CommunicationAssessment(models.Model):
     word_finding_difficulty = models.IntegerField(choices=SKILLS_SCALE)
     imitate_therapist = models.IntegerField(choices=SKILLS_SCALE)
 
-    #receptive language
+    # receptive language
     receptive_language = models.FloatField(validators=[MaxValueValidator(101)], default=0)
     follow_directions = models.IntegerField(choices=SKILLS_SCALE)
     response_to_verbal_instr = models.IntegerField(choices=SKILLS_SCALE)
     respond_to_name_song = models.IntegerField(choices=SKILLS_SCALE)
     respond_to_hello_goodbye = models.IntegerField(choices=SKILLS_SCALE)
 
-    #singing/vocal skills
+    # singing/vocal skills
     singing_vocal_skills = models.FloatField(validators=[MaxValueValidator(101)], default=0)
     call_and_response = models.IntegerField(choices=SKILLS_SCALE)
     singing_familiar_songs = models.IntegerField(choices=SKILLS_SCALE)
 
-    #vocalization
+    # vocalization
     vocalization = models.FloatField(validators=[MaxValueValidator(101)], default=0)
     sing_familiar_songs_syllables = models.IntegerField(choices=SKILLS_SCALE)
 
-    #interactive speech
+    # interactive speech
     interactive_speech = models.FloatField(validators=[MaxValueValidator(101)], default=0)
     greet_others = models.IntegerField(choices=SKILLS_SCALE)
 
-    #choice making
+    # choice making
     choice_making = models.FloatField(validators=[MaxValueValidator(101)], default=0)
     make_choice_in_song = models.IntegerField(choices=SKILLS_SCALE)
+
+    assessment_fields = [verbal_skills, receptive_language, singing_vocal_skills, vocalization, interactive_speech, choice_making, total]
 
     def fill_measurables(self):
         self.verbal_skills = 100 * float(self.verbalize_choices + self.fill_in_the_blank + self.engage_in_conv +
@@ -179,17 +185,23 @@ class CommunicationAssessment(models.Model):
         self.total = float(self.verbal_skills + self.receptive_language + self.singing_vocal_skills + self.vocalization
                            + self.interactive_speech + self. choice_making) / float(6)
 
+
 class CommunicationGoals(models.Model):
     user = models.ForeignKey(UserInfo)
     updated = models.DateTimeField(auto_now=True)
 
-    #increase level of communication
-    verbal_part_with_verbal_prompt = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
-    verbal_part_without_verbal_prompt = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
-    #increase self-expression
-    feelings_were_articulated = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
-    opinions_given = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
-    notes = models.TextField(default="")
+    # increase level of communication
+    verbal_part_with_verbal_prompt = models.PositiveIntegerField(validators=[MaxValueValidator(10)],
+                                                                 blank=True, null=True, verbose_name="Verbal Participation with Verbal Prompt")
+    verbal_part_without_verbal_prompt = models.PositiveIntegerField(validators=[MaxValueValidator(10)],
+                                                                    blank=True, null=True, verbose_name="Verbal Participation without Verbal Prompt")
+    # increase self-expression
+    feelings_were_articulated = models.PositiveIntegerField(validators=[MaxValueValidator(10)],
+                                                            blank=True, null=True, verbose_name="Feelings were Articulated")
+    opinions_given = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True,
+                                                 null=True, verbose_name="Opinions Given")
+    notes = models.TextField(default="", verbose_name="Notes")
+
 
 class PsychoSocialAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -201,10 +213,13 @@ class PsychoSocialAssessment(models.Model):
     self_esteem_confidence = models.IntegerField(choices=SKILLS_SCALE)
     sense_of_humour = models.IntegerField(choices=SKILLS_SCALE)
 
+    assessment_fields = [mood_affect, total]
+
     def fill_measurables(self):
         self.mood_affect = 100 * float(self.display_range_of_affect + self.self_esteem_confidence +
                                        self.sense_of_humour) / float(3 * 3)
         self.total = self.mood_affect
+
 
 class PsychoSocialGoals(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -232,6 +247,7 @@ class PsychoSocialGoals(models.Model):
     #decrease level of anxiety
     demonstrated_anxiety = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     notes = models.TextField(default="")
+
 
 class MotorSkillsAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -263,6 +279,8 @@ class MotorSkillsAssessment(models.Model):
     full_hearing = models.IntegerField(choices=SKILLS_SCALE)
     full_sight = models.IntegerField(choices=SKILLS_SCALE)
 
+    assessment_fields = [mobility, fine_motor, gross_motor, coordination, limitations, total]
+
     def fill_measurables(self):
         self.mobility = 100 * float(self.independent_mobility + self.gait + self.endurance +
                                     self.structure_dance) / float(4 * 3)
@@ -275,6 +293,7 @@ class MotorSkillsAssessment(models.Model):
         self.limitations = 100 * float(self.full_hearing + self.full_sight) / float(2 * 3)
         self.total = float(self.mobility + self.fine_motor + self.gross_motor +
                            self.coordination + self.limitations) / float(5)
+
 
 class MotorSkillsGoals(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -289,6 +308,7 @@ class MotorSkillsGoals(models.Model):
     #stimulate and maintain coordination
     coordination_activity = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     notes = models.TextField(default="")
+
 
 class CognitiveMemorySkillsAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -317,6 +337,8 @@ class CognitiveMemorySkillsAssessment(models.Model):
     oriented_time = models.IntegerField(choices=SKILLS_SCALE)
     oriented_place = models.IntegerField(choices=SKILLS_SCALE)
 
+    assessment_fields = [cognition, memory, total]
+
     def fill_measurables(self):
         self.cognition = 100 * float(self.recalls_own_name + self.recalls_name_familiar_persons +
                                      self.recalls_melody_familiar_songs + self.recalls_lyrics_familiar_songs +
@@ -328,6 +350,7 @@ class CognitiveMemorySkillsAssessment(models.Model):
         self.memory = 100 * float(self.long_term_memory + self.short_term_memory + self.oriented_time +
                                   self.oriented_place) / float(4 * 3)
         self.total = float(self.cognition + self.memory) / float(2)
+
 
 class CognitionMemorySkillsGoals(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -350,6 +373,7 @@ class CognitionMemorySkillsGoals(models.Model):
     willing_participation = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     encouraged_participation = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     notes = models.TextField(default="")
+
 
 class SocialSkillsAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -375,12 +399,15 @@ class SocialSkillsAssessment(models.Model):
     remain_in_group = models.IntegerField(choices=SKILLS_SCALE)
     accept_leadership = models.IntegerField(choices=SKILLS_SCALE)
 
+    assessment_fields = [interactions, attending_skills, sharing_turn_taking, participation_group_music, total]
+
     def fill_measurables(self):
         self.interactions = 100 * float(self.engage_imitation + self.passing_sharing_instruments + self.converse_others + self.dancing_others) / float(4 * 3)
         self.attending_skills = 100 * float(self.make_maintain_eye_contact + self.attend_task) / float(2 * 3)
         self.sharing_turn_taking = 100 * float(self.pass_exchange_instrument + self.play_response_name) / float(2 * 3)
         self.participation_group_music = 100 * float(self.active_in_session + self.remain_in_group + self.accept_leadership) /float(3 * 3)
         self.total = float(self.interactions + self.attending_skills + self.sharing_turn_taking + self.participation_group_music) / float(4)
+
 
 class SocialSkillsGoals(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -399,6 +426,7 @@ class SocialSkillsGoals(models.Model):
     interactions_with_peers = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     therapist = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     notes = models.TextField(default="")
+
 
 class MusicSkillsAssessment(models.Model):
     user = models.ForeignKey(UserInfo)
@@ -426,12 +454,15 @@ class MusicSkillsAssessment(models.Model):
     familiar_song_title_melody = models.IntegerField(choices=SKILLS_SCALE)
     familiar_song_title_lyrics = models.IntegerField(choices=SKILLS_SCALE)
 
+    assessment_fields = [rhythm_beat, melody_tonal, instrument_exploration, interest_preference, total]
+
     def fill_measurables(self):
         self.rhythm_beat = 100 * float(self.match_rhythm + self.keep_steady_beat + self.adapt_to_rhythmic_changes) / float(3 * 3)
         self.melody_tonal = 100 * float(self.match_pitch + self.discriminates_dynamics + self.discriminates_duration + self.sing_familiar_songs + self.finish_musical_phrase) / float(5 * 3)
         self.instrument_exploration = 100 * float(self.choose_instrument_play) / float (1 * 3)
         self.interest_preference = 100 * float(self.response_to_music + self.choose_song_style + self.familiar_song_title_lyrics + self.familiar_song_title_melody) / float(4 * 3)
         self.total = float(self.rhythm_beat + self.melody_tonal + self.instrument_exploration + self.interest_preference) / float(4)
+
 
 class MusicSkillsGoals(models.Model):
     user = models.ForeignKey(UserInfo)

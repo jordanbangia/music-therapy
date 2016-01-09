@@ -60,15 +60,15 @@
                     {% crispy goals_form %}
                 </div>
 
-                {% if musical_pref_form %}
                 <div id ="musicpref" class="tab-pane fade">
-                    {% crispy musical_pref_form %}
+                    {% if musical_pref_form %}
+                        {% crispy musical_pref_form %}
 
-                    {% if musicpref_last_updated %}
-                    <p>Last updated {{ musicpref_last_updated }}</p>
+                        {% if musicpref_last_updated %}
+                        <p>Last updated {{ musicpref_last_updated }}</p>
+                        {% endif %}
                     {% endif %}
                 </div>
-                {% endif %}
 
                 <div id="basicinfo" class="tab-pane fade in active">
                     {% crispy user_info_form %}
@@ -234,233 +234,27 @@
                 </div>
 
                 <div id="communicationskills" class="tab-pane fade">
-                    <p>Past Communication Assessments</p>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Date</th>
-                            <th>Verbal Skills</th>
-                            <th>Receptive Language</th>
-                            <th>Singing/Vocal Skills</th>
-                            <th>Vocalization</th>
-                            <th>Interactive Speech</th>
-                            <th>Choice Making</th>
-                            <th>Total</th>
-                        </tr>
-                        {% if com_assessments %}
-                        {% for assessment in com_assessments %}
-                        <tr>
-                            <td>{{assessment.updated}}</td>
-                            <td>{{assessment.verbal_skills|floatformat:2}}</td>
-                            <td>{{assessment.receptive_language|floatformat:2}}</td>
-                            <td>{{assessment.singing_vocal_skills|floatformat:2}}</td>
-                            <td>{{assessment.vocalization|floatformat:2}}</td></td>
-                            <td>{{assessment.interactive_speech|floatformat:2}}</td>
-                            <td>{{assessment.choice_making|floatformat:2}}</td>
-                            <td>{{assessment.total|floatformat:2}}</td>
-                        </tr>
-                        {% endfor %}
-                        {% endif %}
-                    </table>
-
-                    {% if com_assessment_form %}
-                    {% crispy com_assessment_form %}
-                    {% endif %}
-
-                    {% if com_chart %}
-                    {% include "musictherapy/chart.html" with type="Communication" chart=com_chart pre="com"%}
-                    {% endif %}
-
-                    {% if has_com_goals %}
-                    <p>Submit new Communication Skills Goals Measurables</p>
-                    {% crispy com_skills_form %}
-                    {% endif %}
+                    {% include "musictherapy/skill.html" with type="Communication" pre="com" data=com_data %}
                 </div>
 
                 <div id="psychosocialskills" class="tab-pane fade">
-                    <p>Past Psycho-Social Skills Assessments</p>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Date</th>
-                            <th>Mood/Affect</th>
-                            <th>Total</th>
-                        </tr>
-                        {% if pss_assessments %}
-                        {% for assessment in pss_assessments %}
-                        <tr>
-                            <td>{{assessment.updated}}</td>
-                            <td>{{assessment.mood_affect|floatformat:2}}</td>
-                            <td>{{assessment.total|floatformat:2}}</td>
-                        </tr>
-                        {% endfor %}
-                        {% endif %}
-                    </table>
-
-                    {% if pss_assessment_form %}
-                    {% crispy pss_assessment_form %}
-                    {% endif %}
-
-                    {% if pss_chart %}
-                    {% include "musictherapy/chart.html" with type="Psycho-Social Skills" chart=pss_chart pre="pss"%}
-                    {% endif %}
-
-                    {% if has_pss_goals %}
-                    <p>Submit new Psycho-Social Skills Goals Measurables</p>
-                    {% crispy pss_skills_form %}
-                    {% endif %}
+                    {% include "musictherapy/skill.html" with type="Psycho-Social" pre="pss" data=pss_data %}
                 </div>
 
                 <div id="motorskills" class="tab-pane fade">
-                    <p>Past Motor Skills Assessments</p>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Date</th>
-                            <th>Mobility</th>
-                            <th>Fine Motor</th>
-                            <th>Gross Motor</th>
-                            <th>Coordination</th>
-                            <th>Limitations</th>
-                            <th>Total</th>
-                        </tr>
-                        {% if motor_assessments %}
-                        {% for assessment in motor_assessments %}
-                        <tr>
-                            <td>{{assessment.updated}}</td>
-                            <td>{{assessment.mobility|floatformat:2}}</td>
-                            <td>{{assessment.fine_motor|floatformat:2}}</td>
-                            <td>{{assessment.gross_motor|floatformat:2}}</td>
-                            <td>{{assessment.coordination|floatformat:2}}</td>
-                            <td>{{assessment.limitations|floatformat:2}}</td>
-                            <td>{{assessment.total|floatformat:2}}</td>
-                        </tr>
-                        {% endfor %}
-                        {% endif %}
-                    </table>
-
-                    {% if motor_assessment_form %}
-                    {% crispy motor_assessment_form %}
-                    {% endif %}
-
-                    {% if motor_chart %}
-                    {% include "musictherapy/chart.html" with type="Motor" chart=motor_chart pre="motor"%}
-                    {% endif %}
-
-                    {% if has_motor_goals %}
-                    <p>Submit new Motor Skills Goals Measurables</p>
-                    {% crispy motor_skills_form %}
-                    {% endif %}
+                    {% include "musictherapy/skill.html" with type="Motor" pre="motor" data=motor_data %}
                 </div>
 
                 <div id="cognitiveskills" class="tab-pane fade">
-                    <p>Past Cognitve and Memory Skills Assessments</p>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Date</th>
-                            <th>Cognition</th>
-                            <th>Memory</th>
-                            <th>Total</th>
-                        </tr>
-                        {% if cog_assessments %}
-                        {% for assessment in cog_assessments %}
-                        <tr>
-                            <td>{{assessment.updated}}</td>
-                            <td>{{assessment.cognition|floatformat:2}}</td>
-                            <td>{{assessment.memory|floatformat:2}}</td>
-                            <td>{{assessment.total|floatformat:2}}</td>
-                        </tr>
-                        {% endfor %}
-                        {% endif %}
-                    </table>
-
-                    {% if cog_assessment_form %}
-                    {% crispy cog_assessment_form %}
-                    {% endif %}
-
-                    {% if cog_chart %}
-                    {% include "musictherapy/chart.html" with type="Cognitive and Memory" chart=cog_chart pre="cog"%}
-                    {% endif %}
-
-                    {% if has_cog_goals %}
-                    <p>Submit new Cognitive and Memory Skills Goals Measurables</p>
-                    {% crispy cog_skills_form %}
-                    {% endif %}
+                    {% include "musictherapy/skill.html" with type="Cognitive and Memory" pre="cog" data=cog_data %}
                 </div>
 
                 <div id="socialskills" class="tab-pane fade">
-                    <p>Past Social Skills Assessments</p>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Date</th>
-                            <th>Interactions</th>
-                            <th>Attending Skills</th>
-                            <th>Sharing and Turn-Taking</th>
-                            <th>Participation in Group Music Therapy</th>
-                            <th>Total</th>
-                        </tr>
-                        {% if social_assessments %}
-                        {% for assessment in social_assessments %}
-                        <tr>
-                            <td>{{assessment.updated}}</td>
-                            <td>{{assessment.interactions|floatformat:2}}</td>
-                            <td>{{assessment.attending_skills|floatformat:2}}</td>
-                            <td>{{assessment.sharing_turn_taking|floatformat:2}}</td>
-                            <td>{{assessment.participation_group_music|floatformat:2}}</td>
-                            <td>{{assessment.total|floatformat:2}}</td>
-                        </tr>
-                        {% endfor %}
-                        {% endif %}
-                    </table>
-
-                    {% if social_assessment_form %}
-                    {% crispy social_assessment_form %}
-                    {% endif %}
-
-                    {% if social_chart %}
-                    {% include "musictherapy/chart.html" with type="Social" chart=social_chart pre="social"%}
-                    {% endif %}
-
-                    {% if has_social_goals %}
-                    <p>Submit new Social Skills Goals Measurables</p>
-                    {% crispy social_skills_form %}
-                    {% endif %}
+                    {% include "musictherapy/skill.html" with type="Social" pre="social" data=social_data %}
                 </div>
 
                 <div id="musicskills" class="tab-pane fade">
-                    <p>Past Music Skills Assessments</p>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Date</th>
-                            <th>Rhythm/Beat</th>
-                            <th>Melody/Tonal</th>
-                            <th>Instrument Exploration</th>
-                            <th>Interest/Preference</th>
-                            <th>Total</th>
-                        </tr>
-                        {% if music_assessments %}
-                        {% for assessment in music_assessments %}
-                        <tr>
-                            <td>{{assessment.updated}}</td>
-                            <td>{{assessment.rhythm_beat|floatformat:2}}</td>
-                            <td>{{assessment.melody_tonal|floatformat:2}}</td>
-                            <td>{{assessment.instrument_exploration|floatformat:2}}</td>
-                            <td>{{assessment.interest_preference|floatformat:2}}</td>
-                            <td>{{assessment.total|floatformat:2}}</td>
-                        </tr>
-                        {% endfor %}
-                        {% endif %}
-                    </table>
-
-                    {% if music_assessment_form %}
-                    {% crispy music_assessment_form %}
-                    {% endif %}
-
-                    {% if music_chart %}
-                    {% include "musictherapy/chart.html" with type="Music" chart=music_chart pre="music"%}
-                    {% endif %}
-
-                    {% if has_music_goals %}
-                    <p>Submit new Music Skills Goals Measurables</p>
-                    {% crispy music_skills_form %}
-                    {% endif %}
+                    {% include "musictherapy/skill.html" with type="Music" pre="music" data=music_data %}
                 </div>
             </div>
         </div>

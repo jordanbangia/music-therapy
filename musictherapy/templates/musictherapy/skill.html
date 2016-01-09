@@ -1,0 +1,38 @@
+{% load crispy_forms_tags %}
+{% load template_getattr %}
+<p>Past {{type}} Assessments</p>
+<table class="table table-bordered">
+    <tr>
+        <th>Updated</th>
+        {% for field in data.fields %}
+        <th>{{field.verbose_name}}</th>
+        {% endfor %}
+    </tr>
+    {% if data.assessments %}
+    {% for assessment in data.assessments %}
+    <tr>
+        <td>{{assessment.updated}}
+        {% for field in data.fields %}
+        {% with field_value=assessment|getattrib:field.name %}
+        <td>{{ field_value|floatformat:2 }}</td>
+        {% endwith %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    {% endif %}
+</table>
+
+{% if data.assess_form %}
+{% crispy data.assess_form %}
+{% endif %}
+
+<br/>
+
+{% if data.chart %}
+{% include "musictherapy/chart.html" with chart=data.chart %}
+{% endif %}
+
+{% if data.has_goals %}
+<h3>Submit New {{type}} Skills Goals Measurables</h3>
+{% crispy data.update_form %}
+{% endif %}
