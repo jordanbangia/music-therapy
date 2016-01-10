@@ -4,7 +4,8 @@ from .models import UserInfo, MusicalPreference, CommunicationAssessment, Commun
     SocialSkillsGoals, MusicSkillsAssessment, MusicSkillsGoals
 from .extras import SelectDateWidget
 from .goals import Goals
-from django.forms import ModelForm
+from django.forms import ModelForm, MultipleChoiceField
+from multiselectfield.forms.fields import MultiSelectFormField
 
 
 from crispy_forms.helper import FormHelper
@@ -17,17 +18,11 @@ class GoalsForm(ModelForm):
         model = UserInfo
         fields = ('goals',)
 
+    goals = MultiSelectFormField(choices=Goals.GOALS_CHOICES)
+
     def __init__(self, *args, **kwargs):
         super(GoalsForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-
-        self.helper.form_id = 'id-goals'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-lg-2'
-        self.helper.field_class = 'col-lg-6'
-        self.helper.form_post = 'post'
-        self.helper.form_action = 'submit_goals/#goals'
-        self.helper.add_input(Submit('submit', 'Save'))
+        self.fields['goals'].required = False
 
 
 class UserInfoForm(ModelForm):

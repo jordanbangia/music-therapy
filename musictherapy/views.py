@@ -5,13 +5,9 @@ from annoying.functions import get_object_or_None
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
-from .forms import UserInfoForm, MusicalPrefForm, CommunicationAssessmentForm, CommunicationSkillsForm, GoalsForm, \
-    PsychoSocialSkillsAssessmentForm, PsychoSocialSkillsForm, MotorSkillsAssessmentForm, MotorSkillsForm, \
-    CognitiveSkillsAssessmentForm, CognitiveSkillsForm, SocialSkillsAssessmentForm, SocialSkillsForm, MusicSkillsAssessmentForm, MusicSkillsForm
+from .forms import *
+from .models import *
 from .goals import Goals
-from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, PsychoSocialAssessment, PsychoSocialGoals, \
-    MotorSkillsAssessment, MotorSkillsGoals, CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals, SocialSkillsAssessment, SocialSkillsGoals, \
-    MusicSkillsAssessment, MusicSkillsGoals
 
 
 SkillsData = namedtuple('SkillsData', ['chart', 'fields', 'assessments', 'assess_form', 'update_form', 'has_goals'])
@@ -65,7 +61,7 @@ def user_detail(request, user_id):
 
     social_skills_data = SkillsData(assessments=SocialSkillsAssessment.objects.filter(user=user).order_by('updated'),
                                     assess_form=SocialSkillsAssessmentForm(),
-                                    update_form=SocialSkillsGoals(user=user),
+                                    update_form=SocialSkillsForm(user=user),
                                     chart=make_chart(SocialSkillsGoals.objects.filter(user=user).order_by('updated'), Goals.has_social_goals(user)),
                                     has_goals=Goals.has_social_goals(user),
                                     fields=SocialSkillsAssessment.assessment_fields)

@@ -1,5 +1,8 @@
 class Goals:
-    # pscycho-social-skills
+
+    def __init__(self):
+        pass
+
     PSS_RANGE_OF_AFFECT = 1
     PSS_SELF_ESTEEM = 2
     PSS_LEADERSHIP = 3
@@ -13,6 +16,15 @@ class Goals:
     PSS_GOALS = (PSS_RANGE_OF_AFFECT, PSS_SELF_ESTEEM, PSS_LEADERSHIP, PSS_RESTLESSNESS,
                  PSS_PAIN_MANAGMENT, PSS_DECREASE_COMPULSIVE, PSS_DECREASE_DEPRESSIVE,
                  PSS_INCREASE_TOLERANCE, PSS_INCREASE_ANXIETY_CONTROL)
+    PSS_GOALS_FULL = [(PSS_RANGE_OF_AFFECT, 'Increase range of affect'),
+        (PSS_SELF_ESTEEM, 'Increase self-esteem'),
+        (PSS_LEADERSHIP, 'Increase leadership role'),
+        (PSS_RESTLESSNESS, 'Decrease restlessness'),
+        (PSS_PAIN_MANAGMENT, 'Increase pain management'),
+        (PSS_DECREASE_COMPULSIVE, 'Decrease compulsive/destructive behaviour'),
+        (PSS_DECREASE_DEPRESSIVE, 'Decrease depressive symptoms'),
+        (PSS_INCREASE_TOLERANCE, 'Increase frustration tolerance'),
+        (PSS_INCREASE_ANXIETY_CONTROL, 'Increase anxiety control')]
 
     # motor skills
     MTR_MOBILITY = 9
@@ -21,12 +33,18 @@ class Goals:
     MTR_COORDINATION = 12
 
     MOTOR_GOALS = (MTR_COORDINATION, MTR_GROSS, MTR_FINE, MTR_MOBILITY)
+    MOTOR_GOALS_FULL = [(MTR_MOBILITY, 'Stimulate and maintain mobility'),
+        (MTR_FINE, 'Stimulate and maintain fine motor skills'),
+        (MTR_GROSS, 'Stimulate and maintain gross motor skills'),
+        (MTR_COORDINATION, 'Stimulate and maintain coordination')]
 
     # communication
     COM_INCREASE_LEVEL = 13
     COM_INCREASE_SELF_EXPRESSION = 14
 
     COM_GOALS = (COM_INCREASE_LEVEL, COM_INCREASE_SELF_EXPRESSION)
+    COM_GOALS_FULL = [(COM_INCREASE_LEVEL, 'Increase level of communication'),
+        (COM_INCREASE_SELF_EXPRESSION, 'Increase self-expression')]
 
     # cognition and memory
     COG_CHOICE_MAKING = 15
@@ -37,6 +55,11 @@ class Goals:
 
     COG_GOALS = (COG_CHOICE_MAKING, COG_SENSORY_STIMULATION, COG_MAINTAIN_FUNCTION, COG_DECREASE_CONFUSION,
                  COG_INCREASE_LEVEL_PART)
+    COG_GOALS_FULL = [(COG_CHOICE_MAKING, 'Increase choice making'),
+        (COG_SENSORY_STIMULATION, 'Increase sensory stimulation'),
+        (COG_MAINTAIN_FUNCTION, 'Maintain cognitive function'),
+        (COG_DECREASE_CONFUSION, 'Decrease confusion and disorientation'),
+        (COG_INCREASE_LEVEL_PART, 'Increase level of participation')]
 
     # social skills
     SOC_ATTENTION_SPAN = 20
@@ -44,40 +67,31 @@ class Goals:
     SOC_INTERACTION = 22
 
     SOC_GOALS = (SOC_ATTENTION_SPAN, SOC_ISOLATION, SOC_INTERACTION)
+    SOC_GOALS_FULL = [(SOC_ATTENTION_SPAN, 'Increase attention span'),
+        (SOC_ISOLATION, 'Decrease isolation'),
+        (SOC_INTERACTION, 'Increase social interaction')]
 
     # music skills
     MUS_MAINTAIN_KNOWLEDGE = 23
     MUS_MAINTAIN_SKILLS = 24
 
     MUS_GOALS = (MUS_MAINTAIN_SKILLS, MUS_MAINTAIN_KNOWLEDGE)
+    MUS_GOALS_FULL = [(MUS_MAINTAIN_KNOWLEDGE, 'Maintain current knowledge of music'),
+        (MUS_MAINTAIN_SKILLS, 'Maintain current music skills')]
 
-    GOALS_CHOICES = (
-        (PSS_RANGE_OF_AFFECT, 'Increase range of affect'),
-        (PSS_SELF_ESTEEM, 'Increase self-esteem'),
-        (PSS_LEADERSHIP, 'Increase leadership role'),
-        (PSS_RESTLESSNESS, 'Decrease restlessness'),
-        (PSS_PAIN_MANAGMENT, 'Increase pain management'),
-        (PSS_DECREASE_COMPULSIVE, 'Decrease compulsive/destructive behaviour'),
-        (PSS_DECREASE_DEPRESSIVE, 'Decrease depressive symptoms'),
-        (PSS_INCREASE_TOLERANCE, 'Increase frustration tolerance'),
-        (PSS_INCREASE_ANXIETY_CONTROL, 'Increase anxiety control'),
-        (MTR_MOBILITY, 'Stimulate and maintain mobility'),
-        (MTR_FINE, 'Stimulate and maintain fine motor skills'),
-        (MTR_GROSS, 'Stimulate and maintain gross motor skills'),
-        (MTR_COORDINATION, 'Stimulate and maintain coordination'),
-        (COM_INCREASE_LEVEL, 'Increase level of communication'),
-        (COM_INCREASE_SELF_EXPRESSION, 'Increase self-expression'),
-        (COG_CHOICE_MAKING, 'Increase choice making'),
-        (COG_SENSORY_STIMULATION, 'Increase sensory stimulation'),
-        (COG_MAINTAIN_FUNCTION, 'Maintain cognitive function'),
-        (COG_DECREASE_CONFUSION, 'Decrease confusion and disorientation'),
-        (COG_INCREASE_LEVEL_PART, 'Increase level of participation'),
-        (SOC_ATTENTION_SPAN, 'Increase attention span'),
-        (SOC_ISOLATION, 'Decrease isolation'),
-        (SOC_INTERACTION, 'Increase social interaction'),
-        (MUS_MAINTAIN_KNOWLEDGE, 'Maintain current knowledge of music'),
-        (MUS_MAINTAIN_SKILLS, 'Maintain current music skills'),
-    )
+    __GOALS_FULL = [PSS_GOALS_FULL, MOTOR_GOALS_FULL, COM_GOALS_FULL, COG_GOALS_FULL, SOC_GOALS_FULL, MUS_GOALS_FULL]
+    GOALS_CHOICES = [('Psycho-Social Goals', PSS_GOALS_FULL),
+                     ('Motor Goals', MOTOR_GOALS_FULL),
+                     ('Communication Goals', COM_GOALS_FULL),
+                     ('Cognition and Memory Goals', COG_GOALS_FULL),
+                     ('Social Goals', SOC_GOALS_FULL),
+                     ('Music Goals', MUS_GOALS_FULL)]
+
+    @staticmethod
+    def get_goals_flat():
+        for goal_list in Goals.__GOALS_FULL:
+            for goal in goal_list:
+                yield goal
 
     @staticmethod
     def in_list(selection, goals):

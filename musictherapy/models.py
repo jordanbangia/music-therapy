@@ -3,6 +3,7 @@ from django.core.validators import MaxValueValidator
 from multiselectfield import MultiSelectField
 
 from goals import Goals
+from django.core import exceptions
 
 # Create your models here.
 NONE = 0
@@ -15,6 +16,14 @@ SKILLS_SCALE = {
     (MEDIUM, 'Medium/ Sometimes'),
     (HIGH, 'High/ Always')
 }
+
+
+class GoalsSelectField(MultiSelectField):
+    def validate(self, value, model_instance):
+        arr_choices = self.get_choices_selected(Goals.get_goals_flat())
+        for opt_select in value:
+            if opt_select not in arr_choices:
+                    raise exceptions.ValidationError(self.error_messages['invalid_choice'] % {"value": value})
 
 
 class UserInfo(models.Model):
@@ -36,7 +45,7 @@ class UserInfo(models.Model):
     musical_history = models.CharField(max_length=500)
     care_plan = models.CharField(max_length=200)
     asp_level = models.IntegerField()
-    goals = MultiSelectField(choices=Goals.GOALS_CHOICES, null=True, blank=True)
+    goals = GoalsSelectField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -413,15 +422,15 @@ class SocialSkillsGoals(models.Model):
     user = models.ForeignKey(UserInfo)
     updated = models.DateTimeField(auto_now=True)
 
-    #increase attention span
+    # increase attention span
     redirection_required = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     encouragement_to_stay_required = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
 
-    #decrease isolation
+    # decrease isolation
     participation_in_program = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     joining_of_program = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
 
-    #increase social interaction
+    # increase social interaction
     interactions_with_staff = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     interactions_with_peers = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)
     therapist = models.PositiveIntegerField(validators=[MaxValueValidator(10)], blank=True, null=True)

@@ -57,7 +57,11 @@
 
             <div class="tab-content">
                 <div id="goals" class="tab-pane fade">
-                    {% crispy goals_form %}
+                    <form action="submit_goals/#goals" method="post">
+                        {% csrf_token %}
+                        {{ goals_form }}
+                        <input type="submit" name="submit" value="Save" />
+                    </form>
                 </div>
 
                 <div id ="musicpref" class="tab-pane fade">
