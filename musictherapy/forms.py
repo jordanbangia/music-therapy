@@ -73,10 +73,11 @@ class CommunicationAssessmentForm(ModelForm):
                   'disjointed_response', 'appropriate_rate_of_speech', 'word_finding_difficulty', 'imitate_therapist',
                   'follow_directions', 'response_to_verbal_instr', 'respond_to_name_song', 'respond_to_hello_goodbye',
                   'call_and_response', 'singing_familiar_songs', 'sing_familiar_songs_syllables', 'greet_others',
-                  'make_choice_in_song')
+                  'make_choice_in_song', 'notes')
 
     def __init__(self, *args, **kwargs):
         super(CommunicationAssessmentForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-communicationassessment'
@@ -86,18 +87,6 @@ class CommunicationAssessmentForm(ModelForm):
         self.helper.form_post = 'post'
         self.helper.form_action = 'submit_comassess/#communicationskills'
         self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
-        self.helper.layout = Layout(
-            Accordion(
-                AccordionGroup('Communication Skills Assessment',
-                               'verbalize_choices', 'fill_in_the_blank', 'engage_in_conv', 'answer_questions',
-                               'song_writing', 'communicated_with_single_words', 'communicated_with_phrases',
-                               'communicated_with_sentences', 'disjointed_response', 'appropriate_rate_of_speech',
-                               'word_finding_difficulty', 'imitate_therapist', 'follow_directions',
-                               'response_to_verbal_instr', 'respond_to_name_song', 'respond_to_hello_goodbye',
-                               'call_and_response', 'singing_familiar_songs', 'sing_familiar_songs_syllables',
-                               'greet_others', 'make_choice_in_song')
-            )
-        )
 
 
 class CommunicationSkillsForm(ModelForm):
@@ -133,10 +122,11 @@ class CommunicationSkillsForm(ModelForm):
 class PsychoSocialSkillsAssessmentForm(ModelForm):
     class Meta:
         model = PsychoSocialAssessment
-        fields = ('display_range_of_affect', 'self_esteem_confidence', 'sense_of_humour')
+        fields = ('display_range_of_affect', 'self_esteem_confidence', 'sense_of_humour', 'notes')
 
     def __init__(self, *args, **kwargs):
         super(PsychoSocialSkillsAssessmentForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-psychosocialassessment'
@@ -146,12 +136,6 @@ class PsychoSocialSkillsAssessmentForm(ModelForm):
         self.helper.form_post = 'post'
         self.helper.form_action = 'submit_pssassess/#psychosocialskills'
         self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
-        self.helper.layout = Layout(
-            Accordion(
-                AccordionGroup('Psycho-Social Skills Assessment',
-                               'display_range_of_affect', 'self_esteem_confidence', 'sense_of_humour')
-            )
-        )
 
 
 class PsychoSocialSkillsForm(ModelForm):
@@ -206,10 +190,11 @@ class MotorSkillsAssessmentForm(ModelForm):
         fields = ('independent_mobility', 'gait', 'endurance', 'structure_dance', 'grasped_instruments_mallets',
                   'demonstrated_finger_independence', 'turn_pages_of_songbook', 'demonstrated_upper_extremity_control',
                   'range_of_motion', 'crosses_midline', 'reach_for_instrument', 'demonstrates_adequate_eye_hand_coordination',
-                  'demonstrated_adequate_body_coordination', 'full_hearing', 'full_sight')
+                  'demonstrated_adequate_body_coordination', 'full_hearing', 'full_sight', 'notes')
 
     def __init__(self, *args, **kwargs):
         super(MotorSkillsAssessmentForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-motorassessment'
@@ -219,15 +204,6 @@ class MotorSkillsAssessmentForm(ModelForm):
         self.helper.form_post = 'post'
         self.helper.form_action = 'submit_motorassess/#motorskills'
         self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
-        self.helper.layout = Layout(
-            Accordion(
-                AccordionGroup('Motor Skills Assessment',
-                               'independent_mobility', 'gait', 'endurance', 'structure_dance', 'grasped_instruments_mallets',
-                               'demonstrated_finger_independence', 'turn_pages_of_songbook', 'demonstrated_upper_extremity_control',
-                               'range_of_motion', 'crosses_midline', 'reach_for_instrument', 'demonstrates_adequate_eye_hand_coordination',
-                               'demonstrated_adequate_body_coordination', 'full_hearing', 'full_sight')
-            )
-        )
 
 
 class MotorSkillsForm(ModelForm):
@@ -268,10 +244,11 @@ class CognitiveSkillsAssessmentForm(ModelForm):
         fields = ('recalls_own_name', 'recalls_name_familiar_persons', 'recalls_melody_familiar_songs', 'recalls_lyrics_familiar_songs', 'play_instruments',
                   'recognize_error_self_correct', 'read_song_sheet_book', 'organize_thoughts', 'remains_on_task', 'starts_stops_correct', 'maintains_synchrony_with_another',
                   'follow_verbal_directions', 'follow_non_verbal_directions', 'follows_hand_over_hand_directions', 'long_term_memory', 'short_term_memory', 'oriented_time',
-                  'oriented_place')
+                  'oriented_place', 'notes')
 
     def __init__(self, *args, **kwargs):
         super(CognitiveSkillsAssessmentForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-cogassessment'
@@ -281,15 +258,6 @@ class CognitiveSkillsAssessmentForm(ModelForm):
         self.helper.form_post = 'post'
         self.helper.form_action = 'submit_cogassess/#cognitiveskills'
         self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
-        self.helper.layout = Layout(
-            Accordion(
-                AccordionGroup('Cognitive Skills Assessment',
-                               'recalls_own_name', 'recalls_name_familiar_persons', 'recalls_melody_familiar_songs', 'recalls_lyrics_familiar_songs', 'play_instruments',
-                               'recognize_error_self_correct', 'read_song_sheet_book', 'organize_thoughts', 'remains_on_task', 'starts_stops_correct', 'maintains_synchrony_with_another',
-                               'follow_verbal_directions', 'follow_non_verbal_directions', 'follows_hand_over_hand_directions', 'long_term_memory', 'short_term_memory',
-                               'oriented_time', 'oriented_place')
-            )
-        )
 
 
 class CognitiveSkillsForm(ModelForm):
@@ -336,10 +304,11 @@ class SocialSkillsAssessmentForm(ModelForm):
     class Meta:
         model = SocialSkillsAssessment
         fields = ('engage_imitation', 'passing_sharing_instruments', 'converse_others', 'dancing_others', 'make_maintain_eye_contact', 'attend_task', 'pass_exchange_instrument', 'play_response_name',
-                  'active_in_session', 'remain_in_group', 'accept_leadership')
+                  'active_in_session', 'remain_in_group', 'accept_leadership', 'notes')
 
     def __init__(self, *args, **kwargs):
         super(SocialSkillsAssessmentForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-socialassessment'
@@ -349,13 +318,6 @@ class SocialSkillsAssessmentForm(ModelForm):
         self.helper.form_post = 'post'
         self.helper.form_action = 'submit_socialassess/#socialskills'
         self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
-        self.helper.layout = Layout(
-            Accordion(
-                AccordionGroup('Social Skills Assessment',
-                               'engage_imitation', 'passing_sharing_instruments', 'converse_others', 'dancing_others', 'make_maintain_eye_contact', 'attend_task', 'pass_exchange_instrument',
-                               'play_response_name', 'active_in_session', 'remain_in_group', 'accept_leadership')
-            )
-        )
 
 
 class SocialSkillsForm(ModelForm):
@@ -396,11 +358,11 @@ class MusicSkillsAssessmentForm(ModelForm):
     class Meta:
         model = MusicSkillsAssessment
         fields = ('match_rhythm', 'keep_steady_beat', 'adapt_to_rhythmic_changes', 'match_pitch', 'discriminates_dynamics', 'discriminates_duration', 'sing_familiar_songs', 'finish_musical_phrase',
-                  'choose_instrument_play', 'response_to_music', 'choose_song_style', 'familiar_song_title_melody', 'familiar_song_title_lyrics')
-
+                  'choose_instrument_play', 'response_to_music', 'choose_song_style', 'familiar_song_title_melody', 'familiar_song_title_lyrics', 'notes')
 
     def __init__(self, *args, **kwargs):
         super(MusicSkillsAssessmentForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].required = False
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-musicassessment'
@@ -410,13 +372,6 @@ class MusicSkillsAssessmentForm(ModelForm):
         self.helper.form_post = 'post'
         self.helper.form_action = 'submit_musicassess/#musicskills'
         self.helper.add_input(Submit('submit', 'Submit Skills Assessment'))
-        self.helper.layout = Layout(
-            Accordion(
-                AccordionGroup('Music Skills Assessment',
-                               'match_rhythm', 'keep_steady_beat', 'adapt_to_rhythmic_changes', 'match_pitch', 'discriminates_dynamics', 'discriminates_duration', 'sing_familiar_songs', 'finish_musical_phrase',
-                               'choose_instrument_play', 'response_to_music', 'choose_song_style', 'familiar_song_title_melody', 'familiar_song_title_lyrics')
-            )
-        )
 
 
 class MusicSkillsForm(ModelForm):

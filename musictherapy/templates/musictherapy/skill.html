@@ -1,29 +1,60 @@
 {% load crispy_forms_tags %}
 {% load template_getattr %}
-<p>Past {{type}} Assessments</p>
-<table class="table table-bordered">
-    <tr>
-        <th>Updated</th>
-        {% for field in data.fields %}
-        <th>{{field.verbose_name}}</th>
-        {% endfor %}
-    </tr>
-    {% if data.assessments %}
-    {% for assessment in data.assessments %}
-    <tr>
-        <td>{{assessment.updated}}
-        {% for field in data.fields %}
-        {% with field_value=assessment|getattrib:field.name %}
-        <td>{{ field_value|floatformat:2 }}</td>
-        {% endwith %}
-        {% endfor %}
-    </tr>
-    {% endfor %}
-    {% endif %}
-</table>
+<div class="panel-group" id="accordion-{{pre}}past_assessments">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{pre}}assessment" href="#{{pre}}-pastassessment" aria-expanded="true">Past {{type}} Assessments</a>
+            </h4>
+        </div>
+        <div id="{{pre}}-pastassessment" class="panel-collapse collapse in" aria-expanded="true">
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Updated</th>
+                        {% for field in data.fields %}
+                        <th>{{field.verbose_name}}</th>
+                        {% endfor %}
+                    </tr>
+
+                    {% if data.assessments %}
+                    {% for assessment in data.assessments %}
+                    <tr>
+                        <td>{{assessment.updated}}
+                        {% for field in data.fields %}
+                            {% if field.name = 'notes' %}
+                                <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#{{pre}}-{{assessment.id}}">Notes</button></td>
+                                {% include "musictherapy/notes.html" with id=assessment.id date=assessment.updated notes=assessment.notes %}
+                            {% else %}
+                                {% with field_value=assessment|getattrib:field.name %}
+                                <td>{{ field_value|floatformat:2 }}</td>
+                                {% endwith %}
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% if data.assess_form %}
-{% crispy data.assess_form %}
+<div class="panel-group" id="accordion-{{pre}}assessment">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{pre}}assessment" href="#{{pre}}-assessment" aria-expanded="true">Submit {{type}} Skills Assessment</a>
+            </h4>
+        </div>
+        <div id="{{pre}}-assessment" class="panel-collapse collapse in" aria-expanded="true">
+            <div class="panel-body">
+                {% crispy data.assess_form %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endif %}
 
 <br/>
