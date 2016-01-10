@@ -8,6 +8,23 @@
         <div id="{{pre}}-chart" class="panel-collapse collapse in" aria-expanded="true">
             <div class="panel-body">
                 <figure style="width:60%;height:60%">{{ chart|safe }}</figure>
+
+                <br/>
+
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Date</th>
+                        <th>Notes</th>
+                    </tr>
+
+                    {% for goal in goals %}
+                    <tr>
+                        <td>{{goal.updated}}</td>
+                        <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#{{pre}}-goal-{{goal.id}}">Notes</button></td>
+                        {% include "musictherapy/notes.html" with id=goal.id date=goal.updated notes=goal.notes data_type="goal"%}
+                    </tr>
+                    {% endfor %}
+                </table>
             </div>
         </div>
     </div>

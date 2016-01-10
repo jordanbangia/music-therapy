@@ -20,11 +20,11 @@
                     {% if data.assessments %}
                     {% for assessment in data.assessments %}
                     <tr>
-                        <td>{{assessment.updated}}
+                        <td>{{assessment.updated}}</td>
                         {% for field in data.fields %}
                             {% if field.name = 'notes' %}
-                                <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#{{pre}}-{{assessment.id}}">Notes</button></td>
-                                {% include "musictherapy/notes.html" with id=assessment.id date=assessment.updated notes=assessment.notes %}
+                                <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#{{pre}}-assessment-{{assessment.id}}">Notes</button></td>
+                                {% include "musictherapy/notes.html" with id=assessment.id date=assessment.updated notes=assessment.notes data_type="assessment"%}
                             {% else %}
                                 {% with field_value=assessment|getattrib:field.name %}
                                 <td>{{ field_value|floatformat:2 }}</td>
@@ -57,13 +57,23 @@
 </div>
 {% endif %}
 
-<br/>
-
 {% if data.chart %}
-{% include "musictherapy/chart.html" with chart=data.chart %}
+{% include "musictherapy/chart.html" with chart=data.chart goals=data.goals_data%}
 {% endif %}
 
 {% if data.has_goals %}
-<h3>Submit New {{type}} Skills Goals Measurables</h3>
-{% crispy data.update_form %}
+<div class="panel-group" id="accordion-{{pre}}goals">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{pre}}goals" href="#{{pre}}-goals" aria-expanded="true">Submit {{type}} Skills Goals Measurables</a>
+            </h4>
+        </div>
+        <div id="{{pre}}-goals" class="panel-collapse collapse in" aria-expanded="true">
+            <div class="panel-body">
+                {% crispy data.update_form %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endif %}

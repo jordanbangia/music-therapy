@@ -10,7 +10,7 @@ from .models import *
 from .goals import Goals
 
 
-SkillsData = namedtuple('SkillsData', ['chart', 'fields', 'assessments', 'assess_form', 'update_form', 'has_goals'])
+SkillsData = namedtuple('SkillsData', ['chart', 'fields', 'assessments', 'assess_form', 'update_form', 'has_goals', 'goals_data'])
 
 
 def index(request):
@@ -34,6 +34,7 @@ def user_detail(request, user_id):
     com_skills_data = SkillsData(assessments=CommunicationAssessment.objects.filter(user=user).order_by('updated'),
                                  assess_form=CommunicationAssessmentForm(),
                                  update_form=CommunicationSkillsForm(user=user),
+                                 goals_data=CommunicationGoals.objects.filter(user=user).order_by('updated'),
                                  chart=make_chart(CommunicationGoals.objects.filter(user=user).order_by('updated'), Goals.has_communication_goals(user)),
                                  has_goals=Goals.has_communication_goals(user),
                                  fields=CommunicationAssessment.assessment_fields)
@@ -41,6 +42,7 @@ def user_detail(request, user_id):
     pss_skills_data = SkillsData(assessments=PsychoSocialAssessment.objects.filter(user=user).order_by('updated'),
                                  assess_form=PsychoSocialSkillsAssessmentForm(),
                                  update_form=PsychoSocialSkillsForm(user=user),
+                                 goals_data=PsychoSocialGoals.objects.filter(user=user).order_by('updated'),
                                  chart=make_chart(PsychoSocialGoals.objects.filter(user=user).order_by('updated'), Goals.has_psycho_social_goals(user)),
                                  has_goals=Goals.has_psycho_social_goals(user),
                                  fields=PsychoSocialAssessment.assessment_fields)
@@ -48,6 +50,7 @@ def user_detail(request, user_id):
     motor_skills_data = SkillsData(assessments=MotorSkillsAssessment.objects.filter(user=user).order_by('updated'),
                                    assess_form=MotorSkillsAssessmentForm(),
                                    update_form=MotorSkillsForm(user=user),
+                                   goals_data=MotorSkillsGoals.objects.filter(user=user).order_by('updated'),
                                    chart=make_chart(MotorSkillsGoals.objects.filter(user=user).order_by('updated'), Goals.has_motor_goals(user)),
                                    has_goals=Goals.has_motor_goals(user),
                                    fields=MotorSkillsAssessment.assessment_fields)
@@ -55,6 +58,7 @@ def user_detail(request, user_id):
     cog_skills_data = SkillsData(assessments=CognitiveMemorySkillsAssessment.objects.filter(user=user).order_by('updated'),
                                  assess_form=CognitiveSkillsAssessmentForm(),
                                  update_form=CognitiveSkillsForm(user=user),
+                                 goals_data=CognitionMemorySkillsGoals.objects.filter(user=user).order_by('updated'),
                                  chart=make_chart(CognitionMemorySkillsGoals.objects.filter(user=user).order_by('updated'), Goals.has_motor_goals(user)),
                                  has_goals=Goals.has_motor_goals(user),
                                  fields=CognitiveMemorySkillsAssessment.assessment_fields)
@@ -62,6 +66,7 @@ def user_detail(request, user_id):
     social_skills_data = SkillsData(assessments=SocialSkillsAssessment.objects.filter(user=user).order_by('updated'),
                                     assess_form=SocialSkillsAssessmentForm(),
                                     update_form=SocialSkillsForm(user=user),
+                                    goals_data=SocialSkillsGoals.objects.filter(user=user).order_by('updated'),
                                     chart=make_chart(SocialSkillsGoals.objects.filter(user=user).order_by('updated'), Goals.has_social_goals(user)),
                                     has_goals=Goals.has_social_goals(user),
                                     fields=SocialSkillsAssessment.assessment_fields)
@@ -69,6 +74,7 @@ def user_detail(request, user_id):
     music_skills_data = SkillsData(assessments=MusicSkillsAssessment.objects.filter(user=user).order_by('updated'),
                                    assess_form=MusicSkillsAssessmentForm(),
                                    update_form=MusicSkillsForm(user=user),
+                                   goals_data=MusicSkillsGoals.objects.filter(user=user).order_by('updated'),
                                    chart=make_chart(MusicSkillsGoals.objects.filter(user=user).order_by('updated'), Goals.has_music_goals(user)),
                                    has_goals=Goals.has_music_goals(user),
                                    fields=MusicSkillsAssessment.assessment_fields)
