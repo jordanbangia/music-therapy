@@ -11,6 +11,7 @@ from .goals import Goals
 
 
 SkillsData = namedtuple('SkillsData', ['chart', 'fields', 'assessments', 'assess_form', 'update_form', 'has_goals', 'goals_data'])
+SummaryData = namedtuple('SummaryData', ['com', 'pss', 'motor', 'cog', 'social', 'music'])
 
 
 def index(request):
@@ -79,17 +80,19 @@ def user_detail(request, user_id):
                                    has_goals=Goals.has_music_goals(user),
                                    fields=MusicSkillsAssessment.assessment_fields)
 
+    summary = SummaryData(com=get_assessments(CommunicationAssessment, user),
+                          pss=get_assessments(PsychoSocialAssessment, user),
+                          motor=get_assessments(MotorSkillsAssessment, user),
+                          social=get_assessments(SocialSkillsAssessment, user),
+                          music=get_assessments(MusicSkillsAssessment, user),
+                          cog=get_assessments(CognitiveMemorySkillsAssessment, user))
+
     return render(request, 'musictherapy/detail.html', {
         'user_info_form': user_form,
         'goals_form': goals_form,
         'user_last_updated': user_last_updated,
 
-        'user_com_skills': get_latest_assessment(CommunicationAssessment),
-        'user_pss_skills': get_latest_assessment(PsychoSocialAssessment),
-        'user_motor_skills':  get_latest_assessment(MotorSkillsAssessment),
-        'user_cog_skills': get_latest_assessment(CognitiveMemorySkillsAssessment),
-        'user_social_skills': get_latest_assessment(SocialSkillsAssessment),
-        'user_music_skills': get_latest_assessment(MusicSkillsAssessment),
+        'summary': summary,
 
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated': musicpref_last_updated,
@@ -255,8 +258,8 @@ def make_chart(goals, has_goals):
         return None
 
 
-def get_latest_assessment(assessment):
+def get_assessments(assessment, user):
     try:
-        return assessment.objects.latest('updated')
+        return assessment.objects.filter(user=user).order_by('-updated')
     except:
         return None

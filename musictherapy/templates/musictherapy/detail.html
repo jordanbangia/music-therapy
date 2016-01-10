@@ -23,13 +23,16 @@
             $(document).ready(function() {
                 var url = document.location.toString();
                 if (url.match('#')) {
-                    console.log(url.split('#')[1]);
                     $('.nav-tabs a[href=#'+url.split('#')[1]+']').tab('show');
-
                 }
 
                 $('.nav-tabs a').on('shown.bs.tab', function (e) {
                     window.location.hash = e.target.hash;
+                })
+
+                $('a[data-toggle="tab"]').on('shown', function (e) {
+                    $('.dropdown-menu li.active').removeClass('active');
+                    $(this).parent('li').addClass('active');
                 })
 
             });
@@ -90,153 +93,39 @@
                 <div id="summary" class="tab-pane fade">
                     <div class="row">
                         <div class="col-md-6">
-                            {% if user_motor_skills %}
-                            <h3>Motor Skills</h3>
-                            <div class="row">
-                                <div class="col-md-4">Mobility</div>
-                                <div class="col-md-4">{{user_motor_skills.mobility|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Fine Motor</div>
-                                <div class="col-md-4">{{user_motor_skills.fine_motor|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Gross Motor</div>
-                                <div class="col-md-4">{{user_motor_skills.gross_motor|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Coordination</div>
-                                <div class="col-md-4">{{user_motor_skills.coordination|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Limitations</div>
-                                <div class="col-md-4">{{user_motor_skills.limitations|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <b><div class="col-md-4">Total</div>
-                                    <div class="col-md-4">{{user_motor_skills.total|floatformat:2}}</div></b>
-                            </div>
+                            {% if summary.motor %}
+                                {% include "musictherapy/summary_data.html" with summary=summary.motor type="Motor" pre="motor"%}
                             {% endif %}
                         </div>
 
                         <div class="col-md-6">
-                            {% if user_cog_skills %}
-                            <h3>Cognitive and Memory Skills</h3>
-                            <div class="row">
-                                <div class="col-md-4">Cognition</div>
-                                <div class="col-md-4">{{user_cog_skills.cognition|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Memory</div>
-                                <div class="col-md-4">{{user_cog_skills.memory|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <b><div class="col-md-4">Total</div>
-                                    <div class="col-md-4">{{user_cog_skills.total|floatformat:2}}</div></b>
-                            </div>
+                            {% if summary.cog %}
+                                {% include "musictherapy/summary_data.html" with summary=summary.cog type="Cognitive and Memory" pre="cog"%}
                             {% endif %}
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            {%if user_pss_skills %}
-                            <h3>Psycho-Social Skills</h3>
-                            <div class="row">
-                                <div class="col-md-4">Mood/Affect</div>
-                                <div class="col-md-4">{{user_pss_skills.mood_affect|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <b><div class="col-md-4">Total</div>
-                                    <div class="col-md-4">{{user_pss_skills.total|floatformat:2}}</div></b>
-                            </div>
+                            {%if summary.pss %}
+                                {% include "musictherapy/summary_data.html" with summary=summary.pss type="Psycho-Social" pre="pss"%}
                             {% endif %}
                         </div>
-
-
                         <div class="col-md-6">
-                            {% if user_com_skills %}
-                            <h3>Communication Skills</h3>
-                            <div class="row">
-                                <div class="col-md-4">Verbal Skills</div>
-                                <div class="col-md-4">{{user_com_skills.verbal_skills|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Receptive Language</div>
-                                <div class="col-md-4">{{user_com_skills.receptive_language|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Singing/Vocal Skills</div>
-                                <div class="col-md-4">{{user_com_skills.singing_vocal_skills|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Vocalization</div>
-                                <div class="col-md-4">{{user_com_skills.vocalization|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Interactive Speech</div>
-                                <div class="col-md-4">{{user_com_skills.interactive_speech|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Choice Making</div>
-                                <div class="col-md-4">{{user_com_skills.choice_making|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <b><div class="col-md-4">Total</div>
-                                <div class="col-md-4">{{user_com_skills.total|floatformat:2}}</div></b>
-                            </div>
+                            {% if summary.com %}
+                                {% include "musictherapy/summary_data.html" with summary=summary.com type="Communication" pre="com"%}
                             {% endif %}
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            {% if user_social_skills %}
-                            <h3>Social Skills</h3>
-                            <div class="row">
-                                <div class="col-md-4">Interactions</div>
-                                <div class="col-md-4">{{user_social_skills.interactions|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Attending Skills</div>
-                                <div class="col-md-4">{{user_social_skills.attending_skills|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Sharing and Turn-Taking</div>
-                                <div class="col-md-4">{{user_social_skills.sharing_turn_taking|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Participation in Group Music Therapy</div>
-                                <div class="col-md-4">{{user_social_skills.participation_group_music|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <b><div class="col-md-4">Total</div>
-                                    <div class="col-md-4">{{user_social_skills.total|floatformat:2}}</div></b>
-                            </div>
+                            {% if summary.social %}
+                                {% include "musictherapy/summary_data.html" with summary=summary.social type="Social" pre="social"%}
                             {% endif %}
                         </div>
 
                         <div class="col-md-6">
-                            {% if user_music_skills %}
-                            <h3>Music Skills</h3>
-                            <div class="row">
-                                <div class="col-md-4">Rhythm/Beat</div>
-                                <div class="col-md-4">{{user_music_skills.rhythm_beat|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Melody/Tonal</div>
-                                <div class="col-md-4">{{user_music_skills.melody_tonal|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Instrument Exploration</div>
-                                <div class="col-md-4">{{user_music_skills.instrument_exploration|floatformat:2}}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Interest/Preference</div>
-                                <div class="col-md-4">{{user_music_skills.interest_preference|floatformat:2}}</div>
-                            </div>
-                            <b><div class="row">
-                                <div class="col-md-4">Total</div>
-                                <div class="col-md-4">{{user_music_skills.total|floatformat:2}}</div>
-                            </div></b>
+                            {% if summary.music %}
+                                {% include "musictherapy/summary_data.html" with summary=summary.music type="Music" pre="music"%}
                             {% endif %}
                         </div>
                     </div>
