@@ -24,7 +24,7 @@ def index(request):
 
 def user_detail(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
-    user_form = UserInfoForm(instance = user)
+    user_form = UserInfoForm(instance=user)
     goals_form = GoalsForm(instance=user)
     user_last_updated = user.updated
 
@@ -198,7 +198,6 @@ def save_skills_form(form, user_id):
 
 def save_assess_form(form, user_id):
     if form.is_valid():
-        print('what up')
         update = form.save(commit=False)
         update.fill_measurables()
         update.user = get_object_or_404(UserInfo, pk=user_id)
@@ -209,8 +208,8 @@ def save_assess_form(form, user_id):
 def create_user(request):
     user_form = UserInfoForm()
     return render(request, 'musictherapy/detail.html', {
-        'user_info_form' : user_form,
-        'new' : True
+        'user_info_form': user_form,
+        'new': True
     })
 
 
@@ -220,8 +219,8 @@ def save_new_basic(request):
         if user_form.is_valid():
             user = user_form.save()
             return redirect('/musictherapy/' + str(user.pk), {
-                'tab' : 'user_info',
-            });
+                'tab': 'user_info',
+            })
         else:
             print("From was not valid")
             return HttpResponse(404)
