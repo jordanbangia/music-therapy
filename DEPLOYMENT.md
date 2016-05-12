@@ -1,6 +1,4 @@
 ## Deployment
-(Note: these instructions assume a UNIX like environment)
-
 To deploy the website, first install Python2.7, virtualenv, and pip.
 
 First clone this repo:
