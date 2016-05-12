@@ -1,13 +1,15 @@
 from collections import namedtuple
 
+import django.contrib.auth.views as auth
+from django.contrib.auth.forms import AuthenticationForm
 import pygal
 from annoying.functions import get_object_or_None
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
-from .forms import *
-from .models import *
-from .goals import Goals
+from musictherapy.forms import *
+from musictherapy.models import *
 
 
 SkillsData = namedtuple('SkillsData', ['chart', 'fields', 'assessments', 'assess_form', 'update_form', 'has_goals', 'goals_data'])
@@ -15,13 +17,29 @@ SummaryData = namedtuple('SummaryData', ['com', 'pss', 'motor', 'cog', 'social',
 
 
 def index(request):
+    if request.user.is_authenticated():
+        return redirect('/musictherapy/patients')
+    else:
+        return render(request, 'musictherapy/index.html', {
+            'form': AuthenticationForm(request=request),
+            'next': '/musictherapy/patients'
+        })
+
+
+def login(request):
+    return auth.login(request)
+
+
+@login_required(login_url='/musictherapy/login')
+def patients(request):
     user_info_list = UserInfo.objects.all()
     context = {
         'user_info_list': user_info_list,
     }
-    return render(request, 'musictherapy/index.html', context)
+    return render(request, 'musictherapy/patients.html', context)
 
 
+@login_required(login_url='/musictherapy/login')
 def user_detail(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
     user_form = UserInfoForm(instance=user)
@@ -106,6 +124,7 @@ def user_detail(request, user_id):
     })
 
 
+@login_required(login_url='/musictherapy/login')
 def save_basic_info(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
     if request.method == 'POST':
@@ -115,6 +134,7 @@ def save_basic_info(request, user_id):
             return redirect('/musictherapy/' + user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_music_pref(request, user_id):
     musicpref = get_object_or_None(MusicalPreference, pk=user_id)
     if request.method == 'POST':
@@ -128,66 +148,79 @@ def save_music_pref(request, user_id):
             return redirect('/musictherapy/' + user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_com_assess(request, user_id):
     if request.method == 'POST':
         return save_assess_form(CommunicationAssessmentForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_com_goals(request, user_id):
     if request.method == 'POST':
         return save_skills_form(CommunicationSkillsForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_pss_assess(request, user_id):
     if request.method == 'POST':
         return save_assess_form(PsychoSocialSkillsAssessmentForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_pss_goals(request, user_id):
     if request.method == 'POST':
         return save_skills_form(PsychoSocialSkillsForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_motor_assess(request, user_id):
     if request.method == 'POST':
         return save_assess_form(MotorSkillsAssessmentForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_motor_goals(request, user_id):
     if request.method == 'POST':
         return save_skills_form(MotorSkillsForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_cog_assess(request, user_id):
     if request.method == 'POST':
         return save_assess_form(CognitiveSkillsAssessmentForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_cog_goals(request, user_id):
     if request.method == 'POST':
         return save_skills_form(CognitiveSkillsForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_social_assess(request, user_id):
     if request.method == 'POST':
         return save_assess_form(SocialSkillsAssessmentForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_social_goals(request, user_id):
     if request.method == 'POST':
         return save_skills_form(SocialSkillsForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_music_goals(request, user_id):
     if request.method == 'POST':
         return save_skills_form(MusicSkillsForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_music_assess(request, user_id):
     if request.method == 'POST':
         return save_assess_form(MusicSkillsAssessmentForm(request.POST), user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_skills_form(form, user_id):
     if form.is_valid():
         update = form.save(commit=False)
@@ -196,6 +229,7 @@ def save_skills_form(form, user_id):
         return redirect('/musictherapy/' + user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def save_assess_form(form, user_id):
     if form.is_valid():
         update = form.save(commit=False)
@@ -205,6 +239,7 @@ def save_assess_form(form, user_id):
         return redirect('/musictherapy/' + user_id)
 
 
+@login_required(login_url='/musictherapy/login')
 def create_user(request):
     user_form = UserInfoForm()
     return render(request, 'musictherapy/detail.html', {
@@ -213,6 +248,7 @@ def create_user(request):
     })
 
 
+@login_required(login_url='/musictherapy/login')
 def save_new_basic(request):
     if request.method == 'POST':
         user_form = UserInfoForm(request.POST)
@@ -226,12 +262,14 @@ def save_new_basic(request):
             return HttpResponse(404)
 
 
+@login_required(login_url='/musictherapy/login')
 def delete_user(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
     user.delete()
     return redirect('/musictherapy/')
 
 
+@login_required(login_url='/musictherapy/login')
 def save_user_goals(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
     if request.method == 'POST':

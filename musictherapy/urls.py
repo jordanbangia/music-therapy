@@ -1,8 +1,11 @@
 from django.conf.urls import url
-from . import views
+
+from musictherapy import views
+import django.contrib.auth.views as auth
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^patients/$', views.patients, name='list'),
     url(r'^(?P<user_id>[0-9]+)/$', views.user_detail, name='user_detail'),
     url(r'^(?P<user_id>[0-9]+)/submit_userinfo/$', views.save_basic_info, name='save_userinfo'),
     url(r'^(?P<user_id>[0-9]+)/submit_musicpref/$', views.save_music_pref, name='save_musicpref'),
@@ -34,5 +37,5 @@ urlpatterns = [
     url(r'^(?P<user_id>[0-9]+)/submit_goals/$', views.save_user_goals, name="save_goals"),
     url(r'^new/$', views.create_user, name='create_user'),
     url(r'^new/submit_userinfo/$', views.save_new_basic, name='new_userinfo'),
-
-]
+    url(r'^login/$', auth.login, {'template_name': 'musictherapy/index.html'}),
+    url(r'^logout/$', auth.logout, {'next_page': '/musictherapy'})]

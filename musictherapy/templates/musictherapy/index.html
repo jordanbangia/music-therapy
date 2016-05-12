@@ -10,39 +10,9 @@
 </head>
 
 <body>
-{% if user_info_list %}
-<table id="userTable" class="tablesorter">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Location</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for user in user_info_list %}
-    <tr>
-        <td><a href="{% url 'musictherapy:user_detail' user.id %}"> {{user.name}}</a></td>
-        <td>{{user.location}}</td>
-        <td><a href="{% url 'musictherapy:delete_user' user.id %}">Delete</a></td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p> No users available. </p>
-{% endif %}
+<h3>Welcome to MusicTherapy Platform</h3>
 
-<a class="btn btn-info pull-right" href="new/">Add a user</a>
-
-
-<script type="text/javascript">
-			$(document).ready(function()
-			{
-				$("#myTable").tablesorter();
-			});
-
-</script>
+{% include "musictherapy/login.html" with summary=summary.motor type="Motor" pre="motor"%}
 
 </body>
 
