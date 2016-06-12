@@ -44,3 +44,8 @@ Most of the information on these items can be found [here](https://docs.djangopr
 ### Ansible
 
 To easily deploy the Django stack, can use [this](https://github.com/jcalazan/ansible-django-stack) ansible playbook.  Get ansible [here](https://www.ansible.com/)
+
+
+### Chef
+
+Or, if you would rather do deployment through [Chef](https://www.chef.io/chef/), check out this [recipe](https://github.com/poise/application_python).
