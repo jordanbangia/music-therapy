@@ -39,3 +39,8 @@ A database is required to house all the data.  Any kind of sql database can be u
 - LOGGING if logs are desired (incase of errors)
 
 Most of the information on these items can be found [here](https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/).
+
+
+### Ansible
+
+To easily deploy the Django stack, can use [this](https://github.com/jcalazan/ansible-django-stack) ansible playbook.  Get ansible [here](https://www.ansible.com/)
