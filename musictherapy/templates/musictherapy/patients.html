@@ -3,6 +3,10 @@
 <html>
 
 <head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
     <link rel="stylesheet" href="{% static 'musictherapy/themes/blue/style.css' %}" media="print, projection, screen"/>
     <script type="text/javascript" src="{% static 'musictherapy/jquery-1.11.3.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'musictherapy/jquery.tablesorter.min.js' %}"></script>
@@ -33,14 +37,16 @@
 <p> No users available. </p>
 {% endif %}
 
-<a class="btn btn-info pull-right" href="new/">Add a user</a>
+<a class="btn btn-info pull-left" href="new/" style="margin:5px">Add a user</a>
 
-<a class="btn btn-info pull-right" href="/musictherapy/logout/">Logout</a>
+<a class="btn btn-info pull-left" href="/musictherapy/logout/" style="margin:5px">Logout</a>
+
+<a class="btn btn-info pull-left" href="/musictherapy/change_password/" style="margin:5px">Change Password</a>
 
 <script type="text/javascript">
 			$(document).ready(function()
 			{
-				$("#myTable").tablesorter();
+				$("#userTable").tablesorter();
 			});
 
 </script>

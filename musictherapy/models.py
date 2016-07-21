@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator
 from multiselectfield import MultiSelectField
 
-from goals import Goals
+from musictherapy.goals import Goals
 from django.core import exceptions
 
 # Create your models here.

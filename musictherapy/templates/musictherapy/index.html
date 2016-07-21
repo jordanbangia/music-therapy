@@ -3,6 +3,10 @@
 <html>
 
 <head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
     <link rel="stylesheet" href="{% static 'musictherapy/themes/blue/style.css' %}" media="print, projection, screen"/>
     <script type="text/javascript" src="{% static 'musictherapy/jquery-1.11.3.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'musictherapy/jquery.tablesorter.min.js' %}"></script>
@@ -12,7 +16,7 @@
 <body>
 <h3>Welcome to MusicTherapy Platform</h3>
 
-{% include "musictherapy/login.html" with summary=summary.motor type="Motor" pre="motor"%}
+{% include "musictherapy/login.html" %}
 
 </body>
 

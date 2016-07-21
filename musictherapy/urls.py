@@ -38,4 +38,6 @@ urlpatterns = [
     url(r'^new/$', views.create_user, name='create_user'),
     url(r'^new/submit_userinfo/$', views.save_new_basic, name='new_userinfo'),
     url(r'^login/$', auth.login, {'template_name': 'musictherapy/index.html'}),
-    url(r'^logout/$', auth.logout, {'next_page': '/musictherapy'})]
+    url(r'^logout/$', auth.logout, {'next_page': '/musictherapy'}),
+    url(r'^change_password/$', auth.password_change, {'template_name': 'musictherapy/change_password.html'}),
+    url(r'^password_change_done/$', auth.password_change_done)]
