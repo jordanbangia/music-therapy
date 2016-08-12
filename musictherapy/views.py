@@ -19,7 +19,8 @@ SummaryData = namedtuple('SummaryData', ['com', 'pss', 'motor', 'cog', 'social',
 
 STATUS_MESSAGES = {
     'no_permission': 'You do not have permission to use this function.  Talk to an administrator if you have further questions.',
-    'pass_change_success': 'Password changed successfully.'
+    'pass_change_success': 'Password changed successfully.',
+    'staff_added': 'Staff member added successfully.'
 }
 
 
@@ -306,7 +307,11 @@ def create_staff(request):
         staff_form = StaffForm(request.POST)
         if staff_form.is_valid():
             staff_form.save()
-            return redirect('/musictherapy/staff')
+            return redirect('/musictherapy/patients?status=staff_added')
+        else:
+            return render(request, 'musictherapy/staff.html', {
+                'staff_form': staff_form,
+            })
 
 
 def make_chart(goals, has_goals):
