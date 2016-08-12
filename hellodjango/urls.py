@@ -17,6 +17,6 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^musictherapy/', include('musictherapy.urls', namespace="musictherapy")),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include('musictherapy.urls', namespace="musictherapy")),
 ]
