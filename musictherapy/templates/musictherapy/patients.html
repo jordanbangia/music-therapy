@@ -20,7 +20,9 @@
     <tr>
         <th>Name</th>
         <th>Location</th>
+        {% if perms.musictherapy.delete_userinfo %}
         <th></th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
@@ -28,7 +30,9 @@
     <tr>
         <td><a href="{% url 'musictherapy:user_detail' user.id %}"> {{user.name}}</a></td>
         <td>{{user.location}}</td>
+        {% if perms.musictherapy.delete_userinfo %}
         <td><a href="{% url 'musictherapy:delete_user' user.id %}">Delete</a></td>
+        {% endif %}
     </tr>
     {% endfor %}
     </tbody>
@@ -37,11 +41,22 @@
 <p> No users available. </p>
 {% endif %}
 
-<a class="btn btn-info pull-left" href="new/" style="margin:5px">Add a user</a>
+<a class="btn btn-info pull-left" href="{% url 'musictherapy:create_user' %}" style="margin:5px">Add Patient</a>
 
-<a class="btn btn-info pull-left" href="/musictherapy/logout/" style="margin:5px">Logout</a>
+<a class="btn btn-info pull-left" href="{% url 'musictherapy:logout' %}" style="margin:5px">Logout</a>
 
-<a class="btn btn-info pull-left" href="/musictherapy/change_password/" style="margin:5px">Change Password</a>
+<a class="btn btn-info pull-left" href="{% url 'musictherapy:password_change' %}" style="margin:5px">Change Password</a>
+
+{% if perms.auth.add_user %}
+<a class="btn btn-info pull-left" href="{% url 'musictherapy:create_staff' %}" style="margin:5px">Add Staff Member</a>
+{% endif %}
+
+{% if status %}
+<br>
+<br>
+<br>
+<p>{{ status }}</p>
+{% endif %}
 
 <script type="text/javascript">
 			$(document).ready(function()

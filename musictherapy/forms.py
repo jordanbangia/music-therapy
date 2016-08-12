@@ -1,16 +1,16 @@
-from .models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, \
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
+from django.forms import ModelForm, ChoiceField
+from multiselectfield.forms.fields import MultiSelectFormField
+
+from musictherapy.extras import SelectDateWidget
+from musictherapy.goals import Goals
+from musictherapy.models import UserInfo, MusicalPreference, CommunicationAssessment, CommunicationGoals, \
     PsychoSocialAssessment, PsychoSocialGoals, MotorSkillsAssessment, MotorSkillsGoals, \
     CognitiveMemorySkillsAssessment, CognitionMemorySkillsGoals, SocialSkillsAssessment, \
     SocialSkillsGoals, MusicSkillsAssessment, MusicSkillsGoals
-from .extras import SelectDateWidget
-from .goals import Goals
-from django.forms import ModelForm, MultipleChoiceField
-from multiselectfield.forms.fields import MultiSelectFormField
-
-
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout
-from crispy_forms.bootstrap import Accordion, AccordionGroup
 
 
 class GoalsForm(ModelForm):
@@ -404,3 +404,18 @@ class MusicSkillsForm(ModelForm):
                 del self.fields['music_skill_demonstrated']
                 del self.fields['opinions_given']
 
+
+class StaffForm(UserCreationForm):
+    staff_status = ChoiceField(choices=(('Admin', 'Admin'), ('Staff', 'Staff')),
+                               required=True,
+                               label='Staff level',
+                               initial='Admin')
+
+    def save(self, commit=True):
+        user = super(UserCreationForm, self).save(commit=commit)
+
+        if self.staff_status == 'Admin':
+            user.groups.add(Group.objects.get(name='Admin'))
+        else:
+            self.staff_status == 'Staff'
+        return user

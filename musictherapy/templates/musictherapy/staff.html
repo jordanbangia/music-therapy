@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet" href="{% static 'musictherapy/themes/blue/style.css' %}" media="print, projection, screen"/>
+    <script type="text/javascript" src="{% static 'musictherapy/jquery-1.11.3.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'musictherapy/jquery.tablesorter.min.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</head>
+<body>
+    <p>Provide the username for the new staff.  User a generic password (such as password) and provide it to the new staff member.  Make sure to have them change it once they log in.</p>
+    <p>Admin staff level can add new patients and staff.</p>
+    <p>Staff level can only create and fill in forms for patients.</p>
+    <form action="/musictherapy/staff/" method="post">
+        {% csrf_token %}
+        {{ staff_form }}
+        <input type="submit" name="submit" value="Save" />
+    </form>
+</body>
+</html>

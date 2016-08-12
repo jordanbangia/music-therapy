@@ -1,12 +1,14 @@
 from collections import namedtuple
 
 import django.contrib.auth.views as auth
-from django.contrib.auth.forms import AuthenticationForm
-import pygal
-from annoying.functions import get_object_or_None
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.http import require_http_methods, require_GET
+
+import pygal
+from annoying.functions import get_object_or_None
 
 from musictherapy.forms import *
 from musictherapy.models import *
@@ -14,6 +16,11 @@ from musictherapy.models import *
 
 SkillsData = namedtuple('SkillsData', ['chart', 'fields', 'assessments', 'assess_form', 'update_form', 'has_goals', 'goals_data'])
 SummaryData = namedtuple('SummaryData', ['com', 'pss', 'motor', 'cog', 'social', 'music'])
+
+STATUS_MESSAGES = {
+    'no_permission': 'You do not have permission to use this function.  Talk to an administrator if you have further questions.',
+    'pass_change_success': 'Password changed successfully.'
+}
 
 
 def index(request):
@@ -29,13 +36,16 @@ def index(request):
 def login(request):
     return auth.login(request)
 
-
+@require_GET
 @login_required(login_url='/musictherapy/login')
 def patients(request):
+    status = request.GET.get('status', None)
     user_info_list = UserInfo.objects.all()
     context = {
         'user_info_list': user_info_list,
+        'status': STATUS_MESSAGES.get(status, None)
     }
+
     return render(request, 'musictherapy/patients.html', context)
 
 
@@ -262,11 +272,15 @@ def save_new_basic(request):
             return HttpResponse(404)
 
 
+@permission_required(perm='musictherapy.delete_userinfo')
 @login_required(login_url='/musictherapy/login')
 def delete_user(request, user_id):
-    user = get_object_or_404(UserInfo, pk=user_id)
-    user.delete()
-    return redirect('/musictherapy/')
+    if request.user.has_perm('muscitherapy.userinfo.can_delete'):
+        user = get_object_or_404(UserInfo, pk=user_id)
+        user.delete()
+        return redirect('/musictherapy/')
+    else:
+        return redirect('/musictherapy/patients?status=no_permission')
 
 
 @login_required(login_url='/musictherapy/login')
@@ -279,14 +293,27 @@ def save_user_goals(request, user_id):
             return redirect('/musictherapy/' + user_id)
 
 
+@permission_required(perm='auth.add_user')
+@require_http_methods(["GET", "POST"])
+@login_required(login_url='/musictherapy/login')
+def create_staff(request):
+    if request.method == 'GET':
+        context = {
+            'staff_form': StaffForm()
+        }
+        return render(request, 'musictherapy/staff.html', context)
+    elif request.method == 'POST':
+        staff_form = StaffForm(request.POST)
+        if staff_form.is_valid():
+            staff_form.save()
+            return redirect('/musictherapy/staff')
+
+
 def make_chart(goals, has_goals):
     line_chart = pygal.Line()
     if has_goals:
-
         field_names = [field.attname for field in goals.model._meta.get_fields() if field.attname not in ["id", "user_id", "notes"]]
-
         lines = {field_name: list() for field_name in field_names}
-
         for goal in goals:
             for field in field_names:
                 lines[field].append(getattr(goal, field))

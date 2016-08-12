@@ -28,12 +28,12 @@
 
                 $('.nav-tabs a').on('shown.bs.tab', function (e) {
                     window.location.hash = e.target.hash;
-                })
+                });
 
                 $('a[data-toggle="tab"]').on('shown', function (e) {
                     $('.dropdown-menu li.active').removeClass('active');
                     $(this).parent('li').addClass('active');
-                })
+                });
 
             });
         </script>
