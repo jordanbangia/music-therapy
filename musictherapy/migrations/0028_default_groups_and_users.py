@@ -1,35 +1,30 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import Group, Permission, User
 from django.db import migrations
 
 from musictherapy.permissions import STAFF_PERMISSIONS, ADMIN_PERMISSIONS
 
 
 def create_groups(apps, schema_editor):
-    Group = apps.get_model('auth', 'Group')
-    Permission = apps.get_model('auth', 'Permission')
-
     staff, created = Group.objects.get_or_create(name='Staff')
 
     for permission in STAFF_PERMISSIONS:
         p = Permission.objects.get(codename=permission)
-        if p not in staff.permissions:
+        if p not in staff.permissions.all():
             staff.permissions.add(p)
     staff.save()
 
     admin, created = Group.objects.get_or_create(name='Admin')
     for permission in ADMIN_PERMISSIONS:
         p = Permission.objects.get(codename=permission)
-        if p not in admin.permissions:
+        if p not in admin.permissions.all():
             admin.permissions.add(p)
     admin.save()
 
 
 def add_default_users(apps, schema_editor):
-    User = apps.get_model('auth', 'User')
-    Group = apps.get_model('auth', 'Group')
-
     bd, created = User.objects.get_or_create(username='bdeimling')
     if created:
         bd.set_password('admin')
