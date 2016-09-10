@@ -232,25 +232,6 @@ def save_music_assess(request, user_id):
 
 
 @login_required(login_url='/musictherapy/login')
-def save_skills_form(form, user_id):
-    if form.is_valid():
-        update = form.save(commit=False)
-        update.user = get_object_or_404(UserInfo, pk=user_id)
-        update.save()
-        return redirect('/musictherapy/' + user_id)
-
-
-@login_required(login_url='/musictherapy/login')
-def save_assess_form(form, user_id):
-    if form.is_valid():
-        update = form.save(commit=False)
-        update.fill_measurables()
-        update.user = get_object_or_404(UserInfo, pk=user_id)
-        update.save()
-        return redirect('/musictherapy/' + user_id)
-
-
-@login_required(login_url='/musictherapy/login')
 def create_user(request):
     user_form = UserInfoForm()
     return render(request, 'musictherapy/detail.html', {
@@ -312,6 +293,24 @@ def create_staff(request):
             return render(request, 'musictherapy/staff.html', {
                 'staff_form': staff_form,
             })
+
+
+# helper methods
+def save_assess_form(form, user_id):
+    if form.is_valid():
+        update = form.save(commit=False)
+        update.fill_measurables()
+        update.user = get_object_or_404(UserInfo, pk=user_id)
+        update.save()
+        return redirect('/musictherapy/' + user_id)
+
+
+def save_skills_form(form, user_id):
+    if form.is_valid():
+        update = form.save(commit=False)
+        update.user = get_object_or_404(UserInfo, pk=user_id)
+        update.save()
+        return redirect('/musictherapy/' + user_id)
 
 
 def make_chart(goals, has_goals):

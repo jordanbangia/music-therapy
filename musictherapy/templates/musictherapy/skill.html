@@ -57,10 +57,6 @@
 </div>
 {% endif %}
 
-{% if data.chart %}
-{% include "musictherapy/chart.html" with chart=data.chart goals=data.goals_data%}
-{% endif %}
-
 {% if data.has_goals %}
 <div class="panel-group" id="accordion-{{pre}}goals">
     <div class="panel panel-default">
@@ -76,4 +72,9 @@
         </div>
     </div>
 </div>
+{% endif %}
+
+
+{% if data.chart %}
+{% include "musictherapy/chart.html" with chart=data.chart goals=data.goals_data%}
 {% endif %}
