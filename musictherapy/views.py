@@ -37,6 +37,7 @@ def index(request):
 def login(request):
     return auth.login(request)
 
+
 @require_GET
 @login_required(login_url='/musictherapy/login')
 def patients(request):
@@ -151,11 +152,10 @@ def save_music_pref(request, user_id):
     if request.method == 'POST':
         musicpref_form = MusicalPrefForm(request.POST, instance=musicpref)
         if musicpref_form.is_valid():
-            if musicpref:
-                musicpref_form.save()
-            else:
+            if musicpref is None:
                 musicpref = musicpref_form.save(commit=False)
                 musicpref.user = get_object_or_404(UserInfo, pk=user_id)
+            musicpref_form.save()
             return redirect('/musictherapy/' + user_id)
 
 
