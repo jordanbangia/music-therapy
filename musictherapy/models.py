@@ -82,14 +82,14 @@ class MusicalPreference(models.Model):
         ('Rhythm and Blues', 'Rhythm and Blues'),
         ('Soul', 'Soul'),
         ('Patriotic', 'Patriotic'),
-        # ethnic, sacred, other
     )
 
     user = models.OneToOneField(UserInfo, primary_key=True)
-    fav_composer = models.CharField(max_length=200)
-    fav_song = models.CharField(max_length=200)
-    fav_instrument = models.CharField(max_length=200)
+    fav_composer = models.CharField(max_length=200, null=True, blank=True)
+    fav_song = models.CharField(max_length=200, null=True, blank=True)
+    fav_instrument = models.CharField(max_length=200, null=True, blank=True)
     preferred_style = MultiSelectField(choices=STYLES_CHOICES, null=True, blank=True)
+    other_style = models.CharField(max_length=200, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
 
