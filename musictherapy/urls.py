@@ -5,6 +5,7 @@ import django.contrib.auth.views as auth
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^musictherapy/$', views.index, name='index'),
     url(r'^musictherapy/patients/$', views.patients, name='list'),
     url(r'^musictherapy/(?P<user_id>[0-9]+)/$', views.user_detail, name='user_detail'),
     url(r'^musictherapy/(?P<user_id>[0-9]+)/submit_userinfo/$', views.save_basic_info, name='save_userinfo'),
