@@ -50,8 +50,8 @@ class UserInfo(models.Model):
     country_of_origin = models.CharField(max_length=100)
     language_spoken = models.CharField(max_length=100)
     musical_history = models.CharField(max_length=500)
-    care_plan = models.CharField(max_length=200)
-    asp_level = models.IntegerField()
+    care_plan = models.TextField(default="", verbose_name="Care Plan")
+    asp_level = models.IntegerField(verbose_name="Level of Care", choices=((1, 1), (2, 2), (3, 3)))
     goals = GoalsSelectField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -85,9 +85,9 @@ class MusicalPreference(models.Model):
     )
 
     user = models.OneToOneField(UserInfo, primary_key=True)
-    fav_composer = models.CharField(max_length=200, null=True, blank=True)
-    fav_song = models.CharField(max_length=200, null=True, blank=True)
-    fav_instrument = models.CharField(max_length=200, null=True, blank=True)
+    fav_composer = models.CharField(max_length=200, null=True, blank=True, verbose_name="Favourite Composer/Performer(s)")
+    fav_song = models.CharField(max_length=200, null=True, blank=True, verboase_name="Favourite Song(s)")
+    fav_instrument = models.CharField(max_length=200, null=True, blank=True, verbose_name="Favourite Instrument(s)")
     preferred_style = MultiSelectField(choices=STYLES_CHOICES, null=True, blank=True)
     other_style = models.CharField(max_length=200, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
