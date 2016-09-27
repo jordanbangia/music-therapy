@@ -48,29 +48,39 @@
 
             <ul class ="nav nav-tabs" id="tabs">
                 <li class="active"><a data-toggle="tab" href="#basicinfo">Basic Information</a></li>
+                {% if summary %}
                 <li><a data-toggle="tab" href="#summary">Summary</a></li>
-                {% if goals_form %}
+                {% endif %}
+                {% if goals %}
                 <li><a data-toggle="tab" href="#goals">Goals</a></li>
                 {% endif %}
                 {% if musical_pref_form %}
                 <li><a data-toggle="tab" href="#musicpref">Musical Preference</a></li>
                 {% endif %}
-                <li><a data-toggle="tab" href="#communicationskills">Communication Skills</a></li>
-                <li><a data-toggle="tab" href="#psychosocialskills">Psycho-Social Skills</a></li>
-                <li><a data-toggle="tab" href="#motorskills">Motor Skills</a></li>
-                <li><a data-toggle="tab" href="#cognitiveskills">Cognitive and Memory Skills</a></li>
-                <li><a data-toggle="tab" href="#socialskills">Social Skills</a></li>
+                {% if com_data %}
+                <li><a data-toggle="tab" href="#comskills">Communication Skills</a></li>
+                {% endif %}
+                {% if pss_data %}
+                <li><a data-toggle="tab" href="#pssskills">Psycho-Social Skills</a></li>
+                {% endif %}
+                {% if physical_data %}
+                <li><a data-toggle="tab" href="#physicalskills">Physical Skills</a></li>
+                {% endif  %}
+                {% if cog_data %}
+                <li><a data-toggle="tab" href="#cogskills">Cognitive and Memory Skills</a></li>
+                {% endif %}
+                {% if affective_data %}
+                <li><a data-toggle="tab" href="#affectiveskills">Affective Skills</a></li>
+                {% endif %}
+                {% if music_data %}
                 <li><a data-toggle="tab" href="#musicskills">Music Skills</a></li>
+                {% endif %}
                 <li><a class="btn" href="/musictherapy/logout">Logout</a></li>
             </ul>
 
             <div class="tab-content forms-wrapper">
                 <div id="goals" class="tab-pane fade">
-                    <form action="submit_goals/#goals" method="post">
-                        {% csrf_token %}
-                        {{ goals_form }}
-                        <input type="submit" name="submit" value="Save" />
-                    </form>
+                    {% include "musictherapy/goals.html" with goals=goals %}
                 </div>
 
                 <div id ="musicpref" class="tab-pane fade">
@@ -132,28 +142,28 @@
                     </div>
                 </div>
 
-                <div id="communicationskills" class="tab-pane fade">
+                <div id="comskills" class="tab-pane fade">
                     {% include "musictherapy/skill.html" with type="Communication" pre="com" data=com_data %}
                 </div>
 
-                <div id="psychosocialskills" class="tab-pane fade">
+                <div id="pssskills" class="tab-pane fade">
                     {% include "musictherapy/skill.html" with type="Psycho-Social" pre="pss" data=pss_data %}
                 </div>
 
-                <div id="motorskills" class="tab-pane fade">
-                    {% include "musictherapy/skill.html" with type="Motor" pre="motor" data=motor_data %}
+                <div id="physicalskills" class="tab-pane fade">
+                    {% include "musictherapy/skill.html" with type="Physical" pre="physical" data=physical_data %}
                 </div>
 
-                <div id="cognitiveskills" class="tab-pane fade">
+                <div id="cogskills" class="tab-pane fade">
                     {% include "musictherapy/skill.html" with type="Cognitive and Memory" pre="cog" data=cog_data %}
-                </div>
-
-                <div id="socialskills" class="tab-pane fade">
-                    {% include "musictherapy/skill.html" with type="Social" pre="social" data=social_data %}
                 </div>
 
                 <div id="musicskills" class="tab-pane fade">
                     {% include "musictherapy/skill.html" with type="Music" pre="music" data=music_data %}
+                </div>
+
+                <div id="affectiveskills" class="tab-pane fade">
+                    {% include "musictherapy/skill.html" with type="Affective" pre="affective" data=affective_data %}
                 </div>
             </div>
         </div>

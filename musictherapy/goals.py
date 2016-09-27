@@ -111,6 +111,7 @@ class Goals:
 
     @staticmethod
     def has_psycho_social_goals(user):
+        return False
         selection = user.goals
         if selection is None:
             return False
@@ -118,6 +119,7 @@ class Goals:
 
     @staticmethod
     def has_motor_goals(user):
+        return False
         selection = user.goals
         if selection is None:
             return False
@@ -125,6 +127,7 @@ class Goals:
 
     @staticmethod
     def has_communication_goals(user):
+        return False
         selection = user.goals
         if selection is None:
             return False
@@ -132,6 +135,7 @@ class Goals:
 
     @staticmethod
     def has_cognition_goals(user):
+        return False
         selection = user.goals
         if selection is None:
             return False
@@ -139,6 +143,7 @@ class Goals:
 
     @staticmethod
     def has_social_goals(user):
+        return False
         selection = user.goals
         if selection is None:
             return False
@@ -146,6 +151,7 @@ class Goals:
 
     @staticmethod
     def has_music_goals(user):
+        return False
         selection = user.goals
         if selection is None:
             return False
@@ -153,24 +159,29 @@ class Goals:
 
     @staticmethod
     def get_communication_goals(user):
-        return Goals.intersection(user.goals, Goals.COM_GOALS)
+        return Goals.COM_GOALS
 
     @staticmethod
     def get_psycho_social_goals(user):
-        return Goals.intersection(user.goals, Goals.PSS_GOALS)
+        # return Goals.intersection(user.goals, Goals.PSS_GOALS)
+        return Goals.PSS_GOALS
 
     @staticmethod
     def get_motor_goals(user):
-        return Goals.intersection(user.goals, Goals.MOTOR_GOALS)
+        # return Goals.intersection(user.goals, Goals.MOTOR_GOALS)
+        return Goals.MOTOR_GOALS
 
     @staticmethod
     def get_cognitive_memory_goals(user):
-        return Goals.intersection(user.goals, Goals.COG_GOALS)
+        # return Goals.intersection(user.goals, Goals.COG_GOALS)
+        return Goals.COG_GOALS
 
     @staticmethod
     def get_social_goals(user):
-        return Goals.intersection(user.goals, Goals.SOC_GOALS)
+        # return Goals.intersection(user.goals, Goals.SOC_GOALS)
+        return Goals.SOC_GOALS
 
     @staticmethod
     def get_music_goals(user):
-        return Goals.intersection(user.goals, Goals.MUS_GOALS)
+        # return Goals.intersection(user.goals, Goals.MUS_GOALS)
+        return Goals.MUS_GOALS

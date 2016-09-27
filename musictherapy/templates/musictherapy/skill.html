@@ -1,5 +1,7 @@
 {% load crispy_forms_tags %}
 {% load template_getattr %}
+
+{% if data.past_measurables %}
 <div class="panel-group" id="accordion-{{pre}}past_assessments">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -11,36 +13,31 @@
             <div class="panel-body">
                 <table class="table table-bordered">
                     <tr>
-                        <th>Updated</th>
-                        {% for field in data.fields %}
-                        <th>{{field.verbose_name}}</th>
+                        {% for field in data.past_measurables.fields %}
+                        <th>{{field}}</th>
                         {% endfor %}
                     </tr>
 
-                    {% if data.assessments %}
-                    {% for assessment in data.assessments %}
+                    {% for measurable in data.past_measurables.data %}
                     <tr>
-                        <td>{{assessment.updated}}</td>
-                        {% for field in data.fields %}
-                            {% if field.name = 'notes' %}
-                                <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#{{pre}}-assessment-{{assessment.id}}">Notes</button></td>
+                        {% for field in data.past_measurables.fields %}
+                        {% if field = 'notes' %}
+                        <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#{{pre}}-assessment-{{assessment.id}}">Notes</button></td>
                                 {% include "musictherapy/notes.html" with id=assessment.id date=assessment.updated notes=assessment.notes data_type="assessment"%}
-                            {% else %}
-                                {% with field_value=assessment|getattrib:field.name %}
-                                <td>{{ field_value|floatformat:2 }}</td>
-                                {% endwith %}
-                            {% endif %}
+                        {% else %}
+                        <td>{{ measurable|getattrib:field }}</td>
+                        {% endif %}
                         {% endfor %}
                     </tr>
                     {% endfor %}
-                    {% endif %}
                 </table>
             </div>
         </div>
     </div>
 </div>
+{% endif %}
 
-{% if data.assess_form %}
+{% if data.measurables %}
 <div class="panel-group" id="accordion-{{pre}}assessment">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -50,24 +47,77 @@
         </div>
         <div id="{{pre}}-assessment" class="panel-collapse collapse in" aria-expanded="true">
             <div class="panel-body">
-                {% crispy data.assess_form %}
+                <form action="submit_measurables/" method="post">
+                    {% csrf_token %}
+                    {% for domain, measurables in data.measurables.items %}
+                        <div class="col-md-12">
+                            <h3>{{domain}}</h3>
+                        </div>
+                        {% for measurable in measurables %}
+                        <div class="col-md-12" style="padding: 2px">
+                            <div class="col-md-6">
+                                <label class="control-label" style="padding-top: 5px">{{measurable.name}}</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="select form-control" name="{{measurable.pk}}">
+                                    {% if measurable.pos_neg == 1 %}
+                                        <option value=-1>Not Measured</option>
+                                        <option value=0>None/Never</option>
+                                        <option value=1>Low/Rarely/Poor</option>
+                                        <option value=2>Medium/Sometimes/Good</option>
+                                        <option value=3>High/Always/Very Good</option>
+                                    {% else %}
+                                        <option value=1>Not Measured</option>
+                                        <option value=0>Never</option>
+                                        <option value=-1>Occasionally</option>
+                                        <option value=-2>Regularly</option>
+                                        <option value=-3>Always</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endfor %}
+                    <input type="hidden" name="redirect" value="#{{type}}skills"/>
+                    <input type="submit" name="submit" value="Save" />
+                </form>
             </div>
         </div>
     </div>
 </div>
 {% endif %}
 
-{% if data.has_goals %}
+{% if data.has_goals and data.goals_measurables%}
 <div class="panel-group" id="accordion-{{pre}}goals">
     <div class="panel panel-default">
         <div class="panel-heading">
             <h4 class="panel-title">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{pre}}goals" href="#{{pre}}-goals" aria-expanded="true">Submit {{type}} Skills Goals Measurables</a>
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{pre}}goals" href="#{{pre}}-goals" aria-expanded="true">Submit {{type}} Goals Measurables</a>
             </h4>
         </div>
         <div id="{{pre}}-goals" class="panel-collapse collapse in" aria-expanded="true">
             <div class="panel-body">
-                {% crispy data.update_form %}
+                <form action="submit_goalmeasurables/" method="post">
+                    {% csrf_token %}
+                    {% for measurable in data.goals_measurables %}
+                        <div class="col-md-12" style="padding: 2px">
+                            <div class="col-md-6">
+                                <label class="control-label" style="padding: 5px">{{measurable.goal.name}} - {{measurable.name}}</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="select form-control" name="{{measurable.pk}}">
+                                    <option value=-1>Not Measured</option>
+                                    <option value=0>None/Never</option>
+                                    <option value=1>Low/Rarely/Poor</option>
+                                    <option value=2>Medium/Sometimes/Good</option>
+                                    <option value=3>High/Always/Very Good</option>
+                                </select>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <input type="submit" name="submit" value="Save"/>
+                    <input type="hidden" name="redirect" value="#{{pre}}skills"/>
+                </form>
             </div>
         </div>
     </div>

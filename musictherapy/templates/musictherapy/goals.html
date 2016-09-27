@@ -1,0 +1,17 @@
+{% load template_getattr %}
+<form action="submit_goals/#goals" method="post">
+    {% csrf_token %}
+    {% for domain in goals.order %}
+        <div class="col-md-12">
+            <h3>{{domain}} Goals</h3>
+        </div>
+        {% for goal in goals|getattrib:domain %}
+        <div class="col-md-12">
+            <input type="checkbox" name="goals" value={{goal.pk}} id="goal_{{goal.pk}}" {% if goal.pk in goals.user %} checked {% endif %}/>
+            <label for="goal_{{goal.pk}}">{{goal.name}}</label>
+        </div>
+        {% endfor %}
+    {% endfor %}
+
+    <input type="submit" name="submit" value="Save" />
+</form>

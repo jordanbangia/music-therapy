@@ -2,7 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
-from django.forms import ModelForm, ChoiceField
+from django.forms import ModelForm, ChoiceField, Form
 from multiselectfield.forms.fields import MultiSelectFormField
 
 from musictherapy.extras import SelectDateWidget
@@ -13,16 +13,16 @@ from musictherapy.models import UserInfo, MusicalPreference, CommunicationAssess
     SocialSkillsGoals, MusicSkillsAssessment, MusicSkillsGoals
 
 
-class GoalsForm(ModelForm):
-    class Meta:
-        model = UserInfo
-        fields = ('goals',)
-
-    goals = MultiSelectFormField(choices=Goals.GOALS_CHOICES)
-
-    def __init__(self, *args, **kwargs):
-        super(GoalsForm, self).__init__(*args, **kwargs)
-        self.fields['goals'].required = False
+# class GoalsForm(ModelForm):
+#     class Meta:
+#         model = UserInfo
+#         fields = ('goals',)
+#
+#     goals = MultiSelectFormField(choices=Goals.GOALS_CHOICES)
+#
+#     def __init__(self, *args, **kwargs):
+#         super(GoalsForm, self).__init__(*args, **kwargs)
+#         self.fields['goals'].required = False
 
 
 class UserInfoForm(ModelForm):

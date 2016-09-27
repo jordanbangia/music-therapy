@@ -2,35 +2,16 @@ from django.db import models
 from django.core.validators import MaxValueValidator
 from multiselectfield import MultiSelectField
 
-from musictherapy.goals import Goals
 from django.core import exceptions
 
 # Create your models here.
-NOT_MEASURED = -1
-NONE = 0
-LOW = 1
-MEDIUM = 2
-HIGH = 3
 SKILLS_SCALE = (
-    (NOT_MEASURED, 'Not Measured'),
-    (NONE, 'None/ Never'),
-    (LOW, 'Low/ Rarely'),
-    (MEDIUM, 'Medium/ Sometimes'),
-    (HIGH, 'High/ Always')
+    (-1, 'Not Measured'),
+    (0, 'None/ Never'),
+    (1, 'Low/ Rarely'),
+    (2, 'Medium/ Sometimes'),
+    (3, 'High/ Always')
 )
-
-
-def calculate_measurable(mesurable_fields):
-    valid_fields = [field for field in mesurable_fields if field != -1]
-    return 100 * float(sum(valid_fields)) / float(len(valid_fields) * 3) if len(valid_fields) > 0 else 0
-
-
-class GoalsSelectField(MultiSelectField):
-    def validate(self, value, model_instance):
-        arr_choices = self.get_choices_selected(Goals.get_goals_flat())
-        for opt_select in value:
-            if opt_select not in arr_choices:
-                raise exceptions.ValidationError(self.error_messages['invalid_choice'] % {"value": value})
 
 
 class UserInfo(models.Model):
@@ -42,21 +23,100 @@ class UserInfo(models.Model):
         ('Evelyn\'s', 'Evelyn\'s')
     )
 
-    name = models.CharField(max_length=200)
-    location = models.CharField(max_length=100, choices=LOCATION_CHOICES)
-    date_of_birth = models.DateField('DOB')
-    diagnosis = models.CharField(max_length=300, blank=True)
-    history = models.CharField(max_length=300)
-    country_of_origin = models.CharField(max_length=100)
-    language_spoken = models.CharField(max_length=100)
-    musical_history = models.CharField(max_length=500)
-    care_plan = models.TextField(default="", verbose_name="Care Plan")
-    asp_level = models.IntegerField(verbose_name="Level of Care", choices=((1, 1), (2, 2), (3, 3)))
-    goals = GoalsSelectField(null=True, blank=True)
+    name = models.CharField(max_length=200, verbose_name="Name")
+    location = models.CharField(max_length=100, choices=LOCATION_CHOICES, verbose_name="Location")
+    date_of_birth = models.DateField(verbose_name="Date of Birth")
+    diagnosis = models.CharField(max_length=500, blank=True, verbose_name="Diagnosis")
+    history = models.CharField(max_length=500, verbose_name="Life Experiences/History")
+    country_of_origin = models.CharField(max_length=100, verbose_name="Country of Origin")
+    language_spoken = models.CharField(max_length=100, verbose_name="Language Spoken")
+    musical_history = models.CharField(max_length=500, verbose_name="Musical History")
+    care_plan = models.TextField(default="", verbose_name="Alzheimer Society Peel Care Plan")
+    asp_level = models.IntegerField(verbose_name="Alzheimer Society Peel Level of Care", choices=((1, 1), (2, 2), (3, 3)))
+    # goals = GoalsSelectField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return self.name
+
+
+class Domains(models.Model):
+    name = models.CharField(max_length=100, null=False)
+    enabled = models.IntegerField(choices=((0, 'Disabled'), (1, 'Enabled')))
+    parent = models.ForeignKey('self', related_name="subcategories", null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Domain'
+
+    def __unicode__(self):
+        return self.name if not self.parent else '{} - {}'.format(self.parent.name, self.name)
+
+
+class Goals(models.Model):
+    domain = models.ForeignKey(Domains, related_name="goals", null=False)
+    name = models.CharField(max_length=100, null=False)
+    parent = models.ForeignKey('self', related_name="subgoals", null=True, blank=True)
+    enabled = models.IntegerField(choices=((0, 'Disabled'), (1, 'Enabled')))
+
+    class Meta:
+        verbose_name = 'Goal'
+
+    def __unicode__(self):
+        return '{} - {}'.format(self.domain.name, self.name)
+
+
+class DomainMeasurables(models.Model):
+    domain = models.ForeignKey(Domains, related_name="domainmeasurables", null=False)
+    pos_neg = models.IntegerField(choices=((1, 'Positive'), (-1, 'Negative')), null=False)
+    name = models.CharField(max_length=300, null=False)
+    enabled = models.IntegerField(choices=((0, 'Disabled'), (1, 'Enabled')))
+
+    class Meta:
+        verbose_name = 'Domain Measurable'
+
+    def __unicode__(self):
+        return '{} - {}'.format(self.domain.name, self.name)
+
+
+class GoalsMeasurables(models.Model):
+    goal = models.ForeignKey(Goals, related_name="goalsmeasurables", null=False)
+    name = models.CharField(max_length=300, null=False)
+    enabled = models.IntegerField(choices=((0, 'Disabled'), (1, 'Enabled')))
+
+    class Meta:
+        verbose_name = 'Goal Measurable'
+
+    def __unicode__(self):
+        return '{} - {} - {}'.format(self.goal.domain.name, self.goal.name, self.name)
+
+
+class UserGoals(models.Model):
+    user = models.ForeignKey(UserInfo, related_name="goals", null=False)
+    goal = models.ForeignKey(Goals, on_delete=models.CASCADE, null=False)
+    updated = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    class Meta:
+        unique_together = ('user', 'goal')
+
+
+class UserMeasurables(models.Model):
+    user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="measurables", null=False)
+    measurable = models.ForeignKey(DomainMeasurables, on_delete=models.CASCADE, null=False)
+    value = models.IntegerField(choices=SKILLS_SCALE)
+    updated = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('user', 'measurable', 'updated')
+
+
+class UserGoalMeasurables(models.Model):
+    user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="goalmeasurables", null=False)
+    goal_measurable = models.ForeignKey(GoalsMeasurables, on_delete=models.CASCADE, null=False)
+    value = models.IntegerField(choices=SKILLS_SCALE)
+    updated = models.DateTimeField( blank=True, null=True)
+
+    class Meta:
+        unique_together = ('user', 'goal_measurable')
 
 
 class MusicalPreference(models.Model):
@@ -86,11 +146,36 @@ class MusicalPreference(models.Model):
 
     user = models.OneToOneField(UserInfo, primary_key=True)
     fav_composer = models.CharField(max_length=200, null=True, blank=True, verbose_name="Favourite Composer/Performer(s)")
-    fav_song = models.CharField(max_length=200, null=True, blank=True, verboase_name="Favourite Song(s)")
+    fav_song = models.CharField(max_length=200, null=True, blank=True, verbose_name="Favourite Song(s)")
     fav_instrument = models.CharField(max_length=200, null=True, blank=True, verbose_name="Favourite Instrument(s)")
     preferred_style = MultiSelectField(choices=STYLES_CHOICES, null=True, blank=True)
     other_style = models.CharField(max_length=200, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
+
+
+
+
+
+
+
+
+def calculate_measurable(mesurable_fields):
+    valid_fields = [field for field in mesurable_fields if field != -1]
+    return 100 * float(sum(valid_fields)) / float(len(valid_fields) * 3) if len(valid_fields) > 0 else 0
+
+
+class GoalsSelectField(MultiSelectField):
+    def validate(self, value, model_instance):
+        arr_choices = self.get_choices_selected(Goals.get_goals_flat())
+        for opt_select in value:
+            if opt_select not in arr_choices:
+                raise exceptions.ValidationError(self.error_messages['invalid_choice'] % {"value": value})
+
+
+### Old
+
+
+
 
 
 class ObservableBehaviours(models.Model):
