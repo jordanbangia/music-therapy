@@ -24,7 +24,7 @@ class UserInfo(models.Model):
     )
 
     name = models.CharField(max_length=200, verbose_name="Name")
-    location = models.CharField(max_length=100, choices=LOCATION_CHOICES, verbose_name="Location")
+    location = MultiSelectField(max_length=100, choices=LOCATION_CHOICES, verbose_name="Location")
     date_of_birth = models.DateField(verbose_name="Date of Birth")
     diagnosis = models.CharField(max_length=500, blank=True, verbose_name="Diagnosis")
     history = models.CharField(max_length=500, verbose_name="Life Experiences/History")
@@ -32,6 +32,7 @@ class UserInfo(models.Model):
     language_spoken = models.CharField(max_length=100, verbose_name="Language Spoken")
     musical_history = models.CharField(max_length=500, verbose_name="Musical History")
     care_plan = models.TextField(default="", verbose_name="Alzheimer Society Peel Care Plan")
+    program = models.TextField(default="", verbose_name="Program", null=True, blank=True)
     asp_level = models.IntegerField(verbose_name="Alzheimer Society Peel Level of Care", choices=((1, 1), (2, 2), (3, 3)))
     # goals = GoalsSelectField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)

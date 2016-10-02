@@ -29,9 +29,9 @@ class UserInfoForm(ModelForm):
     class Meta:
         model = UserInfo
         fields = ('name', 'location', 'date_of_birth', 'diagnosis', 'history', 'country_of_origin', 'language_spoken',
-                  'musical_history', 'care_plan', 'asp_level')
+                  'musical_history', 'care_plan', 'asp_level', 'program')
         widgets = {
-            'date_of_birth' : SelectDateWidget
+            'date_of_birth': SelectDateWidget
         }
 
     def __init__(self, *args, **kwargs):

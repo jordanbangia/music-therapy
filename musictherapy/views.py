@@ -42,7 +42,7 @@ def login(request):
 @login_required(login_url='/musictherapy/login')
 def patients(request):
     status = request.GET.get('status', None)
-    user_info_list = UserInfo.objects.all()
+    user_info_list = UserInfo.objects.all().order_by('location')
     context = {
         'user_info_list': user_info_list,
         'status': STATUS_MESSAGES.get(status, None)

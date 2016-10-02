@@ -20,6 +20,7 @@
     <tr>
         <th>Name</th>
         <th>Location</th>
+        <th>Program</th>
         {% if perms.musictherapy.delete_userinfo %}
         <th></th>
         {% endif %}
@@ -29,7 +30,8 @@
     {% for user in user_info_list %}
     <tr>
         <td><a href="{% url 'musictherapy:user_detail' user.id %}"> {{user.name}}</a></td>
-        <td>{{user.location}}</td>
+        <td>{{user.location|join:", "}}</td>
+        <td>{{user.program}}</td>
         {% if perms.musictherapy.delete_userinfo %}
         <td><a href="{% url 'musictherapy:delete_user' user.id %}">Delete</a></td>
         {% endif %}
