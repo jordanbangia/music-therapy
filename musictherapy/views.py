@@ -53,7 +53,6 @@ def patients(request):
 def user_detail(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
     user_form = UserInfoForm(instance=user)
-
     user_last_updated = user.updated
 
     musicpref = get_object_or_None(MusicalPreference, pk=user_id)
@@ -78,6 +77,7 @@ def user_detail(request, user_id):
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated': musicpref_last_updated,
 
+        'general_goals': SkillsData("General", user).to_dict(),
         'com_data': com.to_dict(),
         'pss_data': pss.to_dict(),
         'physical_data': physical.to_dict(),
@@ -215,12 +215,6 @@ def save_goalmeasurables(request, user_id):
             user_measurable.save()
 
         return redirect('/musictherapy/' + user_id + data['redirect'].lower())
-
-def get_assessments(assessment, user):
-    try:
-        return assessment.objects.filter(user=user).order_by('-updated')
-    except:
-        return None
 
 
 def get_goals(user):

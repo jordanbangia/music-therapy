@@ -91,7 +91,12 @@ GOAL_MEASURABLES = {
     'Decrease depressive symptoms': ['Depressive symptoms displayed'],
     'Increase frustration tolerance': ['Frustration was displayed'],
     'Decrease level of anxiety': ['Anxiety was displayed'],
-    'Decrease catastrophic reactions': ['Reactions occurred']
+    'Decrease catastrophic reactions': ['Reactions occurred'],
+    'To provide a productive use of time': ['By creating a personalized playlist for listening enjoyment', 'By encouraging musical engagement in previous or emerging talent'],
+    'To aid relaxation': ['By providing a personalized playlist to listen to', 'By participation in a relaxation program'],
+    'To improve quality of life by alleviation of loneliness': ['By providing one-on-one time interacting through music', 'By including in group for music listening enjoyment'],
+    'To improve quality of life by providing validation of self': ['By including in group for music listening enjoyment', 'By enabling participation in programs'],
+    'To improve quality of life by providing sensory stimulation': ['By providing stimulation through muisc listening and participation'],
 }
 
 

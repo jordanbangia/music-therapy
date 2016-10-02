@@ -98,7 +98,7 @@ class SkillsData(object):
 
     def chart(self):
         if self.has_goal():
-            line_chart = pygal.Line(truncate_legend=-1)
+            line_chart = pygal.Line(truncate_legend=30)
             goals = self.goals_measurables()
             data = dict()
             for goal in goals:

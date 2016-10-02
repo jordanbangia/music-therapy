@@ -54,13 +54,16 @@
                 <li><a data-toggle="tab" href="#summary">Summary</a></li>
                 {% endif %}
                 {% if goals %}
-                <li><a data-toggle="tab" href="#goals">Goals</a></li>
+                <li><a data-toggle="tab" href="#goals">Treatment Plan</a></li>
                 {% endif %}
                 {% if session_goals %}
                 <li><a data-toggle="tab" href="#sessiongoals">Session Goals</a></li>
                 {% endif %}
                 {% if musical_pref_form %}
                 <li><a data-toggle="tab" href="#musicpref">Musical Preference</a></li>
+                {% endif %}
+                {% if general_goals %}
+                <li><a data-toggle="tab" href="#generalgoals">General Goals</a></li>
                 {% endif %}
                 {% if com_data %}
                 <li><a data-toggle="tab" href="#comskills">Communication Skills</a></li>
@@ -128,6 +131,10 @@
                     {% if not summary|length|divisibleby:2 %}
                         </div>
                     {% endif %}
+                </div>
+
+                <div id="generalgoals" class="tab-pane fade">
+                    {% include "musictherapy/skill.html" with type="General" pre="general" data=general_goals %}
                 </div>
 
                 <div id="comskills" class="tab-pane fade">
