@@ -7,8 +7,8 @@
             <li class="dropdown active">
                 <a class="dropdown-toggle" data-toggle="dropdown">Dates<span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    {% for assessment in summary %}
-                    <li><a href="#{{pre}}-summary-{{assessment.id}}" data-toggle="tab">{{assessment.updated}}</a></li>
+                    {% for assessment in summary.data %}
+                    <li><a href="#summary-{{assessment.id}}" data-toggle="tab">{{assessment.Updated}}</a></li>
                     {% endfor %}
                 </ul>
             </li>
@@ -16,28 +16,29 @@
     </div>
 </div>
 <div class="tab-content">
-    {% for assessment in summary %}
+    {% for assessment in summary.data %}
         {% if forloop.first %}
-        <div id="{{pre}}-summary-{{assessment.id}}" class="tab-pane fade in active">
+        <div id="summary-{{assessment.id}}" class="tab-pane fade in active">
         {% else %}
-        <div id="{{pre}}-summary-{{assessment.id}}" class="tab-pane fade">
+        <div id="summary-{{assessment.id}}" class="tab-pane fade">
         {% endif %}
-            <h5>{{assessment.updated}}</h5>
-            {% for field in assessment.assessment_fields %}
-                {% if field.name == 'total' %}
-                    <div class="row">
-                        <b><div class="col-md-4">Total</div>
-                            <div class="col-md-4">{{assessment.total|floatformat:2}}</div></b>
-                    </div>
-                {% elif field.name != 'notes' %}
-                    <div class="row">
-                        <div class="col-md-4">{{field.verbose_name|capfirst}}</div>
-                        {% with field_value=assessment|getattrib:field.name %}
-                        <div class="col-md-4">{{field_value|floatformat:2}}</div>
-                        {% endwith %}
-                    </div>
-                {% endif %}
-            {% endfor %}
+        <h5>{{assessment.Updated}}</h5>
+        {% for field in summary.fields %}
+            {% if field != 'Updated' %}
+                <div class="row">
+                    {% if field == 'Total' %}<b>{% endif %}
+                    <div class="col-md-4">{{field|capfirst}}</h5></div>
+                    {% if assessment|getattrib:field < 0 and assessment|getattrib:field <= -50 or assessment|getattrib:field > 0 and assessment|getattrib:field < 50 %}
+                    <div class="col-md-4" style="color: red">{{assessment|getattrib:field|floatformat:2}}</div>
+                    {% elif assessment|getattrib:field == '--' %}
+                    <div class="col-md-4">{{assessment|getattrib:field}}</div>
+                    {% else %}
+                    <div class="col-md-4">{{assessment|getattrib:field|floatformat:2}}</div>
+                    {% endif %}
+                    {% if field == 'Total' %}</b>{% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
         </div>
     {% endfor %}
 </div>

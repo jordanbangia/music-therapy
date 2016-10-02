@@ -73,7 +73,7 @@ def user_detail(request, user_id):
         'session_goals': {data.domain: data.goals_measurables() for data in [com, pss, physical, cog, music, affective]},
         'user_last_updated': user_last_updated,
 
-        # 'summary': summary,
+        'summary': {data.domain: data.summary_measurable() for data in [com, pss, physical, cog, music, affective]},
 
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated': musicpref_last_updated,

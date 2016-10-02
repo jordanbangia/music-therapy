@@ -1,5 +1,6 @@
 from annoying.functions import get_object_or_None
 import musictherapy.models as models
+import uuid
 
 from collections import defaultdict
 import pygal
@@ -74,7 +75,26 @@ class SkillsData(object):
 
         if len(data['data']) > 0:
             data['fields'] = [k for k in data['data'][0].keys() if k != 'Updated'] + ['Updated']
-        return data
+            data['data'] = sorted(data['data'], key=lambda field: field['Updated'], reverse=True)
+            return data
+        else:
+            return None
+
+    def summary_measurable(self):
+        past_measurables = self.past_measurables()
+        if past_measurables:
+            data = []
+            for measurables in past_measurables['data']:
+                values = [value for key, value in measurables.iteritems() if key != 'Updated' and value != '--']
+                measurables['Total'] = sum(values)/len(values) if len(values) > 0 else '--'
+                measurables['id'] = str(uuid.uuid4())
+                data.append(measurables)
+            return {
+                'fields': past_measurables['fields'] + ['Total'],
+                'data': sorted(data, key=lambda measurable: measurable['Updated'], reverse=True),
+            }
+        else:
+            return None
 
     def chart(self):
         if self.has_goal():

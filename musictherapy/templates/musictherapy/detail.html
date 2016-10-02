@@ -1,3 +1,5 @@
+{% load template_getattr %}
+
 <!DOCTYPE html>
 
 <html>
@@ -110,44 +112,22 @@
                 </div>
 
                 <div id="summary" class="tab-pane fade">
-                    <div class="row">
-                        <div class="col-md-6">
-                            {% if summary.motor %}
-                                {% include "musictherapy/summary_data.html" with summary=summary.motor type="Motor" pre="motor"%}
-                            {% endif %}
+                    {% for domain, domain_data in summary.items %}
+                        {% if forloop.counter0|divisibleby:2 %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% include "musictherapy/summary_data.html" with summary=domain_data type=domain %}
+                            </div>
+                        {% else %}
+                            <div class="col-md-6">
+                                {% include "musictherapy/summary_data.html" with summary=domain_data type=domain %}
+                            </div>
                         </div>
-
-                        <div class="col-md-6">
-                            {% if summary.cog %}
-                                {% include "musictherapy/summary_data.html" with summary=summary.cog type="Cognitive and Memory" pre="cog"%}
-                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if not summary|length|divisibleby:2 %}
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            {%if summary.pss %}
-                                {% include "musictherapy/summary_data.html" with summary=summary.pss type="Psycho-Social" pre="pss"%}
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            {% if summary.com %}
-                                {% include "musictherapy/summary_data.html" with summary=summary.com type="Communication" pre="com"%}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            {% if summary.social %}
-                                {% include "musictherapy/summary_data.html" with summary=summary.social type="Social" pre="social"%}
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6">
-                            {% if summary.music %}
-                                {% include "musictherapy/summary_data.html" with summary=summary.music type="Music" pre="music"%}
-                            {% endif %}
-                        </div>
-                    </div>
+                    {% endif %}
                 </div>
 
                 <div id="comskills" class="tab-pane fade">
