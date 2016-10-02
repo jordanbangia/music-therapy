@@ -1,0 +1,30 @@
+{% load template_getattr %}
+
+<div class="col-md-12">
+    <form action="submit_goalmeasurables/" method="post">
+        {% for domain, goals_measurables in session_goals.items %}
+            {% if goals_measurables %}
+                <h3>{{domain}} Goals</h3>
+                {% csrf_token %}
+                {% for measurable in goals_measurables %}
+                    <div class="col-md-12" style="padding: 2px">
+                        <div class="col-md-6">
+                            <label class="control-label" style="padding: 5px">{{measurable.goal.name}} - {{measurable.name}}</label>
+                        </div>
+                        <div class="col-md-6">
+                            <select class="select form-control" name="{{measurable.pk}}">
+                                <option value=-1>Not Measured</option>
+                                <option value=0>None/Never</option>
+                                <option value=1>Low/Rarely/Poor</option>
+                                <option value=2>Medium/Sometimes/Good</option>
+                                <option value=3>High/Always/Very Good</option>
+                            </select>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+        <input type="submit" name="submit" value="Save"/>
+        <input type="hidden" name="redirect" value="#sessiongoals"/>
+    </form>
+</div>

@@ -55,14 +55,6 @@ def patients(request):
 def user_detail(request, user_id):
     user = get_object_or_404(UserInfo, pk=user_id)
     user_form = UserInfoForm(instance=user)
-    # goals_form = GoalsForm(instance=user)
-
-    goals = defaultdict(list)
-    for g in models.Goals.objects.filter(parent=None, enabled=1).order_by('domain'):
-        goals[g.domain.name if g.domain.parent is None else g.domain.parent.name] += [g]
-    goals = dict(goals)
-    goals['order'] = ['General'] + [domain for domain in goals.keys() if domain != 'General']
-    goals['user'] = [ug.goal.pk for ug in models.UserGoals.objects.filter(user=user)]
 
     user_last_updated = user.updated
 
@@ -80,56 +72,18 @@ def user_detail(request, user_id):
     #                          # fields=CommunicationAssessment.assessment_fields
     #                         )
     #
-    # pss_skills_data = SkillsData(assessments=PsychoSocialAssessment.objects.filter(user=user).order_by('updated'),
-    #                              assess_form=PsychoSocialSkillsAssessmentForm(),
-    #                              update_form=PsychoSocialSkillsForm(user=user),
-    #                              goals_data=PsychoSocialGoals.objects.filter(user=user).order_by('updated'),
-    #                              # chart=make_chart(PsychoSocialGoals.objects.filter(user=user).order_by('updated'), Goals.has_psycho_social_goals(user)),
-    #                              has_goals=Goals.has_psycho_social_goals(user),
-    #                              fields=PsychoSocialAssessment.assessment_fields)
-    #
-    # motor_skills_data = SkillsData(assessments=MotorSkillsAssessment.objects.filter(user=user).order_by('updated'),
-    #                                assess_form=MotorSkillsAssessmentForm(),
-    #                                update_form=MotorSkillsForm(user=user),
-    #                                goals_data=MotorSkillsGoals.objects.filter(user=user).order_by('updated'),
-    #                                # chart=make_chart(MotorSkillsGoals.objects.filter(user=user).order_by('updated'), Goals.has_motor_goals(user)),
-    #                                has_goals=Goals.has_motor_goals(user),
-    #                                fields=MotorSkillsAssessment.assessment_fields)
-    #
-    # cog_skills_data = SkillsData(assessments=CognitiveMemorySkillsAssessment.objects.filter(user=user).order_by('updated'),
-    #                              assess_form=CognitiveSkillsAssessmentForm(),
-    #                              update_form=CognitiveSkillsForm(user=user),
-    #                              goals_data=CognitionMemorySkillsGoals.objects.filter(user=user).order_by('updated'),
-    #                              # chart=make_chart(CognitionMemorySkillsGoals.objects.filter(user=user).order_by('updated'), Goals.has_motor_goals(user)),
-    #                              has_goals=Goals.has_motor_goals(user),
-    #                              fields=CognitiveMemorySkillsAssessment.assessment_fields)
-    #
-    # social_skills_data = SkillsData(assessments=SocialSkillsAssessment.objects.filter(user=user).order_by('updated'),
-    #                                 assess_form=SocialSkillsAssessmentForm(),
-    #                                 update_form=SocialSkillsForm(user=user),
-    #                                 goals_data=SocialSkillsGoals.objects.filter(user=user).order_by('updated'),
-    #                                 # chart=make_chart(SocialSkillsGoals.objects.filter(user=user).order_by('updated'), Goals.has_social_goals(user)),
-    #                                 has_goals=Goals.has_social_goals(user),
-    #                                 fields=SocialSkillsAssessment.assessment_fields)
-    #
-    # music_skills_data = SkillsData(assessments=MusicSkillsAssessment.objects.filter(user=user).order_by('updated'),
-    #                                assess_form=MusicSkillsAssessmentForm(),
-    #                                update_form=MusicSkillsForm(user=user),
-    #                                goals_data=MusicSkillsGoals.objects.filter(user=user).order_by('updated'),
-    #                                # chart=make_chart(MusicSkillsGoals.objects.filter(user=user).order_by('updated'), Goals.has_music_goals(user)),
-    #                                has_goals=Goals.has_music_goals(user),
-    #                                fields=MusicSkillsAssessment.assessment_fields)
-    #
-    # summary = SummaryData(com=get_assessments(CommunicationAssessment, user),
-    #                       pss=get_assessments(PsychoSocialAssessment, user),
-    #                       motor=get_assessments(MotorSkillsAssessment, user),
-    #                       social=get_assessments(SocialSkillsAssessment, user),
-    #                       music=get_assessments(MusicSkillsAssessment, user),
-    #                       cog=get_assessments(CognitiveMemorySkillsAssessment, user))
+
+    com = SkillsData("Communication", user)
+    pss = SkillsData("Psycho-Social", user)
+    physical = SkillsData("Physical", user)
+    cog = SkillsData("Cognitive", user)
+    music = SkillsData("Music", user)
+    affective = SkillsData("Affective", user)
 
     return render(request, 'musictherapy/detail.html', {
         'user_info_form': user_form,
-        'goals': goals,
+        'goals': get_goals(user),
+        'session_goals': {data.domain: data.goals_measurables() for data in [com, pss, physical, cog, music, affective]},
         'user_last_updated': user_last_updated,
 
         # 'summary': summary,
@@ -137,13 +91,12 @@ def user_detail(request, user_id):
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated': musicpref_last_updated,
 
-        'com_data': SkillsData("Communication", user).to_dict(),
-        'pss_data': SkillsData("Psycho-Social", user).to_dict(),
-        'motor_data': SkillsData("Physical", user).to_dict(),
-        'cog_data': SkillsData("Cognitive", user).to_dict(),
-        'social_data': SkillsData("Social", user).to_dict(),
-        'music_data': SkillsData("Music", user).to_dict(),
-        'affective_data': SkillsData("Affective", user).to_dict(),
+        'com_data': com.to_dict(),
+        'pss_data': pss.to_dict(),
+        'physical_data': physical.to_dict(),
+        'cog_data': cog.to_dict(),
+        'music_data': music.to_dict(),
+        'affective_data': affective.to_dict(),
     })
 
 
@@ -300,4 +253,13 @@ def get_assessments(assessment, user):
     except:
         return None
 
+
+def get_goals(user):
+    goals = defaultdict(list)
+    for g in models.Goals.objects.filter(parent=None, enabled=1).order_by('domain'):
+        goals[g.domain.name if g.domain.parent is None else g.domain.parent.name] += [g]
+    goals = dict(goals)
+    goals['order'] = ['General'] + [domain for domain in goals.keys() if domain != 'General']
+    goals['user'] = [ug.goal.pk for ug in models.UserGoals.objects.filter(user=user)]
+    return goals
 

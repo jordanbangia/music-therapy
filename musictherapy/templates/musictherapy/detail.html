@@ -54,6 +54,9 @@
                 {% if goals %}
                 <li><a data-toggle="tab" href="#goals">Goals</a></li>
                 {% endif %}
+                {% if session_goals %}
+                <li><a data-toggle="tab" href="#sessiongoals">Session Goals</a></li>
+                {% endif %}
                 {% if musical_pref_form %}
                 <li><a data-toggle="tab" href="#musicpref">Musical Preference</a></li>
                 {% endif %}
@@ -81,6 +84,10 @@
             <div class="tab-content forms-wrapper">
                 <div id="goals" class="tab-pane fade">
                     {% include "musictherapy/goals.html" with goals=goals %}
+                </div>
+
+                <div id="sessiongoals" class="tab-pane fade">
+                    {% include "musictherapy/session_goals.html" with goals=session_goals %}
                 </div>
 
                 <div id ="musicpref" class="tab-pane fade">
