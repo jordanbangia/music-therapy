@@ -34,7 +34,6 @@ class UserInfo(models.Model):
     care_plan = models.TextField(default="", verbose_name="Alzheimer Society Peel Care Plan")
     program = models.TextField(default="", verbose_name="Program", null=True, blank=True)
     asp_level = models.IntegerField(verbose_name="Alzheimer Society Peel Level of Care", choices=((1, 1), (2, 2), (3, 3)))
-    # goals = GoalsSelectField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -117,7 +116,7 @@ class UserGoalMeasurables(models.Model):
     updated = models.DateTimeField( blank=True, null=True)
 
     class Meta:
-        unique_together = ('user', 'goal_measurable')
+        unique_together = ('user', 'goal_measurable', 'updated')
 
 
 class MusicalPreference(models.Model):

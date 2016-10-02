@@ -2,17 +2,15 @@ from collections import namedtuple, defaultdict
 from datetime import datetime
 
 import django.contrib.auth.views as auth
+from annoying.functions import get_object_or_None
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 
-import pygal
-from annoying.functions import get_object_or_None
-
-from musictherapy.forms import *
 import musictherapy.models as models
+from musictherapy.forms import *
 from musictherapy.skills_data import SkillsData
 
 SummaryData = namedtuple('SummaryData', ['com', 'pss', 'motor', 'cog', 'social', 'music'])
@@ -61,17 +59,6 @@ def user_detail(request, user_id):
     musicpref = get_object_or_None(MusicalPreference, pk=user_id)
     musicpref_form = MusicalPrefForm(instance=musicpref)
     musicpref_last_updated = musicpref.updated if musicpref else None
-
-    # SkillsData(
-    #                         # assessments=CommunicationAssessment.objects.filter(user=user).order_by('updated'),
-    #                         #  assess_form=CommunicationAssessmentForm(),
-    #                         #  update_form=CommunicationSkillsForm(user=user),
-    #                         #  goals_data=CommunicationGoals.objects.filter(user=user).order_by('updated'),
-    #                          # chart=make_chart(CommunicationGoals.objects.filter(user=user).order_by('updated'), Goals.has_communication_goals(user)),
-    #                          has_goals=has_goal("Communication"),
-    #                          # fields=CommunicationAssessment.assessment_fields
-    #                         )
-    #
 
     com = SkillsData("Communication", user)
     pss = SkillsData("Psycho-Social", user)
@@ -228,24 +215,6 @@ def save_goalmeasurables(request, user_id):
             user_measurable.save()
 
         return redirect('/musictherapy/' + user_id + data['redirect'].lower())
-
-
-def make_chart(goals, has_goals):
-    line_chart = pygal.Line()
-    if has_goals:
-        field_names = [field.attname for field in goals.model._meta.get_fields() if field.attname not in ["id", "user_id", "notes"]]
-        lines = {field_name: list() for field_name in field_names}
-        for goal in goals:
-            for field in field_names:
-                lines[field].append(getattr(goal, field))
-
-        line_chart.x_labels = map(str, lines.pop('updated'))
-        for field, values in lines.items():
-            line_chart.add(field, values)
-        return line_chart.render(is_unicode=True, disable_xml_declaration=True)
-    else:
-        return None
-
 
 def get_assessments(assessment, user):
     try:

@@ -2,6 +2,7 @@ from annoying.functions import get_object_or_None
 import musictherapy.models as models
 
 from collections import defaultdict
+import pygal
 
 
 class SkillsData(object):
@@ -75,12 +76,37 @@ class SkillsData(object):
             data['fields'] = [k for k in data['data'][0].keys() if k != 'Updated'] + ['Updated']
         return data
 
+    def chart(self):
+        if self.has_goal():
+            line_chart = pygal.Line(truncate_legend=-1)
+            goals = self.goals_measurables()
+            data = dict()
+            for goal in goals:
+                updates = models.UserGoalMeasurables.objects.filter(goal_measurable=goal).order_by('-updated')
+                data[goal.name] = {update.updated: update.value if update.value != -1 else None for update in updates}
+
+            all_dates = set()
+            for updates in data.itervalues():
+                for date in updates.iterkeys():
+                    all_dates.add(date)
+            all_dates = sorted(all_dates)
+
+            for goal in data.iterkeys():
+                updates = [data[goal][date] if date in data[goal] else None for date in all_dates]
+                line_chart.add(goal, updates)
+
+            line_chart.x_labels = map(str, all_dates)
+            return line_chart.render(is_unicode=True, disable_xml_declaration=True)
+        else:
+            return None
+
     def to_dict(self):
         return dict(
             measurables=self.measurables(),
             has_goals=self.has_goal(),
             past_measurables=self.past_measurables(),
-            goals_measurables=self.goals_measurables()
+            goals_measurables=self.goals_measurables(),
+            chart=self.chart()
         )
 
 
