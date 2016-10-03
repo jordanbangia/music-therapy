@@ -52,29 +52,38 @@ class SkillsData(object):
 
     def past_measurables(self):
         users_measurables = models.UserMeasurables.objects.filter(user=self.user)
+        notes = models.UserDomainNoteMeasurables.objects.filter(user=self.user, domain=self.domain_model)
 
         past_measurables = defaultdict(list)
         for um in users_measurables:
             if um.measurable.domain in self.all_domains:
                 past_measurables[um.updated] += [um]
 
+        for note in notes:
+            past_measurables[note.updated] += [note]
+
         data = dict(fields=[], data=[])
         for date, data_list in past_measurables.iteritems():
             sub_domain_value = defaultdict(list)
             for um in data_list:
-                if um.value*um.measurable.pos_neg == -1:
+                if isinstance(um, models.UserDomainNoteMeasurables):
+                    sub_domain_value['Note'] = um.note
+                elif um.value*um.measurable.pos_neg == -1:
                     sub_domain_value[um.measurable.domain.name] += ['--']
                 else:
                     sub_domain_value[um.measurable.domain.name] += [um.value]
 
             for domain in sub_domain_value.keys():
+                if domain == 'Note':
+                    continue
                 cleaned_data = [float(v)/4 for v in sub_domain_value[domain] if v != '--']
                 sub_domain_value[domain] = sum(cleaned_data)*100 / len(cleaned_data) if len(cleaned_data) > 0 else '--'
             sub_domain_value['Updated'] = date
+            sub_domain_value['id'] = str(uuid.uuid4())
             data['data'].append(dict(sub_domain_value))
 
         if len(data['data']) > 0:
-            data['fields'] = [k for k in data['data'][0].keys() if k != 'Updated'] + ['Updated']
+            data['fields'] = [k for k in data['data'][0].keys() if k not in ['Updated', 'note', 'id']] + ['Updated', 'Note']
             data['data'] = sorted(data['data'], key=lambda field: field['Updated'], reverse=True)
             return data
         else:
@@ -85,9 +94,8 @@ class SkillsData(object):
         if past_measurables:
             data = []
             for measurables in past_measurables['data']:
-                values = [value for key, value in measurables.iteritems() if key != 'Updated' and value != '--']
+                values = [value for key, value in measurables.iteritems() if key not in ['Updated', 'Note', 'id'] and value != '--']
                 measurables['Total'] = sum(values)/len(values) if len(values) > 0 else '--'
-                measurables['id'] = str(uuid.uuid4())
                 data.append(measurables)
             return {
                 'fields': past_measurables['fields'] + ['Total'],
@@ -120,13 +128,25 @@ class SkillsData(object):
         else:
             return None
 
+    def goal_notes(self):
+        notes = models.UserGoalNoteMeasurable.objects.filter(user=self.user, domain=self.domain_model).order_by('-updated')
+        data = []
+        for note in notes:
+            data.append({
+                'updated': note.updated,
+                'notes': note.note,
+                'id': str(uuid.uuid4())
+            })
+        return data
+
     def to_dict(self):
         return dict(
             measurables=self.measurables(),
             has_goals=self.has_goal(),
             past_measurables=self.past_measurables(),
             goals_measurables=self.goals_measurables(),
-            chart=self.chart()
+            chart=self.chart(),
+            goal_notes=self.goal_notes(),
         )
 
 

@@ -109,6 +109,16 @@ class UserMeasurables(models.Model):
         unique_together = ('user', 'measurable', 'updated')
 
 
+class UserDomainNoteMeasurables(models.Model):
+    user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="measurables_note", null=False)
+    domain = models.ForeignKey(Domains, related_name="domainmeasurablesnote", null=False)
+    note = models.TextField(default="", null=True, blank=True)
+    updated = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('user', 'domain', 'updated')
+
+
 class UserGoalMeasurables(models.Model):
     user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="goalmeasurables", null=False)
     goal_measurable = models.ForeignKey(GoalsMeasurables, on_delete=models.CASCADE, null=False)
@@ -117,6 +127,16 @@ class UserGoalMeasurables(models.Model):
 
     class Meta:
         unique_together = ('user', 'goal_measurable', 'updated')
+
+
+class UserGoalNoteMeasurable(models.Model):
+    user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="goalmeasurables_note", null=False)
+    domain = models.ForeignKey(Domains, null=False)
+    note = models.TextField(default="", null=True, blank=True)
+    updated = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('user', 'domain', 'updated')
 
 
 class MusicalPreference(models.Model):

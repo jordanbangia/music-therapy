@@ -13,18 +13,6 @@ from musictherapy.models import UserInfo, MusicalPreference, CommunicationAssess
     SocialSkillsGoals, MusicSkillsAssessment, MusicSkillsGoals
 
 
-# class GoalsForm(ModelForm):
-#     class Meta:
-#         model = UserInfo
-#         fields = ('goals',)
-#
-#     goals = MultiSelectFormField(choices=Goals.GOALS_CHOICES)
-#
-#     def __init__(self, *args, **kwargs):
-#         super(GoalsForm, self).__init__(*args, **kwargs)
-#         self.fields['goals'].required = False
-
-
 class UserInfoForm(ModelForm):
     class Meta:
         model = UserInfo

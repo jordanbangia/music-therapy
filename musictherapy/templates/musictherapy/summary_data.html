@@ -24,7 +24,7 @@
         {% endif %}
         <h5>{{assessment.Updated}}</h5>
         {% for field in summary.fields %}
-            {% if field != 'Updated' %}
+            {% if field != 'Updated' and field != 'Note'%}
                 <div class="row">
                     {% if field == 'Total' %}<b>{% endif %}
                     <div class="col-md-4">{{field|capfirst}}</h5></div>

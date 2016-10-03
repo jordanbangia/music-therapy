@@ -10,6 +10,9 @@ admin.site.register(models.GoalsMeasurables)
 admin.site.register(models.UserGoals)
 admin.site.register(models.UserMeasurables)
 admin.site.register(models.UserGoalMeasurables)
+admin.site.register(models.UserDomainNoteMeasurables)
+admin.site.register(models.UserGoalNoteMeasurable)
+
 
 # admin.site.register(UserInfo)
 # admin.site.register(MusicalPreference)

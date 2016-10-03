@@ -21,14 +21,14 @@
                     {% for measurable in data.past_measurables.data %}
                     <tr>
                         {% for field in data.past_measurables.fields %}
-                        {% if field = 'notes' %}
-                        <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#{{pre}}-assessment-{{assessment.id}}">Notes</button></td>
-                                {% include "musictherapy/notes.html" with id=assessment.id date=assessment.updated notes=assessment.notes data_type="assessment"%}
-                        {% elif field = 'Updated' or measurable|getattrib:field == '--' %}
-                            <td>{{ measurable|getattrib:field }}</td>
-                        {% else %}
-                            <td>{{ measurable|getattrib:field|floatformat:2 }}</td>
-                        {% endif %}
+                            {% if field = 'Note' %}
+                            <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#{{pre}}-assessment-{{measurable.id}}">Notes</button></td>
+                                    {% include "musictherapy/notes.html" with id=measurable.id date=measurable.Updated notes=measurable.Note data_type="assessment"%}
+                            {% elif field = 'Updated' or measurable|getattrib:field == '--' %}
+                                <td>{{ measurable|getattrib:field }}</td>
+                            {% else %}
+                                <td>{{ measurable|getattrib:field|floatformat:2 }}</td>
+                            {% endif %}
                         {% endfor %}
                     </tr>
                     {% endfor %}
@@ -80,6 +80,12 @@
                         </div>
                         {% endfor %}
                     {% endfor %}
+                    <div class="controls col-lg-6">
+                        <label class="control-label" style="padding-top: 5px">Notes</label>
+                    </div>
+                    <div class="controls col-lg-6">
+                        <textarea class="textarea form-control" cols="40" name="{{pre}}_measurablesnotes" rows="10" spellcheck="true" style="z-index: auto; position: relative; line-height: 20px; font-size: 14px; transition: none; background: transparent !important;"></textarea>
+                    </div>
                     <input type="hidden" name="redirect" value="#{{pre}}skills"/>
                     <input type="submit" name="submit" value="Save" />
                 </form>
@@ -117,6 +123,12 @@
                             </div>
                         </div>
                     {% endfor %}
+                    <div class="controls col-lg-6">
+                        <label class="control-label" style="padding-top: 5px">Notes</label>
+                    </div>
+                    <div class="controls col-lg-6">
+                        <textarea class="textarea form-control" cols="40" name="{{pre}}_goalsnotes" rows="10" spellcheck="true" style="z-index: auto; position: relative; line-height: 20px; font-size: 14px; transition: none; background: transparent !important;"></textarea>
+                    </div>
                     <input type="submit" name="submit" value="Save"/>
                     <input type="hidden" name="redirect" value="#{{pre}}skills"/>
                 </form>
@@ -128,5 +140,5 @@
 
 
 {% if data.chart %}
-{% include "musictherapy/chart.html" with chart=data.chart goals=data.goals_data%}
+{% include "musictherapy/chart.html" with chart=data.chart goals=data.goal_notes%}
 {% endif %}

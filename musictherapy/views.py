@@ -13,12 +13,25 @@ import musictherapy.models as models
 from musictherapy.forms import *
 from musictherapy.skills_data import SkillsData
 
-SummaryData = namedtuple('SummaryData', ['com', 'pss', 'motor', 'cog', 'social', 'music'])
-
 STATUS_MESSAGES = {
     'no_permission': 'You do not have permission to use this function.  Talk to an administrator if you have further questions.',
     'pass_change_success': 'Password changed successfully.',
     'staff_added': 'Staff member added successfully.'
+}
+
+PREFIXES = {
+    'general': 'General',
+    'com': 'Communication',
+    'pss': 'Psycho-Social',
+    'physical': 'Physical',
+    'cog': 'Cognitive',
+    'music': 'Music',
+    'affective': 'Affective',
+    'gen': 'General',
+    'psy': 'Psycho-Social',
+    'phy': 'Physical',
+    'mus': 'Music',
+    'aff': 'Affective',
 }
 
 
@@ -193,9 +206,16 @@ def save_measurables(request, user_id):
             if measurable_id.lower() in ['save', 'csrfmiddlewaretoken', 'submit', 'redirect']:
                 continue
 
-            measurable = models.DomainMeasurables.objects.get(pk=measurable_id)
-            user_measurable = models.UserMeasurables(user=user, measurable=measurable, value=measurable_value, updated=date)
-            user_measurable.save()
+            elif 'measurablesnotes' in measurable_id.lower():
+                domain_prefix = measurable_id.lower().split('_')[0]
+                domain = get_object_or_404(models.Domains, name=PREFIXES[domain_prefix])
+                notes = models.UserDomainNoteMeasurables(user=user, domain=domain, note=measurable_value, updated=date)
+                notes.save()
+
+            else:
+                measurable = models.DomainMeasurables.objects.get(pk=measurable_id)
+                user_measurable = models.UserMeasurables(user=user, measurable=measurable, value=measurable_value, updated=date)
+                user_measurable.save()
 
         return redirect('/musictherapy/' + user_id + data['redirect'].lower())
 
@@ -210,9 +230,16 @@ def save_goalmeasurables(request, user_id):
             if measurable_id.lower() in ['save', 'csrfmiddlewaretoken', 'submit', 'redirect']:
                 continue
 
-            measurable = models.GoalsMeasurables.objects.get(pk=measurable_id)
-            user_measurable = models.UserGoalMeasurables(user=user, goal_measurable=measurable, value=measurable_value, updated=date)
-            user_measurable.save()
+            elif 'goalsnotes' in measurable_id.lower():
+                domain_prefix = measurable_id.lower().split('_')[0]
+                domain = get_object_or_404(models.Domains, name=PREFIXES[domain_prefix])
+                notes = models.UserGoalNoteMeasurable(user=user, domain=domain, note=measurable_value, updated=date)
+                notes.save()
+
+            else:
+                measurable = models.GoalsMeasurables.objects.get(pk=measurable_id)
+                user_measurable = models.UserGoalMeasurables(user=user, goal_measurable=measurable, value=measurable_value, updated=date)
+                user_measurable.save()
 
         return redirect('/musictherapy/' + user_id + data['redirect'].lower())
 
