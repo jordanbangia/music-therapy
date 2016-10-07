@@ -62,19 +62,11 @@
                             </div>
                             <div class="col-md-6">
                                 <select class="select form-control" name="{{measurable.pk}}">
-                                    {% if measurable.pos_neg == 1 %}
-                                        <option value=-1>Not Measured</option>
-                                        <option value=0>None/Never</option>
-                                        <option value=1>Low/Rarely/Poor</option>
-                                        <option value=2>Medium/Sometimes/Good</option>
-                                        <option value=3>High/Always/Very Good</option>
-                                    {% else %}
-                                        <option value=1>Not Measured</option>
-                                        <option value=0>Never</option>
-                                        <option value=-1>Occasionally</option>
-                                        <option value=-2>Regularly</option>
-                                        <option value=-3>Always</option>
-                                    {% endif %}
+                                    <option value=-1>Not Measured</option>
+                                    <option value=0>None/Never</option>
+                                    <option value=1>Low/Rarely/Poor</option>
+                                    <option value=2>Medium/Sometimes/Good</option>
+                                    <option value=3>High/Always/Very Good</option>
                                 </select>
                             </div>
                         </div>
