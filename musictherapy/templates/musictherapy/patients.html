@@ -6,42 +6,47 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-
-    <link rel="stylesheet" href="{% static 'musictherapy/themes/blue/style.css' %}" media="print, projection, screen"/>
-    <script type="text/javascript" src="{% static 'musictherapy/jquery-1.11.3.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'musictherapy/jquery.tablesorter.min.js' %}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    <script type="text/javascript" src="{% static 'musictherapy/jquery-1.11.3.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'musictherapy/tablesort.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'musictherapy/tablesort.css' %}" type="text/css"/>
 </head>
 
 <body>
-{% if user_info_list %}
-<table id="userTable" class="tablesorter">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Location</th>
-        <th>Program</th>
-        {% if perms.musictherapy.delete_userinfo %}
-        <th></th>
-        {% endif %}
-    </tr>
-    </thead>
-    <tbody>
-    {% for user in user_info_list %}
-    <tr>
-        <td><a href="{% url 'musictherapy:user_detail' user.id %}"> {{user.name}}</a></td>
-        <td>{{user.location|join:", "}}</td>
-        <td>{{user.program}}</td>
-        {% if perms.musictherapy.delete_userinfo %}
-        <td><a href="{% url 'musictherapy:delete_user' user.id %}">Delete</a></td>
-        {% endif %}
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p> No users available. </p>
-{% endif %}
+<div class="page">
+<div class="inner">
+    <h1>ASPMTDOC Music Therapy App</h1>
+
+    {% if user_info_list %}
+        <table id="userTable" class="sort">
+            <thead>
+            <tr>
+                <th class="sort-header">Name</th>
+                <th class="sort-header">Location</th>
+                <th class="sort-header">Program</th>
+                {% if perms.musictherapy.delete_userinfo %}
+                <th class="no-sort"></th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in user_info_list %}
+            <tr>
+                <td><a href="{% url 'musictherapy:user_detail' user.id %}"> {{user.name}}</a></td>
+                <td>{{user.location|join:", "}}</td>
+                <td>{{user.program}}</td>
+                {% if perms.musictherapy.delete_userinfo %}
+                <td><a href="{% url 'musictherapy:delete_user' user.id %}">Delete</a></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p> No users available. </p>
+    {% endif %}
+
 
 <a class="btn btn-info pull-left" href="{% url 'musictherapy:create_user' %}" style="margin:5px">Add Patient</a>
 
@@ -59,13 +64,11 @@
 <br>
 <p>{{ status }}</p>
 {% endif %}
+</div>
+</div>
 
-<script type="text/javascript">
-			$(document).ready(function()
-			{
-				$("#userTable").tablesorter();
-			});
-
+<script>
+    new Tablesort(document.getElementById('userTable'));
 </script>
 
 </body>
