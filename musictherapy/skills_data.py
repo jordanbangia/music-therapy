@@ -76,14 +76,14 @@ class SkillsData(object):
             for domain in sub_domain_value.keys():
                 if domain == 'Note':
                     continue
-                cleaned_data = [float(v)/4 for v in sub_domain_value[domain] if v != '--']
+                cleaned_data = [float(v)/3 for v in sub_domain_value[domain] if v != '--']
                 sub_domain_value[domain] = sum(cleaned_data)*100 / len(cleaned_data) if len(cleaned_data) > 0 else '--'
             sub_domain_value['Updated'] = date
             sub_domain_value['id'] = str(uuid.uuid4())
             data['data'].append(dict(sub_domain_value))
 
         if len(data['data']) > 0:
-            data['fields'] = [k for k in data['data'][0].keys() if k not in ['Updated', 'note', 'id']] + ['Updated', 'Note']
+            data['fields'] = [k for k in data['data'][0].keys() if k.lower() not in ['updated', 'note', 'id']] + ['Updated', 'Note']
             data['data'] = sorted(data['data'], key=lambda field: field['Updated'], reverse=True)
             return data
         else:
@@ -124,6 +124,13 @@ class SkillsData(object):
                 line_chart.add(goal, updates)
 
             line_chart.x_labels = map(str, all_dates)
+            line_chart.y_labels = [
+                {'label':'Not Measured', 'value': -1},
+                {'label': 'None', 'value': 0},
+                {'label': 'Low', 'value': 1},
+                {'label': 'Medium', 'value': 2},
+                {'label': 'High', 'value':3},
+            ]
             return line_chart.render(is_unicode=True, disable_xml_declaration=True)
         else:
             return None
