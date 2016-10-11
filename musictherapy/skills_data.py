@@ -124,13 +124,13 @@ class SkillsData(object):
                 line_chart.add(goal, updates)
 
             line_chart.x_labels = map(str, all_dates)
-            line_chart.y_labels = [
-                {'label':'Not Measured', 'value': -1},
-                {'label': 'None', 'value': 0},
-                {'label': 'Low', 'value': 1},
-                {'label': 'Medium', 'value': 2},
-                {'label': 'High', 'value':3},
-            ]
+            # line_chart.y_labels = [
+            #     {'label':'Not Measured', 'value': -1},
+            #     {'label': 'None', 'value': 0},
+            #     {'label': 'Low', 'value': 1},
+            #     {'label': 'Medium', 'value': 2},
+            #     {'label': 'High', 'value': 3},
+            # ]
             return line_chart.render(is_unicode=True, disable_xml_declaration=True)
         else:
             return None

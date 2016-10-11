@@ -27,5 +27,6 @@ urlpatterns = [
             'template_name': 'musictherapy/change_password.html',
             'post_change_redirect': '/musictherapy/patients?status=pass_change_success',
     }, name="password_change"),
+    url(r'^musictherapy/save_program', views.save_program, name='save_program')
 ]
 

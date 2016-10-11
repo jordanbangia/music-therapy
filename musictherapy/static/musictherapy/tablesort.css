@@ -187,7 +187,7 @@ table th.sort-up:after {
   }
 
 .page .inner {
-  width:1960px;
+  width: 80%;
   margin:0 auto;
   padding:0 20px;
   }

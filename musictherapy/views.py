@@ -53,7 +53,7 @@ def login(request):
 @login_required(login_url='/musictherapy/login')
 def patients(request):
     status = request.GET.get('status', None)
-    user_info_list = UserInfo.objects.all().order_by('location')
+    user_info_list = models.UserInfo.objects.all().order_by('location')
     context = {
         'user_info_list': user_info_list,
         'status': STATUS_MESSAGES.get(status, None)
@@ -64,11 +64,13 @@ def patients(request):
 
 @login_required(login_url='/musictherapy/login')
 def user_detail(request, user_id):
-    user = get_object_or_404(UserInfo, pk=user_id)
+    user = get_object_or_404(models.UserInfo, pk=user_id)
     user_form = UserInfoForm(instance=user)
     user_last_updated = user.updated
 
-    musicpref = get_object_or_None(MusicalPreference, pk=user_id)
+    program_form = ProgramForm()
+
+    musicpref = get_object_or_None(models.MusicalPreference, pk=user_id)
     musicpref_form = MusicalPrefForm(instance=musicpref)
     musicpref_last_updated = musicpref.updated if musicpref else None
 
@@ -84,6 +86,7 @@ def user_detail(request, user_id):
         'goals': get_goals(user),
         'session_goals': {data.domain: data.goals_measurables() for data in [com, pss, physical, cog, music, affective]},
         'user_last_updated': user_last_updated,
+        'program_form': program_form,
 
         'summary': {data.domain: data.summary_measurable() for data in [com, pss, physical, cog, music, affective]},
 
@@ -110,6 +113,17 @@ def create_user(request):
 
 
 @login_required(login_url='/musictherapy/login')
+def save_program(request):
+    if request.method == 'POST':
+        program_form = ProgramForm(request.POST)
+        print(program_form.is_valid())
+        if program_form.is_valid():
+            program = program_form.save()
+            return redirect('musictherapy/')
+    return HttpResponse(404)
+
+
+@login_required(login_url='/musictherapy/login')
 def save_new_basic(request):
     if request.method == 'POST':
         user_form = UserInfoForm(request.POST)
@@ -127,7 +141,7 @@ def save_new_basic(request):
 @login_required(login_url='/musictherapy/login')
 def delete_user(request, user_id):
     if request.user.has_perm('muscitherapy.userinfo.can_delete'):
-        user = get_object_or_404(UserInfo, pk=user_id)
+        user = get_object_or_404(models.UserInfo, pk=user_id)
         user.delete()
         return redirect('/musictherapy/')
     else:
@@ -136,7 +150,7 @@ def delete_user(request, user_id):
 
 @login_required(login_url='/musictherapy/login')
 def save_user_goals(request, user_id):
-    user = get_object_or_404(UserInfo, pk=user_id)
+    user = get_object_or_404(models.UserInfo, pk=user_id)
     user_goals = [ug.pk for ug in models.UserGoals.objects.filter(user=user)]
     if request.method == 'POST':
         for goal in request.POST.getlist('goals', []):
@@ -175,7 +189,7 @@ def create_staff(request):
 
 @login_required(login_url='/musictherapy/login')
 def save_basic_info(request, user_id):
-    user = get_object_or_404(UserInfo, pk=user_id)
+    user = get_object_or_404(models.UserInfo, pk=user_id)
     if request.method == 'POST':
         user_form = UserInfoForm(request.POST, instance=user)
         if user_form.is_valid():
@@ -185,13 +199,13 @@ def save_basic_info(request, user_id):
 
 @login_required(login_url='/musictherapy/login')
 def save_music_pref(request, user_id):
-    musicpref = get_object_or_None(MusicalPreference, pk=user_id)
+    musicpref = get_object_or_None(models.MusicalPreference, pk=user_id)
     if request.method == 'POST':
         musicpref_form = MusicalPrefForm(request.POST, instance=musicpref)
         if musicpref_form.is_valid():
             if musicpref is None:
                 musicpref = musicpref_form.save(commit=False)
-                musicpref.user = get_object_or_404(UserInfo, pk=user_id)
+                musicpref.user = get_object_or_404(models.UserInfo, pk=user_id)
             musicpref_form.save()
             return redirect('/musictherapy/' + user_id)
 
@@ -252,4 +266,3 @@ def get_goals(user):
     goals['order'] = ['General'] + [domain for domain in goals.keys() if domain != 'General']
     goals['user'] = [ug.goal.pk for ug in models.UserGoals.objects.filter(user=user)]
     return goals
-

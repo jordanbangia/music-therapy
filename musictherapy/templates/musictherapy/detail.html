@@ -1,4 +1,5 @@
 {% load template_getattr %}
+{% load crispy_forms_tags %}
 
 <!DOCTYPE html>
 
@@ -107,7 +108,39 @@
                 </div>
 
                 <div id="basicinfo" class="tab-pane fade in active">
-                    {% crispy user_info_form %}
+                    <form action="{% url 'musictherapy:save_userinfo' user.id %}" class="form-horizontal" method="post">
+                        {% crispy user_info_form %}
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#new-program-modal">Add New Program</button>
+                        </div>
+
+                        <br/>
+
+                        <div class="form-actions">
+                            <input type="submit" name="submit" value="Save" class="btn btn-primary" id="submit-id-submit"/>
+                        </div>
+                    </form>
+
+                    <div class="modal fade" id="new-program-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Add New Program</h4>
+                          </div>
+                          <div class="modal-body">
+                              <form action="{% url 'musictherapy:save_program' %}" class="form-horizontal" method="post" id="new-program-form">
+                                {% crispy program_form %}
+                              </form>
+                          </div>
+                          <div class="modal-footer">
+                            <input type="submit" name="submit" value="Save" class="btn btn-primary" form="new-program-form"/>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                     {% if user_last_update %}
                     <p>Last updated {{ user_last_updated }} </p>
@@ -163,5 +196,29 @@
             </div>
         </div>
     </body>
+
+<!--<script type="text/javascript">-->
+    <!--$("#new-program-form").submit(function(e) {-->
+        <!--$form = $(this);-->
+        <!--var url = $form.attr('action')-->
+
+        <!--$.ajax({-->
+               <!--type: "POST",-->
+               <!--url: url,-->
+               <!--data: $("#new-program-form").serialize(),-->
+               <!--success: function(data)-->
+               <!--{-->
+                   <!--//id_program-->
+                   <!--$('#mySelect').append($('<option>', {-->
+                        <!--value: 1,-->
+                        <!--text: 'My option'-->
+                   <!--}));-->
+               <!--}-->
+             <!--});-->
+
+        <!--e.preventDefault(); // avoid to execute the actual submit of the form.-->
+    <!--});-->
+<!--</script>-->
+
 
 </html>

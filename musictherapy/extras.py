@@ -47,8 +47,9 @@ class SelectDateWidget(Widget):
     day_field = '%s_day'
     year_field = '%s_year'
 
-    def __init__(self, attrs=None, years=None, months=None, empty_label=None):
+    def __init__(self, attrs=None, years=None, months=None, empty_label=None, include_days=True):
         self.attrs = attrs or {}
+        self.include_days = include_days
 
         # Optional list or tuple of years to use in the "year" select box.
         if years:
@@ -101,11 +102,14 @@ class SelectDateWidget(Widget):
         html['year'] = self.create_select(name, self.year_field, value, year_val, choices, self.year_none_value)
         choices = list(six.iteritems(self.months))
         html['month'] = self.create_select(name, self.month_field, value, month_val, choices, self.month_none_value)
+
         choices = [(i, i) for i in range(1, 32)]
         html['day'] = self.create_select(name, self.day_field, value, day_val, choices, self.day_none_value)
 
         output = []
         for field in _parse_date_fmt():
+            if field == 'day' and not self.include_days:
+                continue
             output.append(html[field])
         return mark_safe('\n'.join(output))
 
@@ -118,7 +122,7 @@ class SelectDateWidget(Widget):
     def value_from_datadict(self, data, files, name):
         y = data.get(self.year_field % name)
         m = data.get(self.month_field % name)
-        d = data.get(self.day_field % name)
+        d = data.get(self.day_field % name) if self.include_days else "1"
         if y == m == d == "0":
             return None
         if y and m and d:

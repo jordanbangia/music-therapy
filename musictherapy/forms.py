@@ -5,15 +5,41 @@ from django.contrib.auth.models import Group
 from django.forms import ModelForm, ChoiceField, IntegerField
 
 from musictherapy.extras import SelectDateWidget
-from musictherapy.models import UserInfo, MusicalPreference
+import musictherapy.models as models
 from datetime import date
+
+
+class ProgramForm(ModelForm):
+
+    class Meta:
+        model = models.Program
+        fields = ('name', 'location', 'time', 'start', 'end', 'description')
+
+        this_year = date.today().year
+
+        widgets = {
+            'start': SelectDateWidget(years=range(this_year, this_year + 5), include_days=False),
+            'end': SelectDateWidget(years=range(this_year, this_year + 5), include_days=False),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ProgramForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-programform'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-md-2'
+        self.helper.field_class = 'col-md-6'
+        self.helper.form_post = 'post'
+        self.helper.form_action = 'submit_program/#basicinfo'
+        self.helper.form_tag = False
+        # self.helper.add_input(Submit('submit', 'Save'))
 
 
 class UserInfoForm(ModelForm):
     age = IntegerField(label="Age")
 
     class Meta:
-        model = UserInfo
+        model = models.UserInfo
         fields = ('name', 'location', 'date_of_birth', 'age', 'diagnosis', 'history', 'country_of_origin', 'language_spoken',
                   'musical_history', 'care_plan', 'asp_level', 'program')
         widgets = {
@@ -32,13 +58,12 @@ class UserInfoForm(ModelForm):
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-6'
         self.helper.form_post = 'post'
-        self.helper.form_action = 'submit_userinfo/#basicinfo'
-        self.helper.add_input(Submit('submit', 'Save'))
+        self.helper.form_tag = False
 
 
 class MusicalPrefForm(ModelForm):
     class Meta:
-        model = MusicalPreference
+        model = models.MusicalPreference
         fields = ('fav_composer', 'fav_song', 'fav_instrument', 'preferred_style', 'other_style')
 
     def __init__(self, *args, **kwargs):
