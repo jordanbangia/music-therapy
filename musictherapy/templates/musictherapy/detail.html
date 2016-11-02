@@ -42,7 +42,7 @@
         </script>
 
         <!-- PyGal scripts -->
-        <script type="text/javascript" src="http://kozea.github.com/pygal.js/latest/pygal-tooltips.min.js"></script>
+        <script type="text/javascript" src="https://kozea.github.com/pygal.js/latest/pygal-tooltips.min.js"></script>
     </head>
 
     <body>
@@ -131,6 +131,7 @@
                           </div>
                           <div class="modal-body">
                               <form action="{% url 'musictherapy:save_program' %}" class="form-horizontal" method="post" id="new-program-form">
+                                  <h4 id="new-program-form-error" style="color: red"></h4>
                                 {% crispy program_form %}
                               </form>
                           </div>
@@ -197,28 +198,38 @@
         </div>
     </body>
 
-<!--<script type="text/javascript">-->
-    <!--$("#new-program-form").submit(function(e) {-->
-        <!--$form = $(this);-->
-        <!--var url = $form.attr('action')-->
+<script type="text/javascript">
+$("#new-program-form").submit(function(e) {
+    e.preventDefault();
+    $form = $(this);
+    var url = $form.attr('action');
+    var errorText = $("#new-program-form-error");
+    errorText.html('');
 
-        <!--$.ajax({-->
-               <!--type: "POST",-->
-               <!--url: url,-->
-               <!--data: $("#new-program-form").serialize(),-->
-               <!--success: function(data)-->
-               <!--{-->
-                   <!--//id_program-->
-                   <!--$('#mySelect').append($('<option>', {-->
-                        <!--value: 1,-->
-                        <!--text: 'My option'-->
-                   <!--}));-->
-               <!--}-->
-             <!--});-->
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: 'json',
+        data: $("#new-program-form").serialize(),
+        success: function(data) {
+            if (data == 404) {
+                errorText.html("There was a problem saving the program, try again later.");
+            } else {
+                console.log("I made it back, with some data:");
+                console.log(data);
 
-        <!--e.preventDefault(); // avoid to execute the actual submit of the form.-->
-    <!--});-->
-<!--</script>-->
+                console.log(data["display"]);
+                console.log(data["pk"]);
+                var option = $("<option>" + data["display"] + "</option>");
+                option.attr('value', data["pk"]);
+                $('#id_program').append(option);
+                $('#id_program option[value='+data["pk"] +']').attr("selected", "selected");
+                $('#new-program-modal').modal('toggle');
+            }
+        }
+    });
+});
+</script>
 
 
 </html>

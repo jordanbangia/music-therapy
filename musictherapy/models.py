@@ -18,20 +18,35 @@ LOCATION_CHOICES = (
     ('Evelyn\'s', 'Evelyn\'s')
 )
 
+PROGRAM_DATES = (
+    ('1', 'September - February'),
+    ('2', 'March - August')
+)
+
+DAYS_OF_WEEK = (
+    ('mon', 'Monday'),
+    ('tue', 'Tuesday'),
+    ('wed', 'Wednesday'),
+    ('thu', 'Thursday'),
+    ('fri', 'Friday'),
+    ('sat', 'Saturday'),
+    ('sun', 'Sunday')
+)
+
 
 class Program(models.Model):
     name = models.CharField(max_length=200, verbose_name="Name")
-    start = models.DateField(verbose_name="Start Date")
-    end = models.DateField(verbose_name="End Date")
-    location = models.CharField(max_length=100, choices= LOCATION_CHOICES, verbose_name="Location")
+    date = models.CharField(max_length=1, verbose_name="Program Dates", choices=PROGRAM_DATES)
+    location = models.CharField(max_length=100, choices=LOCATION_CHOICES, verbose_name="Location")
+    day_of_week = models.CharField(max_length=3, verbose_name="Day of Week", choices=DAYS_OF_WEEK)
     time = models.TimeField(verbose_name="Time")
     description = models.TextField(default="", verbose_name="Description", null=True, blank=True)
 
     class Meta:
-        unique_together = ('name', 'start', 'end', 'location', 'time')
+        unique_together = ('name', 'date', 'day_of_week', 'location', 'time')
 
     def __unicode__(self):
-        return '{}, {}/{} - {}/{}'.format(self.name, self.start.month, self.start.year, self.end.month, self.end.year)
+        return '{}, {}, {}, {}'.format(self.name, self.get_date_display(), self.get_day_of_week_display(), self.time)
 
 
 class UserInfo(models.Model):

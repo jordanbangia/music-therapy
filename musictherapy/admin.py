@@ -12,6 +12,8 @@ admin.site.register(models.UserMeasurables)
 admin.site.register(models.UserGoalMeasurables)
 admin.site.register(models.UserDomainNoteMeasurables)
 admin.site.register(models.UserGoalNoteMeasurable)
+admin.site.register(models.UserInfo)
+admin.site.register(models.Program)
 
 
 # admin.site.register(UserInfo)

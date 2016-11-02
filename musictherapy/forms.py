@@ -13,14 +13,7 @@ class ProgramForm(ModelForm):
 
     class Meta:
         model = models.Program
-        fields = ('name', 'location', 'time', 'start', 'end', 'description')
-
-        this_year = date.today().year
-
-        widgets = {
-            'start': SelectDateWidget(years=range(this_year, this_year + 5), include_days=False),
-            'end': SelectDateWidget(years=range(this_year, this_year + 5), include_days=False),
-        }
+        fields = ('name', 'location', 'date', 'day_of_week', 'time', 'description')
 
     def __init__(self, *args, **kwargs):
         super(ProgramForm, self).__init__(*args, **kwargs)

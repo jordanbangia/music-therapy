@@ -1,15 +1,16 @@
-from collections import namedtuple, defaultdict
+import json
+from collections import defaultdict
 from datetime import datetime
 
 import django.contrib.auth.views as auth
 from annoying.functions import get_object_or_None
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 
-import musictherapy.models as models
 from musictherapy.forms import *
 from musictherapy.skills_data import SkillsData
 
@@ -116,10 +117,15 @@ def create_user(request):
 def save_program(request):
     if request.method == 'POST':
         program_form = ProgramForm(request.POST)
-        print(program_form.is_valid())
         if program_form.is_valid():
             program = program_form.save()
-            return redirect('musictherapy/')
+            serialized = serializers.serialize('json', [program])
+            data = json.loads(serialized)
+            data = data[0]
+            data['display'] = str(program)
+            return HttpResponse(json.dumps(data))
+        else:
+            print(program_form.errors)
     return HttpResponse(404)
 
 
