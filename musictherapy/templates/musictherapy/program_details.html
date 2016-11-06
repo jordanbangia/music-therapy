@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load template_getattr %}
+<html>
+
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="{% static 'musictherapy/jquery-1.11.3.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'musictherapy/tablesort.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'musictherapy/toastr.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'musictherapy/tablesort.css' %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static 'musictherapy/toastr.min.css' %}" type="text/css"/>
+
+    <!-- toastr from https://codeseven.github.io/toastr/ -->
+
+    <script>
+        toastr.options = {
+          "closeButton": true,
+          "debug": false,
+          "newestOnTop": false,
+          "progressBar": false,
+          "positionClass": "toast-top-right",
+          "preventDuplicates": false,
+          "onclick": null,
+          "showDuration": "300",
+          "hideDuration": "1000",
+          "timeOut": 2000,
+          "extendedTimeOut": 0,
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut",
+          "tapToDismiss": false
+        };
+    </script>
+</head>
+<body>
+    <div class="page">
+        <div class="inner">
+            <div>
+                <div class="col-md-10">
+                    <h1>Program: {{ program.name }}</h1>
+                </div>
+                <div class="cold-md-2">
+                    <a class="btn btn-info pull-left" href="{% url 'musictherapy:list' %}" style="margin:5px">Home</a>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                        <h3>{{ program.location }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>{{ program.get_date_display }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>{{ program.get_day_of_week_display }}</h3>
+                    </div>
+                </div>
+
+
+            </div>
+            <div>
+                {% include "musictherapy/user_list.html" with user_list=users %}
+            </div>
+            <div>
+            {% for user in users %}
+                <div class="panel-group" id="accordion-gm-{{user.id}}">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-gm-{{user.id}}" href="#gm-{{user.id}}" aria-expanded="true">{{user.name}}</a>
+                            </h4>
+                        </div>
+                        <div id="gm-{{user.id}}" class="panel-collapse collapse in" aria-expanded="true">
+                            <div class="panel-body">
+                                {% include "musictherapy/session_goals.html" with session_goals=session_goals|getattrib:user.id user=user %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

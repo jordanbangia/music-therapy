@@ -261,7 +261,8 @@ def save_goalmeasurables(request, user_id):
                 user_measurable = models.UserGoalMeasurables(user=user, goal_measurable=measurable, value=measurable_value, updated=date)
                 user_measurable.save()
 
-        return redirect('/musictherapy/' + user_id + data['redirect'].lower())
+        return HttpResponse(200)
+    return HttpResponse(404)
 
 
 def get_goals(user):
@@ -272,3 +273,30 @@ def get_goals(user):
     goals['order'] = ['General'] + [domain for domain in goals.keys() if domain != 'General']
     goals['user'] = [ug.goal.pk for ug in models.UserGoals.objects.filter(user=user)]
     return goals
+
+
+@login_required(login_url='/musictherapy/login')
+def program_detail(request, program_id):
+    program = get_object_or_None(models.Program, pk=program_id)
+    users = models.UserInfo.objects.filter(program=program)
+
+    session_goals = {}
+    for user in users:
+        session_goals[user.pk] = {data.domain: data.goals_measurables() for data in get_skills_data_for_user(user)}
+
+    return render(request, 'musictherapy/program_details.html', {
+        'program': program,
+        'users': users,
+        'session_goals': session_goals,
+    })
+
+
+def get_skills_data_for_user(user):
+    return [
+        SkillsData("Communication", user),
+        SkillsData("Psycho-Social", user),
+        SkillsData("Physical", user),
+        SkillsData("Cognitive", user),
+        SkillsData("Music", user),
+        SkillsData("Affective", user),
+    ]

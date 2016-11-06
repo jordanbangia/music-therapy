@@ -1,7 +1,5 @@
-{% load template_getattr %}
-
 <div class="col-md-12">
-    <form action="submit_goalmeasurables/" method="post">
+    <form action="{% url 'musictherapy:save_goalmeasurables' user.id %}" method="post" id="goals-measurables-form-{{user.id}}">
         {% for domain, goals_measurables in session_goals.items %}
             {% if goals_measurables %}
                 <h3>{{domain}} Goals</h3>
@@ -32,6 +30,29 @@
         {% endfor %}
 
         <input type="submit" name="submit" value="Save"/>
-        <input type="hidden" name="redirect" value="#sessiongoals"/>
     </form>
 </div>
+
+<script>
+$("#goals-measurables-form-{{user.id}}").submit(function(e) {
+    e.preventDefault();
+    var $form = $(this);
+    var url = $form.attr('action');
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: 'json',
+        data: $form.serialize(),
+        success: function(data) {
+            if (data == 200) {
+                console.log("success for {{user.id}}");
+                toastr.success("Saved goals measurables for {{user.name}}", "Saved Goals Measurables");
+            } else {
+                console.log("fail: " + data);
+                toastr.error("There was a problem saving goals measurables.");
+            }
+        }
+    });
+});
+</script>

@@ -19,34 +19,7 @@
     <h1>ASPMTDOC Music Therapy App</h1>
 
     {% if user_info_list %}
-        <table id="userTable" class="sort">
-            <thead>
-            <tr>
-                <th class="sort-header">Name</th>
-                <th class="sort-header">Location</th>
-                <th class="sort-header">Program</th>
-                {% if perms.musictherapy.delete_userinfo %}
-                <th class="no-sort"></th>
-                {% endif %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for user in user_info_list %}
-            <tr>
-                <td><a href="{% url 'musictherapy:user_detail' user.id %}"> {{user.name}}</a></td>
-                <td>{{user.location|join:", "}}</td>
-                {% if user.program != '' %}
-                <td>{{user.program}}</td>
-                {% else %}
-                <td> - </td>
-                {% endif %}
-                {% if perms.musictherapy.delete_userinfo %}
-                <td><a href="{% url 'musictherapy:delete_user' user.id %}">Delete</a></td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        {% include "musictherapy/user_list.html" with user_list=user_info_list %}
     {% else %}
         <p> No users available. </p>
     {% endif %}
@@ -71,9 +44,7 @@
 </div>
 </div>
 
-<script>
-    new Tablesort(document.getElementById('userTable'));
-</script>
+
 
 </body>
 

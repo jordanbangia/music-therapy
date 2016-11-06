@@ -49,7 +49,7 @@
         </div>
         <div id="{{pre}}-assessment" class="panel-collapse collapse in" aria-expanded="true">
             <div class="panel-body">
-                <form action="submit_measurables/" method="post">
+                <form action="{% url 'musictherapy:save_measurables' user.id %}" method="post">
                     {% csrf_token %}
                     {% for domain, measurables in data.measurables.items %}
                         <div class="col-md-12">
@@ -97,7 +97,7 @@
         </div>
         <div id="{{pre}}-goals" class="panel-collapse collapse in" aria-expanded="true">
             <div class="panel-body">
-                <form action="submit_goalmeasurables/" method="post">
+                <form action="{% url 'musictherapy:save_goalmeasurables' user.id %}" method="post">
                     {% csrf_token %}
                     {% for measurable in data.goals_measurables %}
                         <div class="col-md-12" style="padding: 2px">
