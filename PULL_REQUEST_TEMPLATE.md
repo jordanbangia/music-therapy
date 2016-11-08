@@ -1,3 +1,4 @@
+#### PR Summary
 This pull request feautures ...
 
 - feature 1
@@ -5,14 +6,14 @@ This pull request feautures ...
 - feature 3
 
 
-
+#### Deployment and Database Changes
 - [ ] This change features backend db changes 
 - [ ] They are backwards compatible
 If not, how are we going to deploy around this:
 - step 1
 - step 2
 
-
+#### Local Tests
 Make sure that all the following work without throwing a Django error/ doing something unexpected:
 - [ ] can login with a valid account
 - [ ] login with an invalid account throws error
