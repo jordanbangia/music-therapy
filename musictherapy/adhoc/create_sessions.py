@@ -7,6 +7,7 @@ django.setup()
 from annoying.functions import get_object_or_None
 import musictherapy.models as models
 
+
 def fix_sessions():
     ug = models.UserGoals.objects.filter(session=None)
     for g in ug:
@@ -20,7 +21,7 @@ def fix_sessions():
 
     ugm = models.UserGoalMeasurables.objects.filter(session=None)
     for g in ugm:
-        if ugm.session is None:
+        if g.session is None:
             session = get_object_or_None(models.Session, user=g.user, date=g.updated)
             if not session:
                 session = models.Session(user=g.user, date=g.updated)
@@ -30,7 +31,7 @@ def fix_sessions():
 
     ugnm = models.UserGoalNoteMeasurable.objects.filter(session=None)
     for g in ugnm:
-        if ugm.session is None:
+        if g.session is None:
             session = get_object_or_None(models.Session, user=g.user, date=g.updated)
             if not session:
                 session = models.Session(user=g.user, date=g.updated)
