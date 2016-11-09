@@ -14,9 +14,4 @@ admin.site.register(models.UserDomainNoteMeasurables)
 admin.site.register(models.UserGoalNoteMeasurable)
 admin.site.register(models.UserInfo)
 admin.site.register(models.Program)
-
-
-# admin.site.register(UserInfo)
-# admin.site.register(MusicalPreference)
-# admin.site.register(CommunicationGoals)
-# admin.site.register(CommunicationAssessment)
+admin.site.register(models.Session)
