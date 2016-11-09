@@ -48,13 +48,8 @@ class SkillsData(object):
             self.measurables()
 
         goals = models.Goals.objects.filter(domain__in=self.all_domains, enabled=1)
-        print("Start")
-        print(len(goals))
         user_goals = models.UserGoals.objects.filter(goal__in=goals, session=session)
-        print(len(user_goals))
         goals_measurables = models.GoalsMeasurables.objects.filter(goal__in=[ug.goal for ug in user_goals], enabled=1)
-        print(len(goals_measurables))
-        print("End")
         return goals_measurables
 
     def past_measurables(self):

@@ -80,13 +80,3 @@ class StaffForm(UserCreationForm):
                                required=True,
                                label='Staff level',
                                initial='Admin')
-
-    def save(self, commit=True):
-        user = super(StaffForm, self).save(commit=commit)
-
-        if self.cleaned_data.get('staff_status') == 'Admin':
-            user.groups.add(Group.objects.get(name='Admin'))
-        else:
-            user.groups.add(Group.objects.get(name='Staff'))
-        user.save()
-        return user

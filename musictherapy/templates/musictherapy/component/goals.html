@@ -1,4 +1,6 @@
 {% load template_getattr %}
+{# requires: goals, user #}
+
 <form action="{% url 'musictherapy:save_goals' user.id %}" method="post">
     {% csrf_token %}
     {% for domain in goals.order %}
@@ -14,5 +16,6 @@
         {% endfor %}
     {% endfor %}
     <input type="hidden" name="session" value="{{session.id}}"/>
+    <input type="hidden" name="redirect" value="{{redirect}}"/>
     <input type="submit" name="submit" value="Save Goals" />
 </form>

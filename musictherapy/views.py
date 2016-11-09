@@ -175,13 +175,14 @@ def delete_user(request, user_id):
 
 @login_required(login_url='/musictherapy/login')
 def save_user_goals(request, user_id):
-    print(user_id)
     user = get_object_or_404(models.UserInfo, pk=user_id)
     if request.method == 'POST':
-        session = get_object_or_None(models.Session, pk=request.POST.get('session'))
+        session = None
+        session_id = request.POST.get('session', None)
+        if session_id and session_id != '':
+            session = get_object_or_None(models.Session, pk=session_id)
         if not session:
-            session = models.Session(user=user)
-            session.save()
+            session = get_current_session(user)
         user_goals = [ug.pk for ug in models.UserGoals.objects.filter(session=session)]
         for goal in request.POST.getlist('goals', []):
             goal_model = models.Goals.objects.get(pk=goal)
@@ -194,8 +195,13 @@ def save_user_goals(request, user_id):
 
         for ug in user_goals:
             models.UserGoals.objects.get(pk=ug).delete()
-    print(user_id)
-    return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
+
+        red = request.POST.get('redirect')
+        if red == 'program':
+            return redirect(reverse('musictherapy:program_detail', kwargs={'program_id': int(user.program.pk)}))
+        else:
+            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
+    return HttpResponse(404)
 
 
 @permission_required(perm='auth.add_user')
@@ -260,10 +266,12 @@ def save_goalmeasurables(request, user_id):
     if request.method == 'POST':
         data = request.POST.dict()
         user = get_object_or_404(models.UserInfo, pk=user_id)
-        session = get_object_or_None(models.Session, pk=data['session'])
+        session = None
+        session_id = request.POST.get('session', None)
+        if session_id and session_id != '':
+            session = get_object_or_None(models.Session, pk=session_id)
         if not session:
-            session = models.Session(user=user)
-            session.save()
+            session = get_current_session(user)
 
         for measurable_id, measurable_value in data.iteritems():
             if measurable_id.lower() in ['save', 'csrfmiddlewaretoken', 'submit', 'redirect', 'session']:
@@ -306,12 +314,15 @@ def program_detail(request, program_id):
     users = models.UserInfo.objects.filter(program=program)
 
     session_goals = {}
+    goals = {}
     for user in users:
-        session_goals[user.pk] = {data.domain: data.goals_measurables() for data in get_skills_data_for_user_as_list(user)}
+        session_goals[user.pk] = {data.domain: data.goals_measurables(get_current_session(user)) for data in get_skills_data_for_user_as_list(user)}
+        goals[user.pk] = get_goals(get_current_session(user))
 
     return render(request, 'musictherapy/program_details.html', {
         'program': program,
         'users': users,
         'session_goals': session_goals,
+        'goals': goals
     })
 
