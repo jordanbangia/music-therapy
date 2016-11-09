@@ -75,11 +75,6 @@ class Migration(migrations.Migration):
             model_name='socialskillsgoals',
             name='user',
         ),
-        migrations.AlterField(
-            model_name='userinfo',
-            name='program',
-            field=models.ForeignKey(to='musictherapy.Program', null=True),
-        ),
         migrations.DeleteModel(
             name='CognitionMemorySkillsGoals',
         ),
