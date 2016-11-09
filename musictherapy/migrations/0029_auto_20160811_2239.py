@@ -8,7 +8,7 @@ import django.core.validators
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('musictherapy', '0028_default_groups_and_users'),
+        ('musictherapy', '0027_auto_20160110_1224'),
     ]
 
     operations = [
