@@ -1,0 +1,17 @@
+.forms-wrapper{
+    margin: 20px;
+}
+
+.page-wrapper {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+textarea {
+    z-index: auto;
+    position: relative;
+    line-height: 20px;
+    font-size: 14px;
+    transition: none;
+    background: transparent !important;
+}

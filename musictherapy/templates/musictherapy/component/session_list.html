@@ -1,0 +1,19 @@
+<table id="session-table" class="sort">
+    <thead>
+        <tr>
+            <th class="sort-header">Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for session in sessions %}
+        <tr>
+            <td><a href="">{{ session.date }}</a></td>
+            <!--{% url 'musictherapy:session_detail' user.id session.id-->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    new Tablesort(document.getElementById('session-table'));
+</script>

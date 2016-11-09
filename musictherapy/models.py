@@ -59,12 +59,20 @@ class UserInfo(models.Model):
     language_spoken = models.CharField(max_length=100, verbose_name="Language Spoken")
     musical_history = models.CharField(max_length=500, verbose_name="Musical History")
     care_plan = models.TextField(default="", verbose_name="Alzheimer Society Peel Care Plan")
-    program = models.ForeignKey(Program, null=True)
+    program = models.ForeignKey(Program, null=True, blank=True)
     asp_level = models.IntegerField(verbose_name="Alzheimer Society Peel Level of Care", choices=((1, 1), (2, 2), (3, 3)))
     updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return self.name
+
+
+class Session(models.Model):
+    user = models.ForeignKey(UserInfo, related_name="sessions", null=False)
+    date = models.DateTimeField(auto_now=True, verbose_name="Session Date")
+
+    class Meta:
+        unique_together = ('user', 'date')
 
 
 class Domains(models.Model):
@@ -117,15 +125,6 @@ class GoalsMeasurables(models.Model):
         return '{} - {} - {}'.format(self.goal.domain.name, self.goal.name, self.name)
 
 
-class UserGoals(models.Model):
-    user = models.ForeignKey(UserInfo, related_name="goals", null=False)
-    goal = models.ForeignKey(Goals, on_delete=models.CASCADE, null=False)
-    updated = models.DateTimeField(auto_now=True, blank=True, null=True)
-
-    class Meta:
-        unique_together = ('user', 'goal')
-
-
 class UserMeasurables(models.Model):
     user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="measurables", null=False)
     measurable = models.ForeignKey(DomainMeasurables, on_delete=models.CASCADE, null=False)
@@ -146,24 +145,36 @@ class UserDomainNoteMeasurables(models.Model):
         unique_together = ('user', 'domain', 'updated')
 
 
+class UserGoals(models.Model):
+    session = models.ForeignKey(Session, null=True)
+    user = models.ForeignKey(UserInfo, related_name="goals", null=True)
+    goal = models.ForeignKey(Goals, on_delete=models.CASCADE, null=False)
+    updated = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    # class Meta:
+    #     unique_together = ('user', 'goal', 'session')
+
+
 class UserGoalMeasurables(models.Model):
-    user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="goalmeasurables", null=False)
-    goal_measurable = models.ForeignKey(GoalsMeasurables, on_delete=models.CASCADE, null=False)
+    user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="goalmeasurables", null=True)
+    goal_measurable = models.ForeignKey(GoalsMeasurables, on_delete=models.CASCADE, null=True)
+    session = models.ForeignKey(Session, null=True)
     value = models.IntegerField(choices=SKILLS_SCALE)
     updated = models.DateTimeField( blank=True, null=True)
 
-    class Meta:
-        unique_together = ('user', 'goal_measurable', 'updated')
+    # class Meta:
+    #     unique_together = ('user', 'goal_measurable', 'updated', 'session')
 
 
 class UserGoalNoteMeasurable(models.Model):
-    user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="goalmeasurables_note", null=False)
+    user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="goalmeasurables_note", null=True)
+    session = models.ForeignKey(Session, null=True)
     domain = models.ForeignKey(Domains, null=False)
     note = models.TextField(default="", null=True, blank=True)
     updated = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        unique_together = ('user', 'domain', 'updated')
+    #
+    # class Meta:
+    #     unique_together = ('user', 'domain', 'updated', 'session')
 
 
 class MusicalPreference(models.Model):

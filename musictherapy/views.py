@@ -12,6 +12,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 
 from musictherapy.forms import *
+from musictherapy.goals import get_session_goals, get_skills_data_for_user_as_list
+from musictherapy.sessions import get_all_sessions, get_current_session
 from musictherapy.skills_data import SkillsData
 
 STATUS_MESSAGES = {
@@ -38,11 +40,11 @@ PREFIXES = {
 
 def index(request):
     if request.user.is_authenticated():
-        return redirect('/musictherapy/patients')
+        return redirect('/musictherapy/users')
     else:
         return render(request, 'musictherapy/index.html', {
             'form': AuthenticationForm(request=request),
-            'next': '/musictherapy/patients'
+            'next': '/musictherapy/users'
         })
 
 
@@ -68,33 +70,39 @@ def user_detail(request, user_id):
     user = get_object_or_404(models.UserInfo, pk=user_id)
     user_form = UserInfoForm(instance=user)
     user_last_updated = user.updated
-
     program_form = ProgramForm()
 
     musicpref = get_object_or_None(models.MusicalPreference, pk=user_id)
-    musicpref_form = MusicalPrefForm(instance=musicpref)
+    musicpref_form = MusicalPrefForm(instance=musicpref, user_id=user_id)
     musicpref_last_updated = musicpref.updated if musicpref else None
 
+    sessions = get_all_sessions(user)
+    current_session = get_current_session(user)
+
+    goals = get_goals(current_session)
     com = SkillsData("Communication", user)
     pss = SkillsData("Psycho-Social", user)
     physical = SkillsData("Physical", user)
     cog = SkillsData("Cognitive", user)
     music = SkillsData("Music", user)
     affective = SkillsData("Affective", user)
+    session_goals = get_session_goals(current_session, user)
 
-    return render(request, 'musictherapy/detail.html', {
+    return render(request, 'musictherapy/user_detail.html', {
+        # general user details, not session based
+        'userinfo': user,
         'user_info_form': user_form,
-        'goals': get_goals(user),
-        'session_goals': {data.domain: data.goals_measurables() for data in [com, pss, physical, cog, music, affective]},
         'user_last_updated': user_last_updated,
         'program_form': program_form,
-
-        'summary': {data.domain: data.summary_measurable() for data in [com, pss, physical, cog, music, affective]},
-
+        'sessions': sessions,
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated': musicpref_last_updated,
 
-        'general_goals': SkillsData("General", user).to_dict(),
+        # session based use details
+        'current_session': current_session,
+        'goals': goals,
+        'session_goals': session_goals,
+        'summary': {data.domain: data.summary_measurable() for data in [com, pss, physical, cog, music, affective]},
         'com_data': com.to_dict(),
         'pss_data': pss.to_dict(),
         'physical_data': physical.to_dict(),
@@ -107,8 +115,10 @@ def user_detail(request, user_id):
 @login_required(login_url='/musictherapy/login')
 def create_user(request):
     user_form = UserInfoForm()
-    return render(request, 'musictherapy/detail.html', {
+    program_form = ProgramForm()
+    return render(request, 'musictherapy/user_detail.html', {
         'user_info_form': user_form,
+        'program_form': program_form,
         'new': True
     })
 
@@ -135,12 +145,21 @@ def save_new_basic(request):
         user_form = UserInfoForm(request.POST)
         if user_form.is_valid():
             user = user_form.save()
-            return redirect('/musictherapy/' + str(user.pk), {
-                'tab': 'user_info',
-            })
-        else:
-            print("From was not valid")
-            return HttpResponse(404)
+            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user.pk)}))
+        return HttpResponse(user_form.errors)
+    return HttpResponse(404)
+
+
+@login_required(login_url='/musictherapy/login')
+def save_basic_info(request, user_id):
+    user = get_object_or_None(models.UserInfo, pk=user_id)
+    if request.method == 'POST':
+        user_form = UserInfoForm(request.POST, instance=user)
+        if user_form.is_valid():
+            user_form.save()
+            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
+        return HttpResponse(user_form.errors)
+    return HttpResponse(404)
 
 
 @permission_required(perm='musictherapy.delete_userinfo')
@@ -151,26 +170,32 @@ def delete_user(request, user_id):
         user.delete()
         return redirect('/musictherapy/')
     else:
-        return redirect('/musictherapy/patients?status=no_permission')
+        return redirect('/musictherapy/users?status=no_permission')
 
 
 @login_required(login_url='/musictherapy/login')
 def save_user_goals(request, user_id):
+    print(user_id)
     user = get_object_or_404(models.UserInfo, pk=user_id)
-    user_goals = [ug.pk for ug in models.UserGoals.objects.filter(user=user)]
     if request.method == 'POST':
+        session = get_object_or_None(models.Session, pk=request.POST.get('session'))
+        if not session:
+            session = models.Session(user=user)
+            session.save()
+        user_goals = [ug.pk for ug in models.UserGoals.objects.filter(session=session)]
         for goal in request.POST.getlist('goals', []):
             goal_model = models.Goals.objects.get(pk=goal)
-            user_goal = get_object_or_None(models.UserGoals, goal=goal_model)
+            user_goal = get_object_or_None(models.UserGoals, goal=goal_model, session=session)
             if not user_goal:
-                user_goal = models.UserGoals(user=user, goal=goal_model)
+                user_goal = models.UserGoals(session=session, goal=goal_model)
                 user_goal.save()
             else:
                 user_goals.remove(user_goal.pk) if user_goal.pk in user_goals else None
 
         for ug in user_goals:
             models.UserGoals.objects.get(pk=ug).delete()
-        return redirect('/musictherapy/' + user_id)
+    print(user_id)
+    return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
 
 
 @permission_required(perm='auth.add_user')
@@ -186,7 +211,7 @@ def create_staff(request):
         staff_form = StaffForm(request.POST)
         if staff_form.is_valid():
             staff_form.save()
-            return redirect('/musictherapy/patients?status=staff_added')
+            return redirect('/musictherapy/users?status=staff_added')
         else:
             return render(request, 'musictherapy/staff.html', {
                 'staff_form': staff_form,
@@ -194,26 +219,16 @@ def create_staff(request):
 
 
 @login_required(login_url='/musictherapy/login')
-def save_basic_info(request, user_id):
-    user = get_object_or_404(models.UserInfo, pk=user_id)
-    if request.method == 'POST':
-        user_form = UserInfoForm(request.POST, instance=user)
-        if user_form.is_valid():
-            user_form.save()
-            return redirect('/musictherapy/' + user_id)
-
-
-@login_required(login_url='/musictherapy/login')
 def save_music_pref(request, user_id):
     musicpref = get_object_or_None(models.MusicalPreference, pk=user_id)
     if request.method == 'POST':
-        musicpref_form = MusicalPrefForm(request.POST, instance=musicpref)
+        musicpref_form = MusicalPrefForm(request.POST, instance=musicpref, user_id=user_id)
         if musicpref_form.is_valid():
             if musicpref is None:
                 musicpref = musicpref_form.save(commit=False)
                 musicpref.user = get_object_or_404(models.UserInfo, pk=user_id)
             musicpref_form.save()
-            return redirect('/musictherapy/' + user_id)
+            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
 
 
 @login_required(login_url='/musictherapy/login')
@@ -221,7 +236,7 @@ def save_measurables(request, user_id):
     if request.method == 'POST':
         data = request.POST.dict()
         user = get_object_or_404(models.UserInfo, pk=user_id)
-        date = datetime.now()
+        d = datetime.now()
         for measurable_id, measurable_value in data.iteritems():
             if measurable_id.lower() in ['save', 'csrfmiddlewaretoken', 'submit', 'redirect']:
                 continue
@@ -229,15 +244,15 @@ def save_measurables(request, user_id):
             elif 'measurablesnotes' in measurable_id.lower():
                 domain_prefix = measurable_id.lower().split('_')[0]
                 domain = get_object_or_404(models.Domains, name=PREFIXES[domain_prefix])
-                notes = models.UserDomainNoteMeasurables(user=user, domain=domain, note=measurable_value, updated=date)
+                notes = models.UserDomainNoteMeasurables(user=user, domain=domain, note=measurable_value, updated=d)
                 notes.save()
 
             else:
                 measurable = models.DomainMeasurables.objects.get(pk=measurable_id)
-                user_measurable = models.UserMeasurables(user=user, measurable=measurable, value=measurable_value, updated=date)
+                user_measurable = models.UserMeasurables(user=user, measurable=measurable, value=measurable_value, updated=d)
                 user_measurable.save()
 
-        return redirect('/musictherapy/' + user_id + data['redirect'].lower())
+        return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
 
 
 @login_required(login_url='/musictherapy/login')
@@ -245,33 +260,43 @@ def save_goalmeasurables(request, user_id):
     if request.method == 'POST':
         data = request.POST.dict()
         user = get_object_or_404(models.UserInfo, pk=user_id)
-        date = datetime.now()
+        session = get_object_or_None(models.Session, pk=data['session'])
+        if not session:
+            session = models.Session(user=user)
+            session.save()
+
         for measurable_id, measurable_value in data.iteritems():
-            if measurable_id.lower() in ['save', 'csrfmiddlewaretoken', 'submit', 'redirect']:
+            if measurable_id.lower() in ['save', 'csrfmiddlewaretoken', 'submit', 'redirect', 'session']:
                 continue
 
             elif 'goalsnotes' in measurable_id.lower():
                 domain_prefix = measurable_id.lower().split('_')[0]
                 domain = get_object_or_404(models.Domains, name=PREFIXES[domain_prefix])
-                notes = models.UserGoalNoteMeasurable(user=user, domain=domain, note=measurable_value, updated=date)
+                notes = get_object_or_None(models.UserGoalNoteMeasurable, session=session, domain=domain)
+                if not notes:
+                    notes = models.UserGoalNoteMeasurable(session=session, domain=domain, note=measurable_value)
+                else:
+                    notes.note = measurable_value
                 notes.save()
 
             else:
                 measurable = models.GoalsMeasurables.objects.get(pk=measurable_id)
-                user_measurable = models.UserGoalMeasurables(user=user, goal_measurable=measurable, value=measurable_value, updated=date)
+                user_measurable = models.UserGoalMeasurables(session=session, goal_measurable=measurable, value=measurable_value)
                 user_measurable.save()
 
+        if 'redirect' in data:
+            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id':int(user_id)}))
         return HttpResponse(200)
     return HttpResponse(404)
 
 
-def get_goals(user):
+def get_goals(session):
     goals = defaultdict(list)
     for g in models.Goals.objects.filter(parent=None, enabled=1).order_by('domain'):
         goals[g.domain.name if g.domain.parent is None else g.domain.parent.name] += [g]
     goals = dict(goals)
     goals['order'] = ['General'] + [domain for domain in goals.keys() if domain != 'General']
-    goals['user'] = [ug.goal.pk for ug in models.UserGoals.objects.filter(user=user)]
+    goals['user'] = [ug.goal.pk for ug in models.UserGoals.objects.filter(session=session)]
     return goals
 
 
@@ -282,7 +307,7 @@ def program_detail(request, program_id):
 
     session_goals = {}
     for user in users:
-        session_goals[user.pk] = {data.domain: data.goals_measurables() for data in get_skills_data_for_user(user)}
+        session_goals[user.pk] = {data.domain: data.goals_measurables() for data in get_skills_data_for_user_as_list(user)}
 
     return render(request, 'musictherapy/program_details.html', {
         'program': program,
@@ -290,13 +315,3 @@ def program_detail(request, program_id):
         'session_goals': session_goals,
     })
 
-
-def get_skills_data_for_user(user):
-    return [
-        SkillsData("Communication", user),
-        SkillsData("Psycho-Social", user),
-        SkillsData("Physical", user),
-        SkillsData("Cognitive", user),
-        SkillsData("Music", user),
-        SkillsData("Affective", user),
-    ]

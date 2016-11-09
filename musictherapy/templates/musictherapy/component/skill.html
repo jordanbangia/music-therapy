@@ -1,0 +1,59 @@
+{% load crispy_forms_tags %}
+{% load template_getattr %}
+
+{% if data.past_measurables %}
+    {% include 'musictherapy/component/past_measurable_list.html' with past_measurables=data.past_measurables pre=pre %}
+{% endif %}
+
+{% if data.measurables %}
+    {% include 'musictherapy/component/measurable.html' with measurables=data.measurables pre=pre user=user%}
+{% endif %}
+
+{% if data.has_goals and data.goals_measurables%}
+<div class="panel-group" id="accordion-{{pre}}goals">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{pre}}goals" href="#{{pre}}-goals" aria-expanded="true">Submit {{type}} Goals Measurables</a>
+            </h4>
+        </div>
+        <div id="{{pre}}-goals" class="panel-collapse collapse in" aria-expanded="true">
+            <div class="panel-body">
+                <form action="{% url 'musictherapy:save_goalmeasurables' user.id %}" method="post">
+                    {% csrf_token %}
+                    {% for measurable in data.goals_measurables %}
+                        <div class="col-md-12" style="padding: 2px">
+                            <div class="col-md-6">
+                                <label class="control-label" style="padding: 5px">{{measurable.goal.name}} - {{measurable.name}}</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="select form-control" name="{{measurable.pk}}">
+                                    <option value=-1>Not Measured</option>
+                                    <option value=0>None/Never</option>
+                                    <option value=1>Low/Rarely/Poor</option>
+                                    <option value=2>Medium/Sometimes/Good</option>
+                                    <option value=3>High/Always/Very Good</option>
+                                </select>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="controls col-lg-6">
+                        <label class="control-label" style="padding-top: 5px">Notes</label>
+                    </div>
+                    <div class="controls col-lg-6">
+                        <textarea class="textarea form-control" cols="40" name="{{pre}}_goalsnotes" rows="10" spellcheck="true" style="z-index: auto; position: relative; line-height: 20px; font-size: 14px; transition: none; background: transparent !important;"></textarea>
+                    </div>
+                    <input type="submit" name="submit" value="Save"/>
+                    <input type="hidden" name="session" value="{{session.id}}"/>
+                    <input type="hidden" name="redirect" value="redirect"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+{% if data.chart %}
+{% include "musictherapy/chart.html" with chart=data.chart goals=data.goal_notes%}
+{% endif %}

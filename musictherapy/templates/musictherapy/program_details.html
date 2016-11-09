@@ -4,40 +4,7 @@
 <html>
 
 <head>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-
-    <script type="text/javascript" src="{% static 'musictherapy/jquery-1.11.3.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'musictherapy/tablesort.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'musictherapy/toastr.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'musictherapy/tablesort.css' %}" type="text/css"/>
-    <link rel="stylesheet" href="{% static 'musictherapy/toastr.min.css' %}" type="text/css"/>
-
-    <!-- toastr from https://codeseven.github.io/toastr/ -->
-
-    <script>
-        toastr.options = {
-          "closeButton": true,
-          "debug": false,
-          "newestOnTop": false,
-          "progressBar": false,
-          "positionClass": "toast-top-right",
-          "preventDuplicates": false,
-          "onclick": null,
-          "showDuration": "300",
-          "hideDuration": "1000",
-          "timeOut": 2000,
-          "extendedTimeOut": 0,
-          "showEasing": "swing",
-          "hideEasing": "linear",
-          "showMethod": "fadeIn",
-          "hideMethod": "fadeOut",
-          "tapToDismiss": false
-        };
-    </script>
+    {% include "musictherapy/header.html" %}
 </head>
 <body>
     <div class="page">

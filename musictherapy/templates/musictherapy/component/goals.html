@@ -1,5 +1,5 @@
 {% load template_getattr %}
-<form action="submit_goals/#goals" method="post">
+<form action="{% url 'musictherapy:save_goals' user.id %}" method="post">
     {% csrf_token %}
     {% for domain in goals.order %}
         <div class="col-md-12">
@@ -8,10 +8,11 @@
         {% for goal in goals|getattrib:domain %}
         <div class="col-md-12">
             <input type="checkbox" name="goals" value={{goal.pk}} id="goal_{{goal.pk}}" {% if goal.pk in goals.user %} checked {% endif %}/>
-            <label for="goal_{{goal.pk}}">{{goal.name}}</label>
+            <label for="goal_{{goal.pk}}"><h5>{{goal.name}}</h5></label>
         </div>
+        <br>
         {% endfor %}
     {% endfor %}
-
-    <input type="submit" name="submit" value="Save" />
+    <input type="hidden" name="session" value="{{session.id}}"/>
+    <input type="submit" name="submit" value="Save Goals" />
 </form>

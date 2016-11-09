@@ -1,4 +1,4 @@
-<table id="userTable" class="sort">
+<table id="user-table" class="sort">
     <thead>
         <tr>
             <th class="sort-header">Name</th>
@@ -14,7 +14,7 @@
             <tr>
                 <td><a href="{% url 'musictherapy:user_detail' user.id %}"> {{user.name}}</a></td>
                 <td>{{user.location|join:", "}}</td>
-                {% if user.program != '' %}
+                {% if user.program %}
                 <td><a href="{% url 'musictherapy:program_detail' user.program.id %}">{{user.program}}</a></td>
                 {% else %}
                 <td> - </td>
@@ -28,5 +28,5 @@
 </table>
 
 <script>
-    new Tablesort(document.getElementById('userTable'));
+    new Tablesort(document.getElementById('user-table'));
 </script>

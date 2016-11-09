@@ -1,9 +1,11 @@
-from annoying.functions import get_object_or_None
-import musictherapy.models as models
 import uuid
-
 from collections import defaultdict
+
 import pygal
+from annoying.functions import get_object_or_None
+
+import musictherapy.models as models
+from musictherapy.sessions import get_all_sessions, get_current_session
 
 
 class SkillsData(object):
@@ -41,16 +43,24 @@ class SkillsData(object):
         goals = models.Goals.objects.filter(domain__in=self.all_domains, enabled=1)
         return models.UserGoals.objects.filter(goal__in=goals).count() > 0
 
-    def goals_measurables(self):
+    def goals_measurables(self, session):
         if not self.all_domains:
             self.measurables()
 
         goals = models.Goals.objects.filter(domain__in=self.all_domains, enabled=1)
-        user_goals = models.UserGoals.objects.filter(goal__in=goals)
+        print("Start")
+        print(len(goals))
+        user_goals = models.UserGoals.objects.filter(goal__in=goals, session=session)
+        print(len(user_goals))
         goals_measurables = models.GoalsMeasurables.objects.filter(goal__in=[ug.goal for ug in user_goals], enabled=1)
+        print(len(goals_measurables))
+        print("End")
         return goals_measurables
 
     def past_measurables(self):
+        if not self.all_domains:
+            self.measurables()
+
         users_measurables = models.UserMeasurables.objects.filter(user=self.user)
         notes = models.UserDomainNoteMeasurables.objects.filter(user=self.user, domain=self.domain_model)
 
@@ -107,11 +117,12 @@ class SkillsData(object):
     def chart(self):
         if self.has_goal():
             line_chart = pygal.Line(truncate_legend=30)
-            goals = self.goals_measurables()
+            goals = self.goals_measurables(get_current_session(self.user))
             data = dict()
             for goal in goals:
-                updates = models.UserGoalMeasurables.objects.filter(goal_measurable=goal).order_by('-updated')
-                data[goal.name] = {update.updated: update.value if update.value != -1 else None for update in updates}
+                updates = models.UserGoalMeasurables.objects.filter(goal_measurable=goal)
+                updates = sorted(updates, key=lambda u: u.session.date, reverse=True)
+                data[goal.name] = {update.session.date: update.value if update.value != -1 else None for update in updates if update.session}
 
             all_dates = set()
             for updates in data.itervalues():
@@ -136,11 +147,13 @@ class SkillsData(object):
             return None
 
     def goal_notes(self):
-        notes = models.UserGoalNoteMeasurable.objects.filter(user=self.user, domain=self.domain_model).order_by('-updated')
+        notes = models.UserGoalNoteMeasurable.objects.filter(session=get_current_session(self.user), domain=self.domain_model)
+        print([n.session.date for n in notes])
+        notes = sorted(notes, key=lambda n: n.session.date, reverse=True)
         data = []
         for note in notes:
             data.append({
-                'updated': note.updated,
+                'updated': note.session.date,
                 'notes': note.note,
                 'id': str(uuid.uuid4())
             })
@@ -151,7 +164,7 @@ class SkillsData(object):
             measurables=self.measurables(),
             has_goals=self.has_goal(),
             past_measurables=self.past_measurables(),
-            goals_measurables=self.goals_measurables(),
+            goals_measurables=self.goals_measurables(get_current_session(self.user)),
             chart=self.chart(),
             goal_notes=self.goal_notes(),
         )

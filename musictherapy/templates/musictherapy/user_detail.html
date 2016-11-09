@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+{% load template_getattr %}
+{% load crispy_forms_tags %}
+<html>
+    <head>
+        {% include 'musictherapy/component/header.html' %}
+    </head>
+
+    <body>
+        <div class="row" style="padding-left: 2%">
+            <div class="col-md-10">
+                <h1>{{userinfo.name}} - Session: {{current_session.date}}</h1>
+            </div>
+            <div class="col-md-2">
+                <a class="btn btn-info pull-right" href="{% url 'musictherapy:logout' %}" style="margin:5px">Logout</a>
+                <a class="btn btn-info pull-right" href="{% url 'musictherapy:list' %}" style="margin:5px">Back to Index</a>
+            </div>
+        </div>
+        <div class="page-wrapper">
+            <ul class ="nav nav-tabs" id="tabs">
+                <li class="active"><a data-toggle="tab" data-target="#basicinfo">Basic Information</a></li>
+                {% if musical_pref_form %}
+                <li><a data-toggle="tab" data-target="#musicpref">Musical Preference</a></li>
+                {% endif %}
+                {% if sessions %}
+                <li><a data-toggle="tab" data-target="#pastsessions">Past Sessions</a></li>
+                {% endif %}
+                {% if summary %}
+                <li><a data-toggle="tab" data-target="#summary">Summary</a></li>
+                {% endif%}
+                {% if goals or session_goals %}
+                <li><a data-toggle="tab" data-target="#sessiongoals">Treatment Plan</a></li>
+                {% endif %}
+                {% if general_goals %}
+                <li><a data-toggle="tab" data-target="#generalgoals">General Goals</a></li>
+                {% endif %}
+                {% if com_data %}
+                <li><a data-toggle="tab" data-target="#comskills">Communication Skills</a></li>
+                {% endif %}
+                {% if pss_data %}
+                <li><a data-toggle="tab" data-target="#pssskills">Psycho-Social Skills</a></li>
+                {% endif %}
+                {% if physical_data %}
+                <li><a data-toggle="tab" data-target="#physicalskills">Physical Skills</a></li>
+                {% endif  %}
+                {% if cog_data %}
+                <li><a data-toggle="tab" data-target="#cogskills">Cognitive and Memory Skills</a></li>
+                {% endif %}
+                {% if affective_data %}
+                <li><a data-toggle="tab" data-target="#affectiveskills">Affective Skills</a></li>
+                {% endif %}
+                {% if music_data %}
+                <li><a data-toggle="tab" data-target="#musicskills">Music Skills</a></li>
+                {% endif %}
+            </ul>
+
+            <div class="tab-content forms-wrapper">
+                {% if goals %}
+                <div id="sessiongoals" class="tab-pane fade">
+                    <div class="col-lg-4">
+                        {% include "musictherapy/component/goals.html" with goals=goals user=userinfo session=current_session%}
+                    </div>
+                    <div class="col-lg-8">
+                        {% if session_goals %}
+                            {% include "musictherapy/component/session_goals.html" with goals=session_goals session=current_session user=userinfo%}
+                        {% else %}
+                            <h3>Select and save goals to start adding measurables.</h3>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div id ="musicpref" class="tab-pane fade">
+                    {% if musical_pref_form %}
+                        {% crispy musical_pref_form %}
+
+                        {% if musicpref_last_updated %}
+                        <br>
+                        <h4>Last updated {{ musicpref_last_updated }}</h4>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <div id="basicinfo" class="tab-pane fade in active">
+                    {% include 'musictherapy/component/user_info.html' with user=userinfo user_info_form=user_info_form program_form=program_form user_last_updated=user_last_updated %}
+                </div>
+
+                <div id="pastsessions" class="tab-pane fade">
+                    {% include 'musictherapy/component/session_list.html' with sessions=sessions %}
+                </div>
+
+                <div id="summary" class="tab-pane fade">
+                    {% for domain, domain_data in summary.items %}
+                        {% if forloop.counter0|divisibleby:2 %}
+                        <div class="row" style="padding:2%">
+                            <div class="col-md-6">
+                                {% if domain_data %}
+                                    {% include "musictherapy/summary_data.html" with summary=domain_data type=domain %}
+                                {% else %}
+                                    <h3>No measurables have been recored yet for {{domain}}</h3>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="col-md-6">
+                                {% if domain_data %}
+                                    {% include "musictherapy/summary_data.html" with summary=domain_data type=domain %}
+                                {% else %}
+                                    <h3>No measurables have been recored yet for {{domain}} Domain</h3>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% if not summary|length|divisibleby:2 %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div id="generalgoals" class="tab-pane fade">
+                    {% include "musictherapy/component/skill.html" with type="General" pre="general" data=general_goals session=current_session%}
+                </div>
+
+                <div id="comskills" class="tab-pane fade">
+                    {% include "musictherapy/component/skill.html" with type="Communication" pre="com" data=com_data session=current_session%}
+                </div>
+
+                <div id="pssskills" class="tab-pane fade">
+                    {% include "musictherapy/component/skill.html" with type="Psycho-Social" pre="pss" data=pss_data session=current_session%}
+                </div>
+
+                <div id="physicalskills" class="tab-pane fade">
+                    {% include "musictherapy/component/skill.html" with type="Physical" pre="physical" data=physical_data session=current_session%}
+                </div>
+
+                <div id="cogskills" class="tab-pane fade">
+                    {% include "musictherapy/component/skill.html" with type="Cognitive and Memory" pre="cog" data=cog_data session=current_session%}
+                </div>
+
+                <div id="musicskills" class="tab-pane fade">
+                    {% include "musictherapy/component/skill.html" with type="Music" pre="music" data=music_data session=current_session%}
+                </div>
+
+                <div id="affectiveskills" class="tab-pane fade">
+                    {% include "musictherapy/component/skill.html" with type="Affective" pre="affective" data=affective_data session=current_session%}
+                </div>
+            </div>
+        </div>
+    </body>
+
+<script type="text/javascript">
+$("#new-program-form").submit(function(e) {
+    e.preventDefault();
+    $form = $(this);
+    var url = $form.attr('action');
+    var errorText = $("#new-program-form-error");
+    errorText.html('');
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: 'json',
+        data: $("#new-program-form").serialize(),
+        success: function(data) {
+            if (data == 404) {
+                toastr.error("There was a problem saving the program, try again later.");
+            } else {
+                var option = $("<option>" + data["display"] + "</option>");
+                option.attr('value', data["pk"]);
+                $('#id_program').append(option);
+                $('#id_program option[value='+data["pk"] +']').attr("selected", "selected");
+                $('#new-program-modal').modal('toggle');
+                toastr.success("Saved new program " + data["display"])
+            }
+        }
+    });
+});
+</script>
+
+
+</html>

@@ -1,0 +1,37 @@
+{% load template_getattr %}
+
+<div class="panel-group" id="accordion-{{pre}}past_assessments">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{pre}}assessment" href="#{{pre}}-pastassessment" aria-expanded="true">Past {{type}} Assessments</a>
+            </h4>
+        </div>
+        <div id="{{pre}}-pastassessment" class="panel-collapse collapse in" aria-expanded="true">
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <tr>
+                        {% for field in past_measurables.fields %}
+                        <th>{{ field }}</th>
+                        {% endfor %}
+                    </tr>
+
+                    {% for measurable in past_measurables.data %}
+                    <tr>
+                        {% for field in past_measurables.fields %}
+                            {% if field = 'Note' %}
+                            <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#{{pre}}-assessment-{{measurable.id}}">Notes</button></td>
+                                    {% include "musictherapy/notes.html" with id=measurable.id date=measurable.Updated notes=measurable.Note data_type="assessment"%}
+                            {% elif field = 'Updated' or measurable|getattrib:field == '--' %}
+                                <td>{{ measurable|getattrib:field }}</td>
+                            {% else %}
+                                <td>{{ measurable|getattrib:field|floatformat:2 }}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
