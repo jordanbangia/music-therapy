@@ -97,6 +97,7 @@ def user_detail(request, user_id):
         'sessions': sessions,
         'musical_pref_form': musicpref_form,
         'musicpref_last_updated': musicpref_last_updated,
+        'tab': request.GET.get('tab', 'info'),
 
         # session based use details
         'current_session': current_session,
@@ -119,6 +120,7 @@ def create_user(request):
     return render(request, 'musictherapy/user_detail.html', {
         'user_info_form': user_form,
         'program_form': program_form,
+        'tab': 'info',
         'new': True
     })
 
@@ -145,7 +147,7 @@ def save_new_basic(request):
         user_form = UserInfoForm(request.POST)
         if user_form.is_valid():
             user = user_form.save()
-            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user.pk)}))
+            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user.pk)}) + "?tab=info")
         return HttpResponse(user_form.errors)
     return HttpResponse(404)
 
@@ -157,7 +159,7 @@ def save_basic_info(request, user_id):
         user_form = UserInfoForm(request.POST, instance=user)
         if user_form.is_valid():
             user_form.save()
-            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
+            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}) + "?tab=info")
         return HttpResponse(user_form.errors)
     return HttpResponse(404)
 
@@ -200,7 +202,7 @@ def save_user_goals(request, user_id):
         if red == 'program':
             return redirect(reverse('musictherapy:program_detail', kwargs={'program_id': int(user.program.pk)}))
         else:
-            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
+            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}) + "?tab=goals")
     return HttpResponse(404)
 
 
@@ -234,7 +236,7 @@ def save_music_pref(request, user_id):
                 musicpref = musicpref_form.save(commit=False)
                 musicpref.user = get_object_or_404(models.UserInfo, pk=user_id)
             musicpref_form.save()
-            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
+            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}) + "?tab=musicpref")
 
 
 @login_required(login_url='/musictherapy/login')
@@ -258,7 +260,12 @@ def save_measurables(request, user_id):
                 user_measurable = models.UserMeasurables(user=user, measurable=measurable, value=measurable_value, updated=d)
                 user_measurable.save()
 
-        return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
+        red = data.get('redirect')
+        if red:
+            red = red[:3]
+        else:
+            red = 'info'
+        return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}) + "?tab={}".format(red))
 
 
 @login_required(login_url='/musictherapy/login')
@@ -292,8 +299,9 @@ def save_goalmeasurables(request, user_id):
                 user_measurable = models.UserGoalMeasurables(session=session, goal_measurable=measurable, value=measurable_value)
                 user_measurable.save()
 
-        if 'redirect' in data:
-            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id':int(user_id)}))
+        red = data.get('redirect')
+        if red:
+            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}) + "?tab={}".format(red[:3]))
         return HttpResponse(200)
     return HttpResponse(404)
 
@@ -325,4 +333,3 @@ def program_detail(request, program_id):
         'session_goals': session_goals,
         'goals': goals
     })
-

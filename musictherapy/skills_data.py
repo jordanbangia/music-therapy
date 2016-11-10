@@ -143,7 +143,6 @@ class SkillsData(object):
 
     def goal_notes(self):
         notes = models.UserGoalNoteMeasurable.objects.filter(session=get_current_session(self.user), domain=self.domain_model)
-        print([n.session.date for n in notes])
         notes = sorted(notes, key=lambda n: n.session.date, reverse=True)
         data = []
         for note in notes:
