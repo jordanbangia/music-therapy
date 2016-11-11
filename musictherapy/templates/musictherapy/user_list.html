@@ -5,7 +5,7 @@
             <th class="sort-header">Location</th>
             <th class="sort-header">Program</th>
             {% if perms.musictherapy.delete_userinfo %}
-            <th class="no-sort"></th>
+            <th class="no-sort">Actions</th>
             {% endif %}
         </tr>
     </thead>
@@ -19,9 +19,16 @@
                 {% else %}
                 <td> - </td>
                 {% endif %}
-                {% if perms.musictherapy.delete_userinfo %}
-                <td><a href="{% url 'musictherapy:delete_user' user.id %}">Delete</a></td>
-                {% endif %}
+                <td>
+                    {% if user.active %}
+                    <a href="{% url 'musictherapy:archive_user' user.id %}?redirect={{redirect}}" class="btn btn-info">Archive</a>
+                    {% else %}
+                    <a href="{% url 'musictherapy:unarchive_user' user.id %}?redirect={{redirect}}" class="btn btn-info">Unarchive</a>
+                    {% endif %}
+                    {% if perms.musictherapy.delete_userinfo %}
+                    <a href="{% url 'musictherapy:delete_user' user.id %}" class="btn btn-info">Delete</a>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
     </tbody>

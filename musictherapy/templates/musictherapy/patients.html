@@ -3,14 +3,8 @@
 <html>
 
 <head>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-
-    <script type="text/javascript" src="{% static 'musictherapy/jquery-1.11.3.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'musictherapy/tablesort.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'musictherapy/tablesort.css' %}" type="text/css"/>
+    {% include "musictherapy/component/header.html" %}
+    <title>ASPMTDOC Home</title>
 </head>
 
 <body>
@@ -18,14 +12,18 @@
 <div class="inner">
     <h1>ASPMTDOC Music Therapy App</h1>
 
+    <h2>Current Active Patients</h2>
+
     {% if user_info_list %}
-        {% include "musictherapy/user_list.html" with user_list=user_info_list %}
+        {% include "musictherapy/user_list.html" with user_list=user_info_list redirect="patients" %}
     {% else %}
         <p> No users available. </p>
     {% endif %}
 
 
 <a class="btn btn-info pull-left" href="{% url 'musictherapy:create_user' %}" style="margin:5px">Add Patient</a>
+
+<a class="btn btn-info pull-left" href="{% url 'musictherapy:all_users' %}" style="margin:5px">View all Patients</a>
 
 <a class="btn btn-info pull-left" href="{% url 'musictherapy:logout' %}" style="margin:5px">Logout</a>
 

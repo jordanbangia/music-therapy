@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    {% include "musictherapy/component/header.html" %}
+    <title>All Patients</title>
+</head>
+<body>
+    <div class="page">
+        <div class="inner">
+            <div class="row" style="padding-top: 1%">
+                <div class="col-md-10">
+                    <h1>All Patients</h1>
+                </div>
+                <div class="col-md-2">
+                    <a class="btn btn-info pull-left" href="{% url 'musictherapy:logout' %}" style="margin:5px">Logout</a>
+                    <a class="btn btn-info pull-left" href="{% url 'musictherapy:list' %}" style="margin:5px">Home</a>
+                </div>
+            </div>
+            {% if user_info_list %}
+                {% include "musictherapy/user_list.html" with user_list=user_info_list redirect="all_users" %}
+            {% else %}
+                <p>No users found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

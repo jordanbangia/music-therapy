@@ -62,6 +62,7 @@ class UserInfo(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True)
     asp_level = models.IntegerField(verbose_name="Alzheimer Society Peel Level of Care", choices=((1, 1), (2, 2), (3, 3)))
     updated = models.DateTimeField(auto_now=True)
+    active = models.IntegerField(choices=((0, 'archived'), (1, 'active')), default=1)
 
     def __unicode__(self):
         return self.name

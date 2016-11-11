@@ -56,13 +56,26 @@ def login(request):
 @login_required(login_url='/musictherapy/login')
 def patients(request):
     status = request.GET.get('status', None)
-    user_info_list = models.UserInfo.objects.all().order_by('location')
+    user_info_list = models.UserInfo.objects.all().filter(active=1).order_by('location')
     context = {
         'user_info_list': user_info_list,
         'status': STATUS_MESSAGES.get(status, None)
     }
 
     return render(request, 'musictherapy/patients.html', context)
+
+
+@login_required(login_url='/musictherapy/login')
+def all_users(request):
+    status = request.GET.get('status', None)
+    user_info_list = models.UserInfo.objects.all().order_by('location')
+    context = {
+        'user_info_list': user_info_list,
+        'status': STATUS_MESSAGES.get(status, None)
+    }
+
+    return render(request, 'musictherapy/base/all_users.html', context)
+
 
 
 @login_required(login_url='/musictherapy/login')
@@ -319,7 +332,7 @@ def get_goals(session):
 @login_required(login_url='/musictherapy/login')
 def program_detail(request, program_id):
     program = get_object_or_None(models.Program, pk=program_id)
-    users = models.UserInfo.objects.filter(program=program)
+    users = models.UserInfo.objects.filter(program=program, active=1)
 
     session_goals = {}
     goals = {}
@@ -333,3 +346,35 @@ def program_detail(request, program_id):
         'session_goals': session_goals,
         'goals': goals
     })
+
+
+@login_required(login_url='/musictherapy/login')
+def archive_user(request, user_id):
+    return update_user_active(request, user_id, active=0)
+
+
+@login_required(login_url='/musictherapy/login')
+def unarchive_user(request, user_id):
+    return update_user_active(request, user_id, active=1)
+
+
+def update_user_active(request, user_id, active):
+    if request.POST:
+        red = request.POST.get('redirect')
+    elif request.GET:
+        red = request.GET.get('redirect')
+
+    user = get_object_or_None(models.UserInfo, pk=user_id)
+    if user:
+        user.active = active
+        user.save()
+        if red:
+            if red == "patients":
+                return redirect(reverse('musictherapy:list'))
+            elif red == "program":
+                return redirect(reverse('musictherapy:program_detail', kwargs={'program_id': int(user.program.id)}))
+            elif red == "all_users":
+                return redirect(reverse('musictherapy:all_users'))
+            else:
+                return HttpResponse(200)
+    return HttpResponse(404)
