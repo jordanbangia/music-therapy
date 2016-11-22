@@ -12,7 +12,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 
 from musictherapy.forms import *
-from musictherapy.goals import get_session_goals, get_skills_data_for_user_as_list
+from musictherapy.goals import get_session_goals, get_skills_data_for_user_as_list, get_custom_goals
 from musictherapy.sessions import get_all_sessions, get_current_session
 from musictherapy.skills_data import SkillsData
 
@@ -77,7 +77,6 @@ def all_users(request):
     return render(request, 'musictherapy/base/all_users.html', context)
 
 
-
 @login_required(login_url='/musictherapy/login')
 def user_detail(request, user_id):
     user = get_object_or_404(models.UserInfo, pk=user_id)
@@ -92,7 +91,7 @@ def user_detail(request, user_id):
     sessions = get_all_sessions(user)
     current_session = get_current_session(user)
 
-    goals = get_goals(current_session)
+    goals = get_goals(current_session, user)
     com = SkillsData("Communication", user)
     pss = SkillsData("Psycho-Social", user)
     physical = SkillsData("Physical", user)
@@ -100,6 +99,7 @@ def user_detail(request, user_id):
     music = SkillsData("Music", user)
     affective = SkillsData("Affective", user)
     session_goals = get_session_goals(current_session, user)
+    custom_session_goals = get_custom_goals(current_session, user)
 
     return render(request, 'musictherapy/user_detail.html', {
         # general user details, not session based
@@ -116,6 +116,7 @@ def user_detail(request, user_id):
         'current_session': current_session,
         'goals': goals,
         'session_goals': session_goals,
+        'custom_session_goals': custom_session_goals,
         'summary': {data.domain: data.summary_measurable() for data in [com, pss, physical, cog, music, affective]},
         'com_data': com.to_dict(),
         'pss_data': pss.to_dict(),
@@ -199,6 +200,24 @@ def save_user_goals(request, user_id):
         if not session:
             session = get_current_session(user)
         user_goals = [ug.pk for ug in models.UserGoals.objects.filter(session=session)]
+        custom_goals = [(key, value) for key, value in request.POST.iteritems() if 'custom' in key]
+
+        for domain_key, goal_name in custom_goals:
+            if goal_name == '':
+                continue
+
+            domain = domain_key.split('_')[0]
+            domain = get_object_or_None(models.Domains, name=domain)
+            if not domain:
+                print("Can't find domain or {}, unable to save custom goal {}".format(domain_key, goal_name))
+                continue
+            goal = get_object_or_None(models.Goals, name=goal_name, user=user, is_custom=1, enabled=1, domain=domain)
+            if not goal:
+                goal = models.Goals(name=goal_name, enabled=1, is_custom=1, user=user, domain=domain)
+                goal.save()
+            user_goal = models.UserGoals(session=session, goal=goal)
+            user_goal.save()
+
         for goal in request.POST.getlist('goals', []):
             goal_model = models.Goals.objects.get(pk=goal)
             user_goal = get_object_or_None(models.UserGoals, goal=goal_model, session=session)
@@ -293,6 +312,8 @@ def save_goalmeasurables(request, user_id):
         if not session:
             session = get_current_session(user)
 
+        custom_gm = defaultdict(dict)
+
         for measurable_id, measurable_value in data.iteritems():
             if measurable_id.lower() in ['save', 'csrfmiddlewaretoken', 'submit', 'redirect', 'session']:
                 continue
@@ -307,9 +328,24 @@ def save_goalmeasurables(request, user_id):
                     notes.note = measurable_value
                 notes.save()
 
+            elif 'custom' in measurable_id.lower():
+                customtag, goal = measurable_id.lower().split('_')
+                tag = 'text' if 'text' in customtag else 'value'
+                custom_gm[goal][tag] = measurable_value
+
             else:
                 measurable = models.GoalsMeasurables.objects.get(pk=measurable_id)
                 user_measurable = models.UserGoalMeasurables(session=session, goal_measurable=measurable, value=measurable_value)
+                user_measurable.save()
+
+        for goal_id, measurable in custom_gm.iteritems():
+            if 'text' in measurable and measurable['text'] != '':
+                goal = get_object_or_None(models.Goals, pk=goal_id)
+                if not goal:
+                    return HttpResponse(404)
+                gm = models.GoalsMeasurables(goal=goal, name=measurable['text'], enabled=1, is_custom=1, user=user)
+                gm.save()
+                user_measurable = models.UserGoalMeasurables(session=session, goal_measurable=gm, value=measurable['value'])
                 user_measurable.save()
 
         red = data.get('redirect')
@@ -319,12 +355,16 @@ def save_goalmeasurables(request, user_id):
     return HttpResponse(404)
 
 
-def get_goals(session):
+def get_goals(session, user):
     goals = defaultdict(list)
     for g in models.Goals.objects.filter(parent=None, enabled=1).order_by('domain'):
-        goals[g.domain.name if g.domain.parent is None else g.domain.parent.name] += [g]
+        if g.domain:
+            if not g.is_custom or (g.is_custom and g.user == user):
+                goals[g.domain.name if g.domain.parent is None else g.domain.parent.name] += [g]
     goals = dict(goals)
-    goals['order'] = ['General'] + [domain for domain in goals.keys() if domain != 'General']
+    goals['order'] = ['General'] + [domain for domain in goals.keys() if domain not in ('General', 'Custom')]
+    if 'Custom' in goals:
+        goals['order'] += ['Custom']
     goals['user'] = [ug.goal.pk for ug in models.UserGoals.objects.filter(session=session)]
     return goals
 
@@ -336,14 +376,17 @@ def program_detail(request, program_id):
 
     session_goals = {}
     goals = {}
+    custom_session_goals = {}
     for user in users:
         session_goals[user.pk] = {data.domain: data.goals_measurables(get_current_session(user)) for data in get_skills_data_for_user_as_list(user)}
-        goals[user.pk] = get_goals(get_current_session(user))
+        goals[user.pk] = get_goals(get_current_session(user), user)
+        custom_session_goals[user.pk] = {data.domain: data.custom_goals(get_current_session(user)) for data in get_skills_data_for_user_as_list(user)}
 
     return render(request, 'musictherapy/program_details.html', {
         'program': program,
         'users': users,
         'session_goals': session_goals,
+        'custom_session_goals': custom_session_goals,
         'goals': goals
     })
 

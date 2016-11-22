@@ -9,6 +9,10 @@ def get_session_goals(session, user):
     return session_goals
 
 
+def get_custom_goals(session, user):
+    return {data.domain: data.custom_goals(session) for data in get_skills_data_for_user_as_list(user)}
+
+
 def get_skills_data_for_user_as_list(user):
     return [
         SkillsData("Communication", user),

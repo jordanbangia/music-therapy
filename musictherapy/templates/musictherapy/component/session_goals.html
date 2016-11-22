@@ -1,10 +1,14 @@
+{% load template_getattr %}
+
 <div class="col-md-12">
     <form action="{% url 'musictherapy:save_goalmeasurables' user.id %}" method="post" id="goals-measurables-form-{{user.id}}">
         {% csrf_token %}
-        {% for domain, goals_measurables in session_goals.items %}
-            {% if goals_measurables %}
-                <h3>{{domain}} Goals</h3>
-                {% for measurable in goals_measurables %}
+        {% for domain, goals_data in session_goals.items %}
+            {% if goals_data or custom_session_goals|getattrib:domain %}
+            <h3>{{domain}} Goals</h3>
+            {% endif %}
+            {% if goals_data %}
+                {% for measurable in goals_data %}
                     <div class="col-md-12" style="padding: 2px">
                         <div class="col-md-6">
                             <label class="control-label" style="padding: 5px">{{measurable.goal.name}} - {{measurable.name}}</label>
@@ -20,12 +24,35 @@
                         </div>
                     </div>
                 {% endfor %}
-                <div class="controls col-lg-6">
-                    <label class="control-label" style="padding-top: 5px">Notes</label>
+                <div class="cold-md-12" style="padding: 2px">
+                    <div class="controls col-md-6">
+                        <label class="control-label" style="padding: 5px">Notes</label>
+                    </div>
+                    <div class="controls col-md-6">
+                        <textarea class="textarea form-control" cols="40" name="{{domain|slice:":3"}}_goalsnotes" rows="3" spellcheck="true"></textarea>
+                    </div>
                 </div>
-                <div class="controls col-lg-6">
-                    <textarea class="textarea form-control" cols="40" name="{{domain|slice:":3"}}_goalsnotes" rows="3" spellcheck="true"></textarea>
-                </div>
+            {% endif %}
+            {% if custom_session_goals|getattrib:domain %}
+                {% for goal in custom_session_goals|getattrib:domain %}
+                    <div class="col-md-12" style="padding: 2px">
+                        <div class="col-md-2">
+                            <label class="control-label" style="padding-left: 5px">{{goal.name}}</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input name="customtext_{{goal.pk}}" type="text" value="" id="custom_goal_measurable_{{goal.pk}}"/>
+                        </div>
+                        <div class="col-md-6">
+                            <select class="select form-control" name="customvalue_{{goal.pk}}">
+                                <option value=-1>Not Measured</option>
+                                <option value=0>None/Never</option>
+                                <option value=1>Low/Rarely/Poor</option>
+                                <option value=2>Medium/Sometimes/Good</option>
+                                <option value=3>High/Always/Very Good</option>
+                            </select>
+                        </div>
+                    </div>
+                {% endfor %}
             {% endif %}
         {% endfor %}
 

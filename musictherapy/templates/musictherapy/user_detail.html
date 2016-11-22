@@ -58,8 +58,8 @@
                         {% include "musictherapy/component/goals.html" with goals=goals user=userinfo session=current_session redirect="user" %}
                     </div>
                     <div class="col-lg-8">
-                        {% if session_goals %}
-                            {% include "musictherapy/component/session_goals.html" with goals=session_goals session=current_session user=userinfo%}
+                        {% if session_goals or custom_session_goals %}
+                            {% include "musictherapy/component/session_goals.html" with goals=session_goals session=current_session user=userinfo custom_session_goals=custom_session_goals%}
                         {% else %}
                             <h3>Select and save goals to start adding measurables.</h3>
                         {% endif %}

@@ -27,6 +27,8 @@ Make sure that all the following work without throwing a Django error/ doing som
 - [ ] can set session goals
 - [ ] can set goals measurables for sessions
 - [ ] can add note to goal measurables
+- [ ] can create a custom goal for a domain
+- [ ] can create a custom goal measurable for the custom goal
 - [ ] can see chart with note for recent addition
 - [ ] can see past measurables at the top of the domain
 - [ ] can see summary of recent measurables

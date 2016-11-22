@@ -89,10 +89,12 @@ class Domains(models.Model):
 
 
 class Goals(models.Model):
-    domain = models.ForeignKey(Domains, related_name="goals", null=False)
+    domain = models.ForeignKey(Domains, related_name="goals", null=True)
     name = models.CharField(max_length=100, null=False)
     parent = models.ForeignKey('self', related_name="subgoals", null=True, blank=True)
     enabled = models.IntegerField(choices=((0, 'Disabled'), (1, 'Enabled')))
+    is_custom = models.IntegerField(choices=((0, 'Not Custom'), (1, 'Custom')), default=0)
+    user = models.ForeignKey(UserInfo, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Goal'
@@ -115,9 +117,11 @@ class DomainMeasurables(models.Model):
 
 
 class GoalsMeasurables(models.Model):
-    goal = models.ForeignKey(Goals, related_name="goalsmeasurables", null=False)
+    goal = models.ForeignKey(Goals, related_name="goalsmeasurables", null=True, blank=True)
     name = models.CharField(max_length=300, null=False)
     enabled = models.IntegerField(choices=((0, 'Disabled'), (1, 'Enabled')))
+    is_custom = models.IntegerField(choices=((0, 'Not Custom'), (1, 'Custom')), default=0)
+    user = models.ForeignKey(UserInfo, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Goal Measurable'
@@ -148,7 +152,7 @@ class UserDomainNoteMeasurables(models.Model):
 
 class UserGoals(models.Model):
     session = models.ForeignKey(Session, null=True)
-    user = models.ForeignKey(UserInfo, related_name="goals", null=True)
+    user = models.ForeignKey(UserInfo, null=True)
     goal = models.ForeignKey(Goals, on_delete=models.CASCADE, null=False)
     updated = models.DateTimeField(auto_now=True, blank=True, null=True)
 
@@ -161,7 +165,7 @@ class UserGoalMeasurables(models.Model):
     goal_measurable = models.ForeignKey(GoalsMeasurables, on_delete=models.CASCADE, null=True)
     session = models.ForeignKey(Session, null=True)
     value = models.IntegerField(choices=SKILLS_SCALE)
-    updated = models.DateTimeField( blank=True, null=True)
+    updated = models.DateTimeField(blank=True, null=True)
 
     # class Meta:
     #     unique_together = ('user', 'goal_measurable', 'updated', 'session')

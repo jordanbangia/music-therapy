@@ -52,6 +52,14 @@ class SkillsData(object):
         goals_measurables = models.GoalsMeasurables.objects.filter(goal__in=[ug.goal for ug in user_goals], enabled=1)
         return goals_measurables
 
+    def custom_goals(self, session):
+        if not self.all_domains:
+            self.measurables()
+
+        goals = models.Goals.objects.filter(domain__in=self.all_domains, enabled=1, is_custom=1, user=self.user)
+        user_goals = models.UserGoals.objects.filter(goal__in=goals, session=session)
+        return [ug.goal for ug in user_goals]
+
     def past_measurables(self):
         if not self.all_domains:
             self.measurables()
@@ -162,16 +170,3 @@ class SkillsData(object):
             chart=self.chart(),
             goal_notes=self.goal_notes(),
         )
-
-
-# both should be a UserMeasurable
-def measurable_comparison(x, y):
-    if x.measurable.domain > y.measurable.domain:
-        return 1
-    elif x.measurable.domain == y.measurable.domain:
-        if x.measurable.name > y.measurable.name:
-            return 1
-        else:
-            return -1
-    else:
-        return -1

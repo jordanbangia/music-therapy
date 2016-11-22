@@ -12,9 +12,16 @@
             <input type="checkbox" name="goals" value={{goal.pk}} id="goal_{{goal.pk}}" {% if goal.pk in goals.user %} checked {% endif %}/>
             <label for="goal_{{goal.pk}}"><h5>{{goal.name}}</h5></label>
         </div>
-        <br>
         {% endfor %}
+        <div class="col-md-12">
+            <input name="{{domain}}_custom" type="text" style="width: 100%" placeholder="Custom {{domain}} goal" id="{{domain}}_goal_custom"/>
+        </div>
+        <br>
+        <br>
     {% endfor %}
+
+    <br>
+
     <input type="hidden" name="session" value="{{session.id}}"/>
     <input type="hidden" name="redirect" value="{{redirect}}"/>
     <input type="submit" name="submit" value="Save Goals" />
