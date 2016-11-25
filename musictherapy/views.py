@@ -215,7 +215,7 @@ def save_user_goals(request, user_id):
             if not goal:
                 goal = models.Goals(name=goal_name, enabled=1, is_custom=1, user=user, domain=domain)
                 goal.save()
-            user_goal = models.UserGoals(session=session, goal=goal)
+            user_goal = models.UserGoals(session=session, goal=goal, user=user)
             user_goal.save()
 
         for goal in request.POST.getlist('goals', []):

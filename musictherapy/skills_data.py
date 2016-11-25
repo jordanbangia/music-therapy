@@ -81,10 +81,10 @@ class SkillsData(object):
             for um in data_list:
                 if isinstance(um, models.UserDomainNoteMeasurables):
                     sub_domain_value['Note'] = um.note
-                elif um.value*um.measurable.pos_neg == -1:
+                elif um.value == -1:
                     sub_domain_value[um.measurable.domain.name] += ['--']
                 else:
-                    sub_domain_value[um.measurable.domain.name] += [um.value]
+                    sub_domain_value[um.measurable.domain.name] += [um.value*um.measurable.pos_neg]
 
             for domain in sub_domain_value.keys():
                 if domain == 'Note':
