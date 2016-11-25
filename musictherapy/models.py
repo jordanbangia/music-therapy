@@ -194,8 +194,8 @@ class MusicalPreference(models.Model):
         ('Gospel', 'Gospel'),
         ('Opera', 'Opera'),
         ('Country and Western', 'Country and Western'),
-        ('Heavy Rock', 'Heavy Rock'),
-        ('Electronic', 'Electronic'),
+        ('Rock \'n\' Roll', 'Rock \'n\' Roll'),
+        ('Motown', 'Motown'),
         ('Jazz', 'Jazz'),
         ('Marching Band', 'Marching Band'),
         ('Meditative', 'Meditative'),
@@ -213,6 +213,8 @@ class MusicalPreference(models.Model):
     fav_instrument = models.CharField(max_length=200, null=True, blank=True, verbose_name="Favourite Instrument(s)")
     preferred_style = MultiSelectField(choices=STYLES_CHOICES, null=True, blank=True)
     other_style = models.CharField(max_length=200, null=True, blank=True)
+    ethnic = models.CharField(max_length=200, null=True, blank=True)
+    sacred_music = models.CharField(max_length=200, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
 

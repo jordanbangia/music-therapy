@@ -59,7 +59,7 @@ class UserInfoForm(ModelForm):
 class MusicalPrefForm(ModelForm):
     class Meta:
         model = models.MusicalPreference
-        fields = ('fav_composer', 'fav_song', 'fav_instrument', 'preferred_style', 'other_style')
+        fields = ('fav_composer', 'fav_song', 'fav_instrument', 'preferred_style', 'ethnic', 'sacred_music', 'other_style')
 
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user_id')
