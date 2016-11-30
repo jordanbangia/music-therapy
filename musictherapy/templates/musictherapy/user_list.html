@@ -25,6 +25,7 @@
                     {% else %}
                     <a href="{% url 'musictherapy:unarchive_user' user.id %}?redirect={{redirect}}" class="btn btn-info">Unarchive</a>
                     {% endif %}
+                    <a href="{% url 'musictherapy:export_user' user.id %}?redirect={{redirect}}" class="btn btn-info">Export</a>
                     {% if perms.musictherapy.delete_userinfo %}
                     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal-{{user.id}}">Delete</button>
                     {% endif %}

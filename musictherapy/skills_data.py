@@ -16,6 +16,8 @@ class SkillsData(object):
         self.all_domains = None
         self.sub_domains = None
         self.all_measurables = None
+        self.goals = None
+        self.goal_measurables = None
 
     def measurables(self):
         if self.all_measurables:
@@ -37,11 +39,11 @@ class SkillsData(object):
         return self.all_measurables
 
     def has_goal(self):
-        if not self.all_domains:
-            self.measurables()
-
-        goals = models.Goals.objects.filter(domain__in=self.all_domains, enabled=1)
-        return models.UserGoals.objects.filter(goal__in=goals).count() > 0
+        if not self.goals:
+            if not self.all_domains:
+                self.measurables()
+            self.goals = models.Goals.objects.filter(domain__in=self.all_domains, enabled=1)
+        return models.UserGoals.objects.filter(goal__in=self.goals).count() > 0
 
     def goals_measurables(self, session):
         if not self.all_domains:
@@ -59,6 +61,23 @@ class SkillsData(object):
         goals = models.Goals.objects.filter(domain__in=self.all_domains, enabled=1, is_custom=1, user=self.user)
         user_goals = models.UserGoals.objects.filter(goal__in=goals, session=session)
         return [ug.goal for ug in user_goals]
+
+    def get_all_measurables(self):
+        if not self.all_domains:
+            self.measurables()
+
+        user_measurables = models.UserMeasurables.objects.filter(user=self.user)
+        notes = models.UserDomainNoteMeasurables.objects.filter(user=self.user, domain=self.domain_model)
+
+        past_measurables = defaultdict(list)
+        for um in user_measurables:
+            if um.measurable.domain in self.all_domains:
+                past_measurables[um.upadted] += [um]
+
+        for note in notes:
+            past_measurables[note.updated] += [note]
+
+        return past_measurables
 
     def past_measurables(self):
         if not self.all_domains:
@@ -116,6 +135,24 @@ class SkillsData(object):
             }
         else:
             return None
+
+    def get_all_goal_measurables(self):
+        if not self.goal_measurables:
+            self.goal_measurables = models.GoalsMeasurables.objecst.filter(goal__in=self.goals)
+
+        ugm = models.UserGoalMeasurables.objects.filter(user=self.user, goal_measurable__in=self.goal_measurables)
+        notes = models.UserGoalNoteMeasurable.objects.filter(user=self.user, domain__in=self.all_domains)
+
+        past_ugms = defaultdict(list)
+        for measurable in ugm:
+            past_ugms[measurable.session.date] += [measurable]
+
+        for note in notes:
+            past_ugms[note.session.date] += [note]
+
+        return past_ugms
+
+
 
     def chart(self):
         if self.has_goal():

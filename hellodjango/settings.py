@@ -38,7 +38,8 @@ INSTALLED_APPS = (
     'multiselectfield',
     'musictherapy',
     'crispy_forms',
-    'annoying'
+    'annoying',
+    'easy_pdf',
 )
 
 MIDDLEWARE_CLASSES = (

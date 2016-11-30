@@ -1,0 +1,71 @@
+{% extends "easy_pdf/base.html" %}
+{% load template_getattr %}
+
+{% block extra_style %}
+    <style type="text/css">
+        .tab {
+            margin: 0 0 0 40px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="content">
+        <div class="main">
+            <h1>Patient Data: {{userinfo.name}}</h1>
+
+            <h2>User Information</h2>
+            <p>
+                <b>Name: {{userinfo.name}}</b></br>
+                <b>Locations: {{userinfo.location|join:", "}}</b></br>
+                <b>Date of Birth: {{userinfo.date_of_birth}}</b><br>
+                <b>History: {{userinfo.history}}</b><br>
+                <b>Country of Origin: {{userinfo.country_of_origin}}</b><br>
+                <b>Language Spoken: {{userinfo.language_spoken}}</b><br>
+                <b>Program: {{userinfo.program}}</b><br>
+                <b>ASP Level: {{userinfo.asp_level}}</b><br>
+            </p>
+
+            <h2>Musical Preferences</h2>
+            <p>
+                Favourite Composer: {{musical_preferences.fav_composer}}<br>
+                Favourite Song: {{musical_preferences.fav_song}}<br>
+                Favourite Instrument: {{musical_preferences.favourite_instrument}}<br>
+                Preferred Styles:
+            </p>
+            <p class="tab">{%if musical_preferences.preferred_style%}{{musical_preferences.preferred_style|join:", "}}<br>{% endif %}
+            Other Styles: {{musical_preferences.other_style}}<br>
+            Ethnic Music: {{musical_preferences.ethnic}}<br>
+            Sacred Music: {{musical_preferences.sacred_music}}</p><br>
+
+            <h1>Domain Measurable Summaries</h1>
+            {%for domain, domain_data in summary.items%}
+                {% if domain_data %}
+                    <h2>{{domain}}</h2>
+                    <table>
+                        <thead>
+                            <th></th>
+                            {% for assessment in domain_data.data %}
+                            <th>{{assessment.Updated}}</th>
+                            {% endfor %}
+                        </thead>
+                        <tbody>
+                            {% for field in domain_data.fields %}
+                            <tr>
+                                <th style="text-align: left">{{field}}</th>
+                                {% for assessment in domain_data.data %}
+                                    {% if assessment|getattrib:field == '--' or field == 'Updated'%}
+                                    <td style="text-align: center">{{assessment|getattrib:field}}</td>
+                                    {% else %}
+                                    <td style="text-align: center">{{assessment|getattrib:field|floatformat:2}}</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}}

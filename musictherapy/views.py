@@ -402,6 +402,7 @@ def unarchive_user(request, user_id):
 
 
 def update_user_active(request, user_id, active):
+    red = None
     if request.POST:
         red = request.POST.get('redirect')
     elif request.GET:
