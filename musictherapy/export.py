@@ -31,7 +31,7 @@ class MusicTherapyPDFView(PDFTemplateView):
         }
 
         summary = self.get_summary_data()
-        domain_data = self.get_domain_measurables_and_goals()
+        domain_data = None #self.get_domain_measurables_and_goals()
 
         return super(MusicTherapyPDFView, self).get_context_data(
             pagesize="A4",
@@ -52,9 +52,9 @@ class MusicTherapyPDFView(PDFTemplateView):
 
         return summary_data
 
-    def get_domain_measurables_and_goals(self):
-        data = defaultdict(dict)
-        for skill in self.domain_data.values():
-            data[skill.domain]['measurables'] = skill.get_all_measurables()
-            data[skill.domain]['goals_measurables'] = skill.get_all_goal_measurables()
-        return dict(data)
+    # def get_domain_measurables_and_goals(self):
+    #     data = defaultdict(dict)
+    #     for skill in self.domain_data.values():
+    #         data[skill.domain]['measurables'] = skill.get_all_measurables()
+    #         data[skill.domain]['goals_measurables'] = skill.get_all_goal_measurables()
+    #     return dict(data)

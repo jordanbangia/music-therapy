@@ -136,21 +136,21 @@ class SkillsData(object):
         else:
             return None
 
-    def get_all_goal_measurables(self):
-        if not self.goal_measurables:
-            self.goal_measurables = models.GoalsMeasurables.objecst.filter(goal__in=self.goals)
-
-        ugm = models.UserGoalMeasurables.objects.filter(user=self.user, goal_measurable__in=self.goal_measurables)
-        notes = models.UserGoalNoteMeasurable.objects.filter(user=self.user, domain__in=self.all_domains)
-
-        past_ugms = defaultdict(list)
-        for measurable in ugm:
-            past_ugms[measurable.session.date] += [measurable]
-
-        for note in notes:
-            past_ugms[note.session.date] += [note]
-
-        return past_ugms
+    # def get_all_goal_measurables(self):
+    #     if not self.goal_measurables:
+    #         self.goal_measurables = models.GoalsMeasurables.objects.filter(goal__in=self.goals)
+    #
+    #     ugm = models.UserGoalMeasurables.objects.filter(user=self.user, goal_measurable__in=self.goal_measurables)
+    #     notes = models.UserGoalNoteMeasurable.objects.filter(user=self.user, domain__in=self.all_domains)
+    #
+    #     past_ugms = defaultdict(list)
+    #     for measurable in ugm:
+    #         past_ugms[measurable.session.date] += [measurable]
+    #
+    #     for note in notes:
+    #         past_ugms[note.session.date] += [note]
+    #
+    #     return past_ugms
 
 
 
