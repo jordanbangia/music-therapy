@@ -15,7 +15,11 @@
                 <td><a href="{% url 'musictherapy:user_detail' user.id %}"> {{user.name}}</a></td>
                 <td>{{user.location|join:", "}}</td>
                 {% if user.program %}
-                <td><a href="{% url 'musictherapy:program_detail' user.program.id %}">{{user.program}}</a></td>
+                    <td>
+                        {% for program in user.program.all|dictsort:"location" %}
+                            <a href="{% url 'musictherapy:program_detail' program.id %}">{{program}}</a><br>
+                        {% endfor %}
+                    </td>
                 {% else %}
                 <td> - </td>
                 {% endif %}

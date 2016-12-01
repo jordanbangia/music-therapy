@@ -3,7 +3,7 @@ from crispy_forms.layout import Submit
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
-from django.forms import ModelForm, ChoiceField, IntegerField
+from django.forms import ModelForm, ChoiceField, IntegerField, CheckboxSelectMultiple
 
 from musictherapy.extras import SelectDateWidget
 import musictherapy.models as models
@@ -37,7 +37,8 @@ class UserInfoForm(ModelForm):
         fields = ('name', 'location', 'date_of_birth', 'age', 'diagnosis', 'history', 'country_of_origin', 'language_spoken',
                   'musical_history', 'care_plan', 'asp_level', 'program')
         widgets = {
-            'date_of_birth': SelectDateWidget
+            'date_of_birth': SelectDateWidget,
+            'program': CheckboxSelectMultiple,
         }
 
     def __init__(self, *args, **kwargs):
@@ -46,6 +47,7 @@ class UserInfoForm(ModelForm):
         born = kwargs['instance'].date_of_birth if 'instance' in kwargs and hasattr(kwargs['instance'], 'date_of_birth') else None
         if born:
             self.fields['age'].initial = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+        self.fields['program'].queryset = models.Program.objects.order_by('location', 'name')
         self.helper = FormHelper()
 
         self.helper.form_id = 'id-userinfoform'

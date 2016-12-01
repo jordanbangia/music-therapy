@@ -46,7 +46,7 @@ class Program(models.Model):
         unique_together = ('name', 'date', 'day_of_week', 'location', 'time')
 
     def __unicode__(self):
-        return '{}, {}, {}, {}'.format(self.name, self.get_date_display(), self.get_day_of_week_display(), self.time)
+        return '{}, {}, {}, {}, {}'.format(self.location, self.name, self.get_date_display(), self.get_day_of_week_display(), self.time)
 
 
 class UserInfo(models.Model):
@@ -59,7 +59,7 @@ class UserInfo(models.Model):
     language_spoken = models.CharField(max_length=100, verbose_name="Language Spoken")
     musical_history = models.CharField(max_length=500, verbose_name="Musical History")
     care_plan = models.TextField(default="", verbose_name="Alzheimer Society Peel Care Plan")
-    program = models.ForeignKey(Program, null=True, blank=True)
+    program = models.ManyToManyField(Program, blank=True)
     asp_level = models.IntegerField(verbose_name="Alzheimer Society Peel Level of Care", choices=((1, 1), (2, 2), (3, 3)))
     updated = models.DateTimeField(auto_now=True)
     active = models.IntegerField(choices=((0, 'archived'), (1, 'active')), default=1)
