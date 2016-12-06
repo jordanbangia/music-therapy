@@ -32,10 +32,12 @@ class MusicTherapyPDFView(PDFTemplateView):
 
         summary = self.get_summary_data()
         domain_data = None #self.get_domain_measurables_and_goals()
+        programs = self.get_user_programs(user)
 
         return super(MusicTherapyPDFView, self).get_context_data(
             pagesize="A4",
             userinfo=user,
+            programs=programs,
             musical_preferences=music_pref,
             summary=summary,
             domain_data=domain_data,
@@ -51,6 +53,13 @@ class MusicTherapyPDFView(PDFTemplateView):
                 summaries['data'] = list(reversed(summaries['data'][:4]))
 
         return summary_data
+
+    def get_user_programs(self, user):
+        programs = []
+        for program in user.program.all():
+            print(program)
+            programs.append('{}, {}'.format(program.location, program.name))
+        return programs
 
     # def get_domain_measurables_and_goals(self):
     #     data = defaultdict(dict)

@@ -6,26 +6,53 @@
         .tab {
             margin: 0 0 0 40px;
         }
+
+        .header-margin {
+            padding: 1cm 0 0 0;
+        }
     </style>
 {% endblock %}
+
+{% block page_header %}
+<div id="page-header">
+    <div class="header">
+        <table>
+            <tr>
+                <td>
+                    <p class="tab">
+                        <b>Name: {{userinfo.name}}</b><br>
+                        <b>Date of Birth: {{userinfo.date_of_birth}}</b> <br>
+                        <b>Locations: {{userinfo.location|join:", "}}</b><br>
+                        <b>Country of Origin: {{userinfo.country_of_origin}}</b><br>
+                    </p>
+                </td>
+                <td>
+                    <p>
+                        <b>Language Spoken: {{userinfo.language_spoken}}</b><br>
+                        <b>History: {{userinfo.history}}</b><br>
+                        <b>ASP Level: {{userinfo.asp_level}}</b><br>
+                    </p>
+                </td>
+                <td>
+                    <p style="margin-left: -40px;">
+                        <b>Programs:</b><br>
+                        {% for program in programs %}
+                            <b class="tab">{{program}}</b><br>
+                        {% endfor %}
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+{% endblock %}
+
 
 {% block content %}
     <div id="content">
         <div class="main">
-            <h1>Patient Data: {{userinfo.name}}</h1>
-
-            <h2>User Information</h2>
-            <p>
-                <b>Name: {{userinfo.name}}</b></br>
-                <b>Locations: {{userinfo.location|join:", "}}</b></br>
-                <b>Date of Birth: {{userinfo.date_of_birth}}</b><br>
-                <b>History: {{userinfo.history}}</b><br>
-                <b>Country of Origin: {{userinfo.country_of_origin}}</b><br>
-                <b>Language Spoken: {{userinfo.language_spoken}}</b><br>
-                <b>Program: {{userinfo.program}}</b><br>
-                <b>ASP Level: {{userinfo.asp_level}}</b><br>
-            </p>
-
+            <!--
             <h2>Musical Preferences</h2>
             <p>
                 Favourite Composer: {{musical_preferences.fav_composer}}<br>
@@ -37,8 +64,9 @@
             Other Styles: {{musical_preferences.other_style}}<br>
             Ethnic Music: {{musical_preferences.ethnic}}<br>
             Sacred Music: {{musical_preferences.sacred_music}}</p><br>
+            -->
 
-            <h1>Domain Measurable Summaries</h1>
+            <h1 class="header-margin">Domain Measurable Summaries</h1>
             {%for domain, domain_data in summary.items%}
                 {% if domain_data %}
                     <h2>{{domain}}</h2>
