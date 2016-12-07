@@ -136,6 +136,12 @@ class SkillsData(object):
         else:
             return None
 
+    def latest_summary_measurable(self):
+        past_measruables = self.summary_measurable()
+        if past_measruables:
+            past_measruables['data'] = past_measruables['data'][:1]
+        return past_measruables
+
     # def get_all_goal_measurables(self):
     #     if not self.goal_measurables:
     #         self.goal_measurables = models.GoalsMeasurables.objects.filter(goal__in=self.goals)

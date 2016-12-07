@@ -31,7 +31,7 @@ class MusicTherapyPDFView(PDFTemplateView):
         }
 
         summary = self.get_summary_data()
-        domain_data = None #self.get_domain_measurables_and_goals()
+        domain_measurables = None #self.get_domain_measurables_and_goals()
         programs = self.get_user_programs(user)
 
         return super(MusicTherapyPDFView, self).get_context_data(
@@ -40,12 +40,12 @@ class MusicTherapyPDFView(PDFTemplateView):
             programs=programs,
             musical_preferences=music_pref,
             summary=summary,
-            domain_data=domain_data,
+            domain_measurables=domain_measurables,
             **kwargs
         )
 
     def get_summary_data(self):
-        summary_data = {data.domain: data.summary_measurable() for data in self.domain_data.values()}
+        summary_data = {data.domain: data.latest_summary_measurable() for data in self.domain_data.values()}
 
         for domain, summaries in summary_data.items():
             if summaries and 'fields' in summaries:
