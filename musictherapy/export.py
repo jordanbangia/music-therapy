@@ -4,6 +4,7 @@ from annoying.functions import get_object_or_None
 import musictherapy.models as models
 from collections import defaultdict
 from musictherapy.skills_data import SkillsData
+from musictherapy.models import UserDomainNoteMeasurables
 
 
 class MusicTherapyPDFView(PDFTemplateView):
@@ -31,7 +32,7 @@ class MusicTherapyPDFView(PDFTemplateView):
         }
 
         summary = self.get_summary_data()
-        domain_measurables = None #self.get_domain_measurables_and_goals()
+        domain_measurables = self.get_domain_measurables_and_goals()
         programs = self.get_user_programs(user)
 
         return super(MusicTherapyPDFView, self).get_context_data(
@@ -57,13 +58,31 @@ class MusicTherapyPDFView(PDFTemplateView):
     def get_user_programs(self, user):
         programs = []
         for program in user.program.all():
-            print(program)
             programs.append('{}, {}'.format(program.location, program.name))
         return programs
 
-    # def get_domain_measurables_and_goals(self):
-    #     data = defaultdict(dict)
-    #     for skill in self.domain_data.values():
-    #         data[skill.domain]['measurables'] = skill.get_all_measurables()
-    #         data[skill.domain]['goals_measurables'] = skill.get_all_goal_measurables()
-    #     return dict(data)
+    def get_domain_measurables_and_goals(self):
+        data = defaultdict(dict)
+        for skill in self.domain_data.values():
+            data[skill.domain]['measurables'] = self.format(skill.latest_user_measurables())
+            data[skill.domain]['goals_measurables'] = skill.latest_goals_measurables()
+        return dict(data)
+
+    @staticmethod
+    def format(measurables):
+        if measurables is None:
+            return
+
+        data = defaultdict(list)
+        date = None
+        for measurable in measurables:
+            if not date:
+                date = measurable.updated
+            if isinstance(measurable, UserDomainNoteMeasurables):
+                print(measurable)
+                data["Notes"] += [measurable]
+            else:
+                data[measurable.measurable.domain] += [measurable]
+        data = dict(data)
+        data['date'] = date
+        return dict(data)

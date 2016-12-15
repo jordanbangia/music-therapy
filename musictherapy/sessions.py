@@ -15,3 +15,10 @@ def get_current_session(user):
         current_session = Session(user=user)
         current_session.save()
     return current_session
+
+
+def get_latest_session(user):
+    sessions = get_all_sessions(user)
+    if len(sessions) > 0:
+        return sessions[0]
+    return None

@@ -5,7 +5,7 @@ import pygal
 from annoying.functions import get_object_or_None
 
 import musictherapy.models as models
-from musictherapy.sessions import get_all_sessions, get_current_session
+from musictherapy.sessions import get_current_session, get_latest_session, get_all_sessions
 
 
 class SkillsData(object):
@@ -17,7 +17,6 @@ class SkillsData(object):
         self.sub_domains = None
         self.all_measurables = None
         self.goals = None
-        self.goal_measurables = None
 
     def measurables(self):
         if self.all_measurables:
@@ -62,7 +61,7 @@ class SkillsData(object):
         user_goals = models.UserGoals.objects.filter(goal__in=goals, session=session)
         return [ug.goal for ug in user_goals]
 
-    def get_all_measurables(self):
+    def all_user_measurables(self):
         if not self.all_domains:
             self.measurables()
 
@@ -72,27 +71,24 @@ class SkillsData(object):
         past_measurables = defaultdict(list)
         for um in user_measurables:
             if um.measurable.domain in self.all_domains:
-                past_measurables[um.upadted] += [um]
+                past_measurables[um.updated] += [um]
 
         for note in notes:
             past_measurables[note.updated] += [note]
 
-        return past_measurables
+        return dict(past_measurables)
+
+    def latest_user_measurables(self):
+        measurables = self.all_user_measurables()
+
+        dates = sorted(measurables.keys(), reverse=True)
+        return measurables[dates[0]] if len(dates) > 0 else None
 
     def past_measurables(self):
         if not self.all_domains:
             self.measurables()
 
-        users_measurables = models.UserMeasurables.objects.filter(user=self.user)
-        notes = models.UserDomainNoteMeasurables.objects.filter(user=self.user, domain=self.domain_model)
-
-        past_measurables = defaultdict(list)
-        for um in users_measurables:
-            if um.measurable.domain in self.all_domains:
-                past_measurables[um.updated] += [um]
-
-        for note in notes:
-            past_measurables[note.updated] += [note]
+        past_measurables = self.all_user_measurables()
 
         data = dict(fields=[], data=[])
         for date, data_list in past_measurables.iteritems():
@@ -142,23 +138,19 @@ class SkillsData(object):
             past_measruables['data'] = past_measruables['data'][:1]
         return past_measruables
 
-    # def get_all_goal_measurables(self):
-    #     if not self.goal_measurables:
-    #         self.goal_measurables = models.GoalsMeasurables.objects.filter(goal__in=self.goals)
-    #
-    #     ugm = models.UserGoalMeasurables.objects.filter(user=self.user, goal_measurable__in=self.goal_measurables)
-    #     notes = models.UserGoalNoteMeasurable.objects.filter(user=self.user, domain__in=self.all_domains)
-    #
-    #     past_ugms = defaultdict(list)
-    #     for measurable in ugm:
-    #         past_ugms[measurable.session.date] += [measurable]
-    #
-    #     for note in notes:
-    #         past_ugms[note.session.date] += [note]
-    #
-    #     return past_ugms
+    def latest_goals_measurables(self):
+        goals = self.goals_measurables(get_latest_session(self.user))
+        data = dict()
 
+        for goal in goals:
+            updates = models.UserGoalMeasurables.objects.filter(goal_measurable=goal)
+            updates = sorted(updates, key=lambda u: u.session.date, reverse=True)
+            data[goal.name] = [update.value if update.value != -1 else None for update in updates if update.session]
+            if len(data[goal.name]) > 0:
+                data[goal.name] = data[goal.name][0]
 
+        notes = models.UserGoalNoteMeasurable.objects.filter(session=get_latest_session(self.user), domain=self.domain_model)
+        return {'data': data, 'notes': notes,} if len(data) > 0 or len(notes) > 0 else None
 
     def chart(self):
         if self.has_goal():

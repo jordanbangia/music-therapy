@@ -1,14 +1,35 @@
 {% extends "easy_pdf/base.html" %}
 {% load template_getattr %}
 
+{% block layout_style %}
+    <style type="text/css">
+        @page {
+            size: {{ pagesize|default:"A4" }};
+            margin-left: 2.5cm;
+            margin-right: 2.5cm;
+            margin-top: 4cm;
+            margin-bottom: 2cm;
+
+            @frame header {
+                -pdf-frame-content: page-header;
+                margin-top: 1.3cm;
+                margin-right: 2mm;
+                margin-bottom: 1cm;
+                margin-left: 1.2cm;
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block extra_style %}
     <style type="text/css">
         .tab {
             margin: 0 0 0 40px;
         }
 
-        .header-margin {
-            padding: 1cm 0 0 0;
+        .header-border {
+            border-bottom: solid;
+            border-color: black;
         }
     </style>
 {% endblock %}
@@ -16,34 +37,35 @@
 {% block page_header %}
 <div id="page-header">
     <div class="header">
-        <table>
-            <tr>
-                <td>
-                    <p class="tab">
-                        <b>Name: {{userinfo.name}}</b><br>
-                        <b>Date of Birth: {{userinfo.date_of_birth}}</b> <br>
-                        <b>Locations: {{userinfo.location|join:", "}}</b><br>
-                        <b>Country of Origin: {{userinfo.country_of_origin}}</b><br>
-                    </p>
-                </td>
-                <td>
-                    <p>
-                        <b>Language Spoken: {{userinfo.language_spoken}}</b><br>
-                        <b>History: {{userinfo.history}}</b><br>
-                        <b>ASP Level: {{userinfo.asp_level}}</b><br>
-                    </p>
-                </td>
-                <td>
-                    <p style="margin-left: -40px;">
-                        <b>Programs:</b><br>
-                        {% for program in programs %}
-                            <b class="tab">{{program}}</b><br>
-                        {% endfor %}
-                    </p>
-                </td>
-            </tr>
-        </table>
-
+        <div class="header-border">
+            <table>
+                <tr>
+                    <td>
+                        <p class="tab">
+                            <b>Name: {{userinfo.name}}</b><br>
+                            <b>Date of Birth: {{userinfo.date_of_birth}}</b> <br>
+                            <b>Locations: {{userinfo.location|join:", "}}</b><br>
+                            <b>Country of Origin: {{userinfo.country_of_origin}}</b><br>
+                        </p>
+                    </td>
+                    <td>
+                        <p>
+                            <b>Language Spoken: {{userinfo.language_spoken}}</b><br>
+                            <b>History: {{userinfo.history}}</b><br>
+                            <b>ASP Level: {{userinfo.asp_level}}</b><br>
+                        </p>
+                    </td>
+                    <td>
+                        <p style="margin-left: -40px;">
+                            <b>Programs:</b><br>
+                            {% for program in programs %}
+                                <b class="tab">{{program}}</b><br>
+                            {% endfor %}
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -66,32 +88,80 @@
             Sacred Music: {{musical_preferences.sacred_music}}</p><br>
             -->
 
-            <h1 class="header-margin">Domain Measurable Summaries</h1>
-            {%for domain, domain_data in summary.items%}
-                {% if domain_data %}
-                    <h2>{{domain}}</h2>
-                    <table>
-                        <thead>
-                            <th></th>
-                            {% for assessment in domain_data.data %}
-                            <th>{{assessment.Updated}}</th>
-                            {% endfor %}
-                        </thead>
-                        <tbody>
-                            {% for field in domain_data.fields %}
-                            <tr>
-                                <th style="text-align: left">{{field}}</th>
+            <div id="summaries">
+                <h1>Domain Measurable Summaries</h1>
+                {%for domain, domain_data in summary.items%}
+                    {% if domain_data %}
+                        <h2>{{domain}}</h2>
+                        <table>
+                            <thead>
+                                <th></th>
                                 {% for assessment in domain_data.data %}
-                                    {% if assessment|getattrib:field == '--' or field == 'Updated'%}
-                                    <td style="text-align: center">{{assessment|getattrib:field}}</td>
-                                    {% else %}
-                                    <td style="text-align: center">{{assessment|getattrib:field|floatformat:2}}</td>
-                                    {% endif %}
+                                <th>{{assessment.Updated}}</th>
                                 {% endfor %}
-                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for field in domain_data.fields %}
+                                <tr>
+                                    <th style="text-align: left">{{field}}</th>
+                                    {% for assessment in domain_data.data %}
+                                        {% if assessment|getattrib:field == '--' or field == 'Updated'%}
+                                        <td style="text-align: center">{{assessment|getattrib:field}}</td>
+                                        {% else %}
+                                        <td style="text-align: center">{{assessment|getattrib:field|floatformat:2}}</td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% for domain, domain_data in domain_measurables.items %}
+                {% if domain_data.goals_measurables or domain_data.measurables %}
+                <div id="{{domain}}">
+                    <h1 class="header-margin">{{domain}} Measurables - {{domain_data.measurables.date}}</h1>
+                    {% if domain_data.measurables %}
+                        <div id="{{domain}}_measurables">
+                            {% for subdomain, measurables in domain_data.measurables.items %}
+                                {% if subdomain != "Notes" and subdomain != "date" %}
+                                    <h3>{{subdomain.name}}</h3>
+                                    <div class="tab">
+                                        {% for measurable in measurables %}
+                                            <b>{{measurable.measurable.name}}</b>: {{measurable.value}}<br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             {% endfor %}
-                        </tbody>
-                    </table>
+                            {% if domain_data.measurables.notes %}
+                                <b>Notes</b>:
+                                {% for note in domain_data.measurables.notes %}
+                                    {{note}}<br>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if domain_data.goals_measurables %}
+                        <h2>{{domain}} Goal Measurables</h2>
+                            <div id="{{domain}}_goal_measurables" class="tab">
+                            {% if domain_data.goals_measurables.data %}
+                                {% for goal, value in domain_data.goals_measurables.data.items %}
+                                    <b>{{goal}}</b>: {{value}}<br>
+                                {% endfor %}
+                            {% endif %}
+
+                            {% if domain_data.goals_measurables.notes %}
+                                <b>Notes</b>:
+                                {% for note in domain_data.goals_measurables.notes %}
+                                    {{note.note}}
+                                {% endfor %}
+                            {% endif %}
+                            </div>
+                    {% endif %}
+                </div>
                 {% endif %}
             {% endfor %}
         </div>
