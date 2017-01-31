@@ -125,7 +125,11 @@
                                     <h3>{{subdomain.name}}</h3>
                                     <div class="tab">
                                         {% for measurable in measurables %}
-                                            <b>{{measurable.measurable.name}}</b>: {{measurable.value}}<br>
+                                            {# if measurable.value != -1 #}
+                                            {% if measurable.measurable.name %}
+                                                <b>{{measurable.measurable.name}}</b>: {{measurable.get_value_display}}<br>
+                                            {% endif %}
+                                            {# endif #}
                                         {% endfor %}
                                     </div>
                                 {% endif %}
@@ -133,7 +137,7 @@
                             {% if domain_data.measurables.notes %}
                                 <b>Notes</b>:
                                 {% for note in domain_data.measurables.notes %}
-                                    {{note}}<br>
+                                    {{note.note}}<br>
                                 {% endfor %}
                             {% endif %}
                         </div>
@@ -144,7 +148,7 @@
                             <div id="{{domain}}_goal_measurables" class="tab">
                             {% if domain_data.goals_measurables.data %}
                                 {% for goal, value in domain_data.goals_measurables.data.items %}
-                                    <b>{{goal}}</b>: {{value}}<br>
+                                    <b>{{goal}}</b>: {{value.get_value_display}}<br>
                                 {% endfor %}
                             {% endif %}
 

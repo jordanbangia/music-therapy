@@ -65,7 +65,7 @@ class MusicTherapyPDFView(PDFTemplateView):
         data = defaultdict(dict)
         for skill in self.domain_data.values():
             data[skill.domain]['measurables'] = self.format(skill.latest_user_measurables())
-            data[skill.domain]['goals_measurables'] = skill.latest_goals_measurables()
+            data[skill.domain]['goals_measurables'] = skill.latest_goals_measurables(return_model=True)
         return dict(data)
 
     @staticmethod
@@ -79,8 +79,7 @@ class MusicTherapyPDFView(PDFTemplateView):
             if not date:
                 date = measurable.updated
             if isinstance(measurable, UserDomainNoteMeasurables):
-                print(measurable)
-                data["Notes"] += [measurable]
+                data["notes"] += [measurable]
             else:
                 data[measurable.measurable.domain] += [measurable]
         data = dict(data)

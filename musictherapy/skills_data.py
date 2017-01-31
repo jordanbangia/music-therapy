@@ -138,14 +138,17 @@ class SkillsData(object):
             past_measruables['data'] = past_measruables['data'][:1]
         return past_measruables
 
-    def latest_goals_measurables(self):
+    def latest_goals_measurables(self, return_model=False):
         goals = self.goals_measurables(get_latest_session(self.user))
         data = dict()
 
         for goal in goals:
             updates = models.UserGoalMeasurables.objects.filter(goal_measurable=goal)
             updates = sorted(updates, key=lambda u: u.session.date, reverse=True)
-            data[goal.name] = [update.value if update.value != -1 else None for update in updates if update.session]
+            if return_model:
+                data[goal.name] = [update for update in updates if update.session]
+            else:
+                data[goal.name] = [update.value if update.value != -1 else None for update in updates if update.session]
             if len(data[goal.name]) > 0:
                 data[goal.name] = data[goal.name][0]
 
