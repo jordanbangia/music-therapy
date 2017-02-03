@@ -25,7 +25,7 @@ urlpatterns = [
 
     url(r'^musictherapy/staff/$', views.create_staff, name='create_staff'),
     url(r'^musictherapy/login/$', auth.login, {
-        'template_name': 'musictherapy/index.html'
+        'template_name': 'musictherapy/login.html'
     }, name='login'),
     url(r'^musictherapy/logout/$', auth.logout, {
         'next_page': '/musictherapy'

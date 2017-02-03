@@ -42,7 +42,7 @@ def index(request):
     if request.user.is_authenticated():
         return redirect('/musictherapy/users')
     else:
-        return render(request, 'musictherapy/index.html', {
+        return render(request, 'musictherapy/login.html', {
             'form': AuthenticationForm(request=request),
             'next': '/musictherapy/users'
         })
