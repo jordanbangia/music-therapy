@@ -18,3 +18,4 @@ static3==0.6.1
 webencodings==0.5
 whitenoise==1.0.6
 xhtml2pdf==0.0.6
+django-widget-tweaks==1.4.1

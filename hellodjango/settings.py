@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'annoying',
     'easy_pdf',
+    'widget_tweaks',
 )
 
 MIDDLEWARE_CLASSES = (
