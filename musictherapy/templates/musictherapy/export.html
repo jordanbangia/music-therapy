@@ -58,6 +58,9 @@
                             {% endfor %}
                         </p>
                     </td>
+                    <td>
+
+                    </td>
                 </tr>
             </table>
         </div>
@@ -69,25 +72,32 @@
 {% block content %}
     <div id="content">
         <div class="main">
-            <!--
-            <h2>Musical Preferences</h2>
-            <p>
-                Favourite Composer: {{musical_preferences.fav_composer}}<br>
-                Favourite Song: {{musical_preferences.fav_song}}<br>
-                Favourite Instrument: {{musical_preferences.favourite_instrument}}<br>
-                Preferred Styles:
-            </p>
-            <p class="tab">{%if musical_preferences.preferred_style%}{{musical_preferences.preferred_style|join:", "}}<br>{% endif %}
-            Other Styles: {{musical_preferences.other_style}}<br>
-            Ethnic Music: {{musical_preferences.ethnic}}<br>
-            Sacred Music: {{musical_preferences.sacred_music}}</p><br>
-            -->
+            <h1 style="text-align:center">Alzhemier Society Peel's Music Therapy Assessment</h1>
+
+            <div id="life-experiences">
+                <h2>Life Experiences/History</h2>
+            </div>
+
+            <div id="music-preferences">
+                <h2>Music Preferences</h2>
+                    Favourite Composer: {{musical_preferences.fav_composer}}<br>
+                    Favourite Song: {{musical_preferences.fav_song}}<br>
+                    Favourite Instrument: {{musical_preferences.favourite_instrument}}<br>
+                    Preferred Styles:
+                    <div class="tab">
+                        {%if musical_preferences.preferred_style%}{{musical_preferences.preferred_style|join:", "}}<br>{% endif %}
+                        Other Styles: {{musical_preferences.other_style}}<br>
+                        Ethnic Music: {{musical_preferences.ethnic}}<br>
+                        Sacred Music: {{musical_preferences.sacred_music}}<br>
+                    </div>
+            </div>
+
 
             <div id="summaries">
-                <h1>Domain Measurable Summaries</h1>
+                <h2>Domain Measurable Summaries</h2>
                 {%for domain, domain_data in summary.items%}
                     {% if domain_data %}
-                        <h2>{{domain}}</h2>
+                        <h3>{{domain}}</h3>
                         <table>
                             <thead>
                                 <th></th>
@@ -143,6 +153,7 @@
                         </div>
                     {% endif %}
 
+                    <!--
                     {% if domain_data.goals_measurables %}
                         <h2>{{domain}} Goal Measurables</h2>
                             <div id="{{domain}}_goal_measurables" class="tab">
@@ -160,6 +171,7 @@
                             {% endif %}
                             </div>
                     {% endif %}
+                    -->
                 </div>
                 {% endif %}
             {% endfor %}
