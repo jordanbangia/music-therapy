@@ -3,15 +3,15 @@
 {% load widget_tweaks %}
 <html>
     <head>
-        {% include "musictherapy/component/header.html" %}
+        {% include "musictherapy/component/header.html" with skip_tablesort=true %}
     </head>
 
     <body style="background: white">
-        <div class="col-md-4 col-md-offset-4 text-centered page-wrapper">
+        <div class="col-md-4 col-md-offset-4 page-wrapper">
             <img src="{% static 'musictherapy/logo.jpg' %}" style="max-width: 100%"/>
             {% block content %}
 
-            <h2>Please login to continue.</h2>
+            <h3>Please login to continue.</h3>
 
             <form method="post" action="/musictherapy/login/">
                 {% csrf_token %}
@@ -32,8 +32,8 @@
             {# Assumes you setup the password_reset view in your URLconf #}
             <!--<p><a href="">Lost password?</a></p>-->
 
+            <img class="img-responsive center-block" src="{% static 'musictherapy/icon.jpg' %}" style="padding-top: 40px"/>
 
-            <img src="{% static 'musictherapy/icon.jpg' %}" style="max-width: 100%; padding-top: 40px"/>
             {% endblock %}
         </div>
     </body>
