@@ -6,6 +6,7 @@ from collections import defaultdict
 from musictherapy.skills_data import SkillsData
 from musictherapy.models import UserDomainNoteMeasurables
 
+import datetime
 
 class MusicTherapyPDFView(PDFTemplateView):
     template_name = 'musictherapy/export.html'
@@ -42,6 +43,7 @@ class MusicTherapyPDFView(PDFTemplateView):
             musical_preferences=music_pref,
             summary=summary,
             domain_measurables=domain_measurables,
+            date=datetime.datetime.now().date(),
             **kwargs
         )
 
