@@ -151,13 +151,12 @@ class UserDomainNoteMeasurables(models.Model):
 
 
 class UserGoals(models.Model):
-    session = models.ForeignKey(Session, null=True)
-    user = models.ForeignKey(UserInfo, null=True)
+    user = models.ForeignKey(UserInfo, null=False)
     goal = models.ForeignKey(Goals, on_delete=models.CASCADE, null=False)
     updated = models.DateTimeField(auto_now=True, blank=True, null=True)
 
-    # class Meta:
-    #     unique_together = ('user', 'goal', 'session')
+    class Meta:
+        unique_together = ('user', 'goal')
 
 
 class UserGoalMeasurables(models.Model):

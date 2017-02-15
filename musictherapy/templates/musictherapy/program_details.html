@@ -45,10 +45,10 @@
                         <div id="gm-{{user.id}}" class="panel-collapse collapse in" aria-expanded="true">
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        {% include "musictherapy/component/goals.html" with user=user goals=goals|getattrib:user.id redirect="program" %}
-                                    </div>
-                                    <div class="col-md-6">
+                                    <!--<div class="col-md-6">-->
+                                        <!--{% include "musictherapy/component/goals.html" with user=user goals=goals|getattrib:user.id redirect="program" %}-->
+                                    <!--</div>-->
+                                    <div class="col-md-12">
                                         {% include "musictherapy/component/session_goals.html" with session_goals=session_goals|getattrib:user.id user=user custom_session_goals=custom_session_goals|getattrib:user.id %}
                                     </div>
                                 </div>

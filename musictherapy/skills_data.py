@@ -44,21 +44,21 @@ class SkillsData(object):
             self.goals = models.Goals.objects.filter(domain__in=self.all_domains, enabled=1)
         return models.UserGoals.objects.filter(goal__in=self.goals).count() > 0
 
-    def goals_measurables(self, session):
+    def goals_measurables(self):
         if not self.all_domains:
             self.measurables()
 
         goals = models.Goals.objects.filter(domain__in=self.all_domains, enabled=1)
-        user_goals = models.UserGoals.objects.filter(goal__in=goals, session=session)
+        user_goals = models.UserGoals.objects.filter(goal__in=goals, user=self.user)
         goals_measurables = models.GoalsMeasurables.objects.filter(goal__in=[ug.goal for ug in user_goals], enabled=1)
         return goals_measurables
 
-    def custom_goals(self, session):
+    def custom_goals(self):
         if not self.all_domains:
             self.measurables()
 
         goals = models.Goals.objects.filter(domain__in=self.all_domains, enabled=1, is_custom=1, user=self.user)
-        user_goals = models.UserGoals.objects.filter(goal__in=goals, session=session)
+        user_goals = models.UserGoals.objects.filter(goal__in=goals, user=self.user)
         return [ug.goal for ug in user_goals]
 
     def all_user_measurables(self):
@@ -139,7 +139,7 @@ class SkillsData(object):
         return past_measruables
 
     def latest_goals_measurables(self, return_model=False):
-        goals = self.goals_measurables(get_latest_session(self.user))
+        goals = self.goals_measurables()
         data = dict()
 
         for goal in goals:
@@ -158,7 +158,7 @@ class SkillsData(object):
     def chart(self):
         if self.has_goal():
             line_chart = pygal.Line(truncate_legend=30)
-            goals = self.goals_measurables(get_current_session(self.user))
+            goals = self.goals_measurables()
             data = dict()
             for goal in goals:
                 updates = models.UserGoalMeasurables.objects.filter(goal_measurable=goal)
@@ -204,7 +204,7 @@ class SkillsData(object):
             measurables=self.measurables(),
             has_goals=self.has_goal(),
             past_measurables=self.past_measurables(),
-            goals_measurables=self.goals_measurables(get_current_session(self.user)),
+            goals_measurables=self.goals_measurables(),
             chart=self.chart(),
             goal_notes=self.goal_notes(),
         )

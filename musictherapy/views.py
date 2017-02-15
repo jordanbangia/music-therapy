@@ -91,7 +91,7 @@ def user_detail(request, user_id):
     sessions = get_all_sessions(user)
     current_session = get_current_session(user)
 
-    goals = get_goals(current_session, user)
+    goals = get_goals(user)
     com = SkillsData("Communication", user)
     pss = SkillsData("Psycho-Social", user)
     physical = SkillsData("Physical", user)
@@ -99,7 +99,7 @@ def user_detail(request, user_id):
     music = SkillsData("Music", user)
     affective = SkillsData("Affective", user)
     session_goals = get_session_goals(current_session, user)
-    custom_session_goals = get_custom_goals(current_session, user)
+    custom_session_goals = get_custom_goals(user)
 
     return render(request, 'musictherapy/user_detail.html', {
         # general user details, not session based
@@ -199,7 +199,7 @@ def save_user_goals(request, user_id):
             session = get_object_or_None(models.Session, pk=session_id)
         if not session:
             session = get_current_session(user)
-        user_goals = [ug.pk for ug in models.UserGoals.objects.filter(session=session)]
+        user_goals = [ug.pk for ug in models.UserGoals.objects.filter(user=user)]
         custom_goals = [(key, value) for key, value in request.POST.iteritems() if 'custom' in key]
 
         for domain_key, goal_name in custom_goals:
@@ -215,14 +215,14 @@ def save_user_goals(request, user_id):
             if not goal:
                 goal = models.Goals(name=goal_name, enabled=1, is_custom=1, user=user, domain=domain)
                 goal.save()
-            user_goal = models.UserGoals(session=session, goal=goal, user=user)
+            user_goal = models.UserGoals(goal=goal, user=user)
             user_goal.save()
 
         for goal in request.POST.getlist('goals', []):
             goal_model = models.Goals.objects.get(pk=goal)
-            user_goal = get_object_or_None(models.UserGoals, goal=goal_model, session=session)
+            user_goal = get_object_or_None(models.UserGoals, goal=goal_model, user=user)
             if not user_goal:
-                user_goal = models.UserGoals(session=session, goal=goal_model)
+                user_goal = models.UserGoals(user=user, goal=goal_model)
                 user_goal.save()
             else:
                 user_goals.remove(user_goal.pk) if user_goal.pk in user_goals else None
@@ -355,7 +355,7 @@ def save_goalmeasurables(request, user_id):
     return HttpResponse(404)
 
 
-def get_goals(session, user):
+def get_goals(user):
     goals = defaultdict(list)
     for g in models.Goals.objects.filter(parent=None, enabled=1).order_by('domain'):
         if g.domain:
@@ -365,7 +365,7 @@ def get_goals(session, user):
     goals['order'] = ['General'] + [domain for domain in goals.keys() if domain not in ('General', 'Custom')]
     if 'Custom' in goals:
         goals['order'] += ['Custom']
-    goals['user'] = [ug.goal.pk for ug in models.UserGoals.objects.filter(session=session)]
+    goals['user'] = [ug.goal.pk for ug in models.UserGoals.objects.filter(user=user)]
     return goals
 
 
@@ -378,9 +378,9 @@ def program_detail(request, program_id):
     goals = {}
     custom_session_goals = {}
     for user in users:
-        session_goals[user.pk] = {data.domain: data.goals_measurables(get_current_session(user)) for data in get_skills_data_for_user_as_list(user)}
-        goals[user.pk] = get_goals(get_current_session(user), user)
-        custom_session_goals[user.pk] = {data.domain: data.custom_goals(get_current_session(user)) for data in get_skills_data_for_user_as_list(user)}
+        session_goals[user.pk] = {data.domain: data.goals_measurables() for data in get_skills_data_for_user_as_list(user)}
+        goals[user.pk] = get_goals(user)
+        custom_session_goals[user.pk] = {data.domain: data.custom_goals() for data in get_skills_data_for_user_as_list(user)}
 
     return render(request, 'musictherapy/program_details.html', {
         'program': program,
