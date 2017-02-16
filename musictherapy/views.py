@@ -89,7 +89,6 @@ def user_detail(request, user_id):
     musicpref_last_updated = musicpref.updated if musicpref else None
 
     sessions = get_all_sessions(user)
-    current_session = get_current_session(user)
 
     goals = get_goals(user)
     com = SkillsData("Communication", user)
@@ -98,7 +97,7 @@ def user_detail(request, user_id):
     cog = SkillsData("Cognitive", user)
     music = SkillsData("Music", user)
     affective = SkillsData("Affective", user)
-    session_goals = get_session_goals(current_session, user)
+    session_goals = get_session_goals(user)
     custom_session_goals = get_custom_goals(user)
 
     return render(request, 'musictherapy/user_detail.html', {
@@ -113,7 +112,6 @@ def user_detail(request, user_id):
         'tab': request.GET.get('tab', 'info'),
 
         # session based use details
-        'current_session': current_session,
         'goals': goals,
         'session_goals': session_goals,
         'custom_session_goals': custom_session_goals,
@@ -193,12 +191,6 @@ def delete_user(request, user_id):
 def save_user_goals(request, user_id):
     user = get_object_or_404(models.UserInfo, pk=user_id)
     if request.method == 'POST':
-        session = None
-        session_id = request.POST.get('session', None)
-        if session_id and session_id != '':
-            session = get_object_or_None(models.Session, pk=session_id)
-        if not session:
-            session = get_current_session(user)
         user_goals = [ug.pk for ug in models.UserGoals.objects.filter(user=user)]
         custom_goals = [(key, value) for key, value in request.POST.iteritems() if 'custom' in key]
 
@@ -305,12 +297,7 @@ def save_goalmeasurables(request, user_id):
     if request.method == 'POST':
         data = request.POST.dict()
         user = get_object_or_404(models.UserInfo, pk=user_id)
-        session = None
-        session_id = request.POST.get('session', None)
-        if session_id and session_id != '':
-            session = get_object_or_None(models.Session, pk=session_id)
-        if not session:
-            session = get_current_session(user)
+        session = get_current_session(user)
 
         custom_gm = defaultdict(dict)
 

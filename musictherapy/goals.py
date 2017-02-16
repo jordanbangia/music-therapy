@@ -1,7 +1,7 @@
 from musictherapy.skills_data import SkillsData
 
 
-def get_session_goals(session, user):
+def get_session_goals(user):
     session_goals = {data.domain: data.goals_measurables() for data in get_skills_data_for_user_as_list(user)}
 
     if all(len(gms) == 0 for domain, gms in session_goals.iteritems()):
