@@ -3,7 +3,7 @@ from django.conf.urls import url
 from musictherapy import views
 import django.contrib.auth.views as auth
 
-from musictherapy.export import MusicTherapyPDFView
+from musictherapy.export import MusicTherapyAssessment
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/submit_goals/$', views.save_user_goals, name="save_goals"),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/archive/$', views.archive_user, name="archive_user"),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/unarchive/$', views.unarchive_user, name="unarchive_user"),
-    url(r'^musictherapy/users/(?P<user_id>[0-9]+)/export/$', MusicTherapyPDFView.as_view(), name="export_user"),
+    url(r'^musictherapy/users/(?P<user_id>[0-9]+)/export/assessment/$', MusicTherapyAssessment.as_view(), name="export_assessment"),
 
     url(r'^musictherapy/staff/$', views.create_staff, name='create_staff'),
     url(r'^musictherapy/login/$', auth.login, {

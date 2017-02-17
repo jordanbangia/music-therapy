@@ -8,35 +8,29 @@ from musictherapy.models import UserDomainNoteMeasurables
 
 import datetime
 
-class MusicTherapyPDFView(PDFTemplateView):
-    template_name = 'musictherapy/export.html'
+
+class MusicTherapyAssessment(PDFTemplateView):
+    template_name = 'musictherapy/export/assessment.html'
     domain_data = None
 
     def get_context_data(self, **kwargs):
         user = get_object_or_404(models.UserInfo, pk=kwargs['user_id'])
         music_pref = get_object_or_None(models.MusicalPreference, user=user)
 
-        com = SkillsData("Communication", user)
-        pss = SkillsData("Psycho-Social", user)
-        physical = SkillsData("Physical", user)
-        cog = SkillsData("Cognitive", user)
-        music = SkillsData("Music", user)
-        affective = SkillsData("Affective", user)
-
         self.domain_data = {
-            'com': com,
-            'pss': pss,
-            'phys': physical,
-            'cog': cog,
-            'music': music,
-            'aff': affective
+            'com': SkillsData("Communication", user),
+            'pss': SkillsData("Psycho-Social", user),
+            'phys': SkillsData("Physical", user),
+            'cog': SkillsData("Cognitive", user),
+            'music': SkillsData("Music", user),
+            'aff': SkillsData("Affective", user)
         }
 
         summary = self.get_summary_data()
         domain_measurables = self.get_domain_measurables_and_goals()
         programs = self.get_user_programs(user)
 
-        return super(MusicTherapyPDFView, self).get_context_data(
+        return super(MusicTherapyAssessment, self).get_context_data(
             pagesize="A4",
             userinfo=user,
             programs=programs,
