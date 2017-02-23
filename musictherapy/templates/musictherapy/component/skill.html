@@ -21,30 +21,7 @@
             <div class="panel-body">
                 <form action="{% url 'musictherapy:save_goalmeasurables' user.id %}" method="post">
                     {% csrf_token %}
-                    {% for measurable in data.goals_measurables %}
-                        <div class="col-md-12" style="padding: 2px">
-                            <div class="col-md-6">
-                                <label class="control-label" style="padding: 5px">{{measurable.goal.name}} - {{measurable.name}}</label>
-                            </div>
-                            <div class="col-md-6">
-                                <select class="select form-control" name="{{measurable.pk}}">
-                                    <option value=-1>Not Measured</option>
-                                    <option value=0>None/Never</option>
-                                    <option value=1>Low/Rarely/Poor</option>
-                                    <option value=2>Medium/Sometimes/Good</option>
-                                    <option value=3>High/Always/Very Good</option>
-                                </select>
-                            </div>
-                        </div>
-                    {% endfor %}
-                    <div class="controls col-lg-6">
-                        <label class="control-label" style="padding-top: 5px">Notes</label>
-                    </div>
-                    <div class="controls col-lg-6">
-                        <textarea class="textarea form-control" cols="40" name="{{pre}}_goalsnotes" rows="10" spellcheck="true" style="z-index: auto; position: relative; line-height: 20px; font-size: 14px; transition: none; background: transparent !important;"></textarea>
-                    </div>
-                    <input type="submit" name="submit" value="Save"/>
-                    <input type="hidden" name="redirect" value="{{pre}}"/>
+                    {% include 'musictherapy/component/session_goal_observable.html' with data=data redirect=pre pre=pre show_save=True%}
                 </form>
             </div>
         </div>

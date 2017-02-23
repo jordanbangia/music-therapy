@@ -8,11 +8,12 @@ from musictherapy.export import MusicTherapyAssessment
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^musictherapy/$', views.index, name='index'),
-    url(r'^musictherapy/users/$', views.patients, name='list'),
+    url(r'^musictherapy/users/$', views.users, name='list'),
     url(r'^musictherapy/users/new/$', views.create_user, name='create_user'),
     url(r'^musictherapy/users/submit_userinfo/$', views.save_new_basic, name='new_userinfo'),
     url(r'^musictherapy/users/all/$', views.all_users, name='all_users'),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/$', views.user_detail, name='user_detail'),
+    url(r'^musictherapy/users/(?P<user_id>[0-9]+)/sessions/(?P<session_id>[0-9]+)/$', views.user_session_detail, name='user_session_detail'),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/submit_userinfo/$', views.save_basic_info, name='save_userinfo'),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/submit_musicpref/$', views.save_music_pref, name='save_musicpref'),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/delete_user/$', views.delete_user, name='delete_user'),

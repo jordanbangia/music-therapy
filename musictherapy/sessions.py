@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.shortcuts import get_object_or_404
+
 from musictherapy.models import Session
 
 
@@ -22,3 +24,9 @@ def get_latest_session(user):
     if len(sessions) > 0:
         return sessions[0]
     return None
+
+
+def get_session_for_id(user, session_id):
+    # make sure that the latest session exists
+    get_current_session(user)
+    return get_object_or_404(Session, pk=session_id)

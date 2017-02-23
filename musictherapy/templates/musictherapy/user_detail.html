@@ -9,7 +9,7 @@
     <body>
         <div class="row" style="padding-left: 2%">
             <div class="col-md-10">
-                <h1>{{userinfo.name}} - Session: {{current_session.date}}</h1>
+                <h1>{{userinfo.name}} - Session: {{session.date.date}}</h1>
             </div>
             <div class="col-md-2">
                 <a class="btn btn-info pull-right" href="{% url 'musictherapy:logout' %}" style="margin:5px">Logout</a>
@@ -25,29 +25,17 @@
                 {% if sessions %}
                 <li {% if tab == "sessions" %} class="active" {% endif %}><a data-toggle="tab" data-target="#pastsessions">Past Sessions</a></li>
                 {% endif %}
-                {% if summary %}
-                <li {% if tab == "summary" %} class="active" {% endif %}><a data-toggle="tab" data-target="#summary">Summary</a></li>
-                {% endif%}
                 {% if goals or session_goals %}
                 <li {% if tab == "goals" %} class="active" {% endif %}><a data-toggle="tab" data-target="#sessiongoals">Treatment Plan</a></li>
                 {% endif %}
-                {% if com_data %}
-                <li {% if tab == "com" %} class="active" {% endif %}><a data-toggle="tab" data-target="#comskills">Communication Skills</a></li>
-                {% endif %}
-                {% if pss_data %}
-                <li {% if tab == "pss" %} class="active" {% endif %}><a data-toggle="tab" data-target="#pssskills">Psycho-Social Skills</a></li>
-                {% endif %}
-                {% if physical_data %}
-                <li {% if tab == "phy" %} class="active" {% endif %}><a data-toggle="tab" data-target="#physicalskills">Physical Skills</a></li>
-                {% endif  %}
-                {% if cog_data %}
-                <li {% if tab == "cog" %} class="active" {% endif %}><a data-toggle="tab" data-target="#cogskills">Cognitive and Memory Skills</a></li>
-                {% endif %}
-                {% if affective_data %}
-                <li {% if tab == "aff" %} class="active" {% endif %}><a data-toggle="tab" data-target="#affectiveskills">Affective Skills</a></li>
-                {% endif %}
-                {% if music_data %}
-                <li {% if tab == "mus" %} class="active" {% endif %}><a data-toggle="tab" data-target="#musicskills">Music Skills</a></li>
+                {% if data %}
+                <li {% if tab == "summary" %} class="active" {% endif %}><a data-toggle="tab" data-target="#summary">Summary</a></li>
+                <li {% if tab == "com" %} class="active" {% endif %}><a data-toggle="tab" data-target="#com">Communication Skills</a></li>
+                <li {% if tab == "pss" %} class="active" {% endif %}><a data-toggle="tab" data-target="#pss">Psycho-Social Skills</a></li>
+                <li {% if tab == "phy" %} class="active" {% endif %}><a data-toggle="tab" data-target="#phy">Physical Skills</a></li>
+                <li {% if tab == "cog" %} class="active" {% endif %}><a data-toggle="tab" data-target="#cog">Cognitive and Memory Skills</a></li>
+                <li {% if tab == "aff" %} class="active" {% endif %}><a data-toggle="tab" data-target="#aff">Affective Skills</a></li>
+                <li {% if tab == "mus" %} class="active" {% endif %}><a data-toggle="tab" data-target="#mus">Music Skills</a></li>
                 {% endif %}
             </ul>
 
@@ -55,14 +43,10 @@
                 <div id="sessiongoals" class="tab-pane fade {% if tab == "goals" %} in active {% endif %}">
                     {% if goals %}
                     <div class="col-lg-4">
-                        {% include "musictherapy/component/goals.html" with goals=goals user=userinfo session=current_session redirect="user" %}
+                        {% include "musictherapy/component/goals.html" with goals=goals user=userinfo redirect="goals" %}
                     </div>
                     <div class="col-lg-8">
-                        {% if session_goals or custom_session_goals %}
-                            {% include "musictherapy/component/session_goals.html" with goals=session_goals session=current_session user=userinfo custom_session_goals=custom_session_goals%}
-                        {% else %}
-                            <h3>Select and save goals to start adding measurables.</h3>
-                        {% endif %}
+                        {% include "musictherapy/component/session_goals.html" with data=data user=userinfo redirect="goals" %}
                     </div>
                     {% endif %}
                 </div>
@@ -71,9 +55,9 @@
                     {% if musical_pref_form %}
                         {% crispy musical_pref_form %}
 
-                        {% if musicpref_last_updated %}
+                        {% if musical_pref %}
                         <br>
-                        <h4>Last updated {{ musicpref_last_updated }}</h4>
+                        <h4>Last updated {{ musical_pref.updated }}</h4>
                         {% endif %}
                     {% endif %}
                 </div>
@@ -83,59 +67,18 @@
                 </div>
 
                 <div id="pastsessions" class="tab-pane fade {% if tab == "sessions" %} in active {% endif %}">
-                    {% include 'musictherapy/component/session_list.html' with sessions=sessions %}
+                    {% include 'musictherapy/component/session_list.html' with sessions=sessions userinfo=userinfo %}
                 </div>
 
                 <div id="summary" class="tab-pane fade {% if tab == "summary" %} in active {% endif %}">
-                    {% for domain, domain_data in summary.items %}
-                        {% if forloop.counter0|divisibleby:2 %}
-                        <div class="row" style="padding:2%">
-                            <div class="col-md-6">
-                                {% if domain_data %}
-                                    {% include "musictherapy/summary_data.html" with summary=domain_data type=domain %}
-                                {% else %}
-                                    <h3>No measurables have been recored yet for {{domain}}</h3>
-                                {% endif %}
-                            </div>
-                        {% else %}
-                            <div class="col-md-6">
-                                {% if domain_data %}
-                                    {% include "musictherapy/summary_data.html" with summary=domain_data type=domain %}
-                                {% else %}
-                                    <h3>No measurables have been recored yet for {{domain}} Domain</h3>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endif %}
-                    {% endfor %}
-                    {% if not summary|length|divisibleby:2 %}
-                        </div>
-                    {% endif %}
+                    {% include 'musictherapy/component/summary.html' with data=data %}
                 </div>
 
-                <div id="comskills" class="tab-pane fade {% if tab == "com" %} in active {% endif %}">
-                    {% include "musictherapy/component/skill.html" with type="Communication" pre="com" data=com_data session=current_session user=userinfo%}
+                {% for domain, domain_data in data.items %}
+                <div id="{{domain}}" class="tab-pane fade {% if tab == domain %} in active {% endif %}">
+                    {% include "musictherapy/component/skill.html" with type=domain_data.domain pre=domain data=domain_data user=userinfo %}
                 </div>
-
-                <div id="pssskills" class="tab-pane fade {% if tab == "pss" %} in active {% endif %}">
-                    {% include "musictherapy/component/skill.html" with type="Psycho-Social" pre="pss" data=pss_data session=current_session user=userinfo%}
-                </div>
-
-                <div id="physicalskills" class="tab-pane fade {% if tab == "phy" %} in active {% endif %}">
-                    {% include "musictherapy/component/skill.html" with type="Physical" pre="physical" data=physical_data session=current_session user=userinfo%}
-                </div>
-
-                <div id="cogskills" class="tab-pane fade {% if tab == "cog" %} in active {% endif %}">
-                    {% include "musictherapy/component/skill.html" with type="Cognitive and Memory" pre="cog" data=cog_data session=current_session user=userinfo%}
-                </div>
-
-                <div id="musicskills" class="tab-pane fade {% if tab == "mus" %} in active {% endif %}">
-                    {% include "musictherapy/component/skill.html" with type="Music" pre="music" data=music_data session=current_session user=userinfo%}
-                </div>
-
-                <div id="affectiveskills" class="tab-pane fade {% if tab == "aff" %} in active {% endif %}">
-                    {% include "musictherapy/component/skill.html" with type="Affective" pre="affective" data=affective_data session=current_session user=userinfo%}
-                </div>
+                {% endfor %}
             </div>
         </div>
     </body>

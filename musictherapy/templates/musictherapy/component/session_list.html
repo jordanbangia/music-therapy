@@ -7,8 +7,7 @@
     <tbody>
         {% for session in sessions %}
         <tr>
-            <td><a href="">{{ session.date }}</a></td>
-            <!--{% url 'musictherapy:session_detail' user.id session.id-->
+            <td><a href="{% url 'musictherapy:user_session_detail' userinfo.id session.id %}">{{ session.date.date }}</a></td>
         </tr>
         {% endfor %}
     </tbody>

@@ -1,35 +1,23 @@
 from musictherapy.skills_data import SkillsData
 
 
-def get_session_goals(user):
-    session_goals = {data.domain: data.goals_measurables() for data in get_skills_data_for_user_as_list(user)}
-
-    if all(len(gms) == 0 for domain, gms in session_goals.iteritems()):
-        return None
-    return session_goals
-
-
-def get_custom_goals(user):
-    return {data.domain: data.custom_goals() for data in get_skills_data_for_user_as_list(user)}
-
-
-def get_skills_data_for_user_as_list(user):
+def get_skills_data_for_user_as_list(user, session):
     return [
-        SkillsData("Communication", user),
-        SkillsData("Psycho-Social", user),
-        SkillsData("Physical", user),
-        SkillsData("Cognitive", user),
-        SkillsData("Music", user),
-        SkillsData("Affective", user),
+        SkillsData("Communication", user, session),
+        SkillsData("Psycho-Social", user, session),
+        SkillsData("Physical", user, session),
+        SkillsData("Cognitive", user, session),
+        SkillsData("Music", user, session),
+        SkillsData("Affective", user, session),
     ]
 
 
-def get_skills_data_for_user_as_dict(user):
+def get_skills_data_for_user_as_dict(user, session):
     return {
-        'com': SkillsData("Communication", user),
-        'pss': SkillsData("Psycho-Social", user),
-        'phys': SkillsData("Physical", user),
-        'cog': SkillsData("Cognitive", user),
-        'mus': SkillsData("Music", user),
-        'aff': SkillsData("Affective", user),
+        'com': SkillsData("Communication", user, session),
+        'pss': SkillsData("Psycho-Social", user, session),
+        'phys': SkillsData("Physical", user, session),
+        'cog': SkillsData("Cognitive", user, session),
+        'mus': SkillsData("Music", user, session),
+        'aff': SkillsData("Affective", user, session),
     }

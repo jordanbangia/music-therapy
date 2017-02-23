@@ -1,0 +1,24 @@
+{% for domain, domain_data in data.items %}
+    {% if forloop.counter0|divisibleby:2 %}
+    <div class="row" style="padding:2%">
+        <div class="col-md-6">
+            {% if domain_data.summary_measurable %}
+                {% include "musictherapy/summary_data.html" with summary=domain_data.summary_measurable type=domain_data.domain %}
+            {% else %}
+                <h3>No measurables have been recored yet for {{domain_data.domain}} Domain</h3>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="col-md-6">
+            {% if domain_data.summary_measurable %}
+                {% include "musictherapy/summary_data.html" with summary=domain_data.summary_measurable type=domain_data.domain %}
+            {% else %}
+                <h3>No measurables have been recored yet for {{domain_data.domain}} Domain</h3>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+{% endfor %}
+{% if not summary|length|divisibleby:2 %}
+    </div>
+{% endif %}

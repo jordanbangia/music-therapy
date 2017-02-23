@@ -1,0 +1,36 @@
+{% load crispy_forms_tags %}
+{% load template_getattr %}
+
+{% if data.has_goals == True %}
+    {% for measurable in data.goals_measurables %}
+        <div class="col-md-12" style="padding: 2px">
+            <div class="col-md-6">
+                <label class="control-label" style="padding: 5px">{{measurable.goal.name}} - {{measurable.name}}</label>
+            </div>
+            <div class="col-md-6">
+                {% with response=data.session_goal_measurables_response|getattrib:measurable.pk %}
+                <select class="select form-control" name="{{measurable.pk}}" value>
+                    <option value=-1 {% if response.value == -1 %} selected="selected" {% endif %}>Not Measured</option>
+                    <option value=0  {% if response.value == 0  %} selected="selected" {% endif %}>None/Never</option>
+                    <option value=1  {% if response.value == 1  %} selected="selected" {% endif %}>Low/Rarely/Poor</option>
+                    <option value=2  {% if response.value == 2  %} selected="selected" {% endif %}>Medium/Sometimes/Good</option>
+                    <option value=3  {% if response.value == 3  %} selected="selected" {% endif %}>High/Always/Very Good</option>
+                </select>
+                {% endwith %}
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="controls col-lg-6">
+        <label class="control-label" style="padding-top: 5px">Notes</label>
+    </div>
+    <div class="controls col-lg-6">
+        <textarea class="textarea form-control" cols="40" name="{{pre}}_goalsnotes" rows="10" spellcheck="true" style="z-index: auto; position: relative; line-height: 20px; font-size: 14px; transition: none; background: transparent !important;">{{data.session_goal_measurables_note.note}}</textarea>
+    </div>
+
+    {% if show_save %}
+    <input type="submit" name="submit" value="Save"/>
+    <input type="hidden" name="redirect" value="{{redirect}}"/>
+    {% endif %}
+
+{% endif %}

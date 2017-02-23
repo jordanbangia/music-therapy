@@ -160,11 +160,13 @@ class UserGoals(models.Model):
 
 
 class UserGoalMeasurables(models.Model):
-    user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="goalmeasurables", null=True)
     goal_measurable = models.ForeignKey(GoalsMeasurables, on_delete=models.CASCADE, null=True)
     session = models.ForeignKey(Session, null=True)
     value = models.IntegerField(choices=SKILLS_SCALE)
     updated = models.DateTimeField(blank=True, null=True)
+
+    def __unicode__(self):
+        return '{} - {} - {}'.format(self.goal_measurable.name, self.session.id, self.session.user.name)
 
     # class Meta:
     #     unique_together = ('user', 'goal_measurable', 'updated', 'session')

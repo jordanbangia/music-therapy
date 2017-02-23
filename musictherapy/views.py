@@ -12,8 +12,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 
 from musictherapy.forms import *
-from musictherapy.goals import get_session_goals, get_skills_data_for_user_as_list, get_custom_goals
-from musictherapy.sessions import get_all_sessions, get_current_session
+from musictherapy.goals import get_skills_data_for_user_as_list
+from musictherapy.sessions import get_all_sessions, get_current_session, get_session_for_id
 from musictherapy.skills_data import SkillsData
 
 STATUS_MESSAGES = {
@@ -54,7 +54,7 @@ def login(request):
 
 @require_GET
 @login_required(login_url='/musictherapy/login')
-def patients(request):
+def users(request):
     status = request.GET.get('status', None)
     user_info_list = models.UserInfo.objects.all().filter(active=1).order_by('location')
     context = {
@@ -80,48 +80,41 @@ def all_users(request):
 @login_required(login_url='/musictherapy/login')
 def user_detail(request, user_id):
     user = get_object_or_404(models.UserInfo, pk=user_id)
-    user_form = UserInfoForm(instance=user)
-    user_last_updated = user.updated
-    program_form = ProgramForm()
+    session = get_current_session(user)
 
+    return redirect(reverse('musictherapy:user_session_detail', kwargs={
+        'user_id': int(user.pk),
+        'session_id': int(session.pk)
+    }))
+
+
+@login_required(login_url='/musictherapy/login')
+def user_session_detail(request, user_id, session_id):
+    user = get_object_or_404(models.UserInfo, pk=user_id)
+    session = get_session_for_id(user, session_id)
+    user_form = UserInfoForm(instance=user)
+    program_form = ProgramForm()
     musicpref = get_object_or_None(models.MusicalPreference, pk=user_id)
     musicpref_form = MusicalPrefForm(instance=musicpref, user_id=user_id)
-    musicpref_last_updated = musicpref.updated if musicpref else None
-
-    sessions = get_all_sessions(user)
-
-    goals = get_goals(user)
-    com = SkillsData("Communication", user)
-    pss = SkillsData("Psycho-Social", user)
-    physical = SkillsData("Physical", user)
-    cog = SkillsData("Cognitive", user)
-    music = SkillsData("Music", user)
-    affective = SkillsData("Affective", user)
-    session_goals = get_session_goals(user)
-    custom_session_goals = get_custom_goals(user)
 
     return render(request, 'musictherapy/user_detail.html', {
-        # general user details, not session based
         'userinfo': user,
         'user_info_form': user_form,
-        'user_last_updated': user_last_updated,
         'program_form': program_form,
-        'sessions': sessions,
+        'sessions': get_all_sessions(user),
         'musical_pref_form': musicpref_form,
-        'musicpref_last_updated': musicpref_last_updated,
+        'musical_pref': musicpref,
         'tab': request.GET.get('tab', 'info'),
-
-        # session based use details
-        'goals': goals,
-        'session_goals': session_goals,
-        'custom_session_goals': custom_session_goals,
-        'summary': {data.domain: data.summary_measurable() for data in [com, pss, physical, cog, music, affective]},
-        'com_data': com.to_dict(),
-        'pss_data': pss.to_dict(),
-        'physical_data': physical.to_dict(),
-        'cog_data': cog.to_dict(),
-        'music_data': music.to_dict(),
-        'affective_data': affective.to_dict(),
+        'session': session,
+        'goals': get_goals(user),
+        'data': {
+            'com': SkillsData("Communication", user, session).to_dict(),
+            'pss': SkillsData("Psycho-Social", user, session).to_dict(),
+            'phy': SkillsData("Physical", user, session).to_dict(),
+            'cog': SkillsData("Cognitive", user, session).to_dict(),
+            'mus': SkillsData("Music", user, session).to_dict(),
+            'aff': SkillsData("Affective", user, session).to_dict()
+        },
     })
 
 
