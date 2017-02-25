@@ -18,8 +18,8 @@ Make sure that all the following work without throwing a Django error/ doing som
 - [ ] can login with a valid account
 - [ ] login with an invalid account throws error
 - [ ] can logout successfully
-- [ ] can see patient list
-- [ ] can see patient details
+- [ ] can see client list
+- [ ] can see client details
 - [ ] can add program
 - [ ] can edit user info
 - [ ] can edit music preferences

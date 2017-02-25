@@ -14,8 +14,8 @@
 </head>
 <body>
     <p>Provide the username for the new staff.  User a generic password (such as password) and provide it to the new staff member.  Make sure to have them change it once they log in.</p>
-    <p>Admin staff level can add new patients and staff.</p>
-    <p>Staff level can only create and fill in forms for patients.</p>
+    <p>Admin staff level can add new clients and staff.</p>
+    <p>Staff level can only create and fill in forms for clients.</p>
     <form action="/musictherapy/staff/" method="post">
         {% csrf_token %}
         {{ staff_form }}

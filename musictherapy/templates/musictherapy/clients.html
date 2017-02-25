@@ -12,18 +12,18 @@
 <div class="inner">
     <h1>ASPMTDOC Music Therapy App</h1>
 
-    <h2>Current Active Patients</h2>
+    <h2>Current Active Clients</h2>
 
     {% if user_info_list %}
-        {% include "musictherapy/user_list.html" with user_list=user_info_list redirect="patients" %}
+        {% include "musictherapy/user_list.html" with user_list=user_info_list redirect="clients" %}
     {% else %}
         <p> No users available. </p>
     {% endif %}
 
 
-<a class="btn btn-info pull-left" href="{% url 'musictherapy:create_user' %}" style="margin:5px">Add Patient</a>
+<a class="btn btn-info pull-left" href="{% url 'musictherapy:create_user' %}" style="margin:5px">Add Client</a>
 
-<a class="btn btn-info pull-left" href="{% url 'musictherapy:all_users' %}" style="margin:5px">View all Patients</a>
+<a class="btn btn-info pull-left" href="{% url 'musictherapy:all_users' %}" style="margin:5px">View all Clients</a>
 
 <a class="btn btn-info pull-left" href="{% url 'musictherapy:logout' %}" style="margin:5px">Logout</a>
 

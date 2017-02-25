@@ -62,7 +62,7 @@ def users(request):
         'status': STATUS_MESSAGES.get(status, None)
     }
 
-    return render(request, 'musictherapy/patients.html', context)
+    return render(request, 'musictherapy/clients.html', context)
 
 
 @login_required(login_url='/musictherapy/login')
@@ -393,7 +393,7 @@ def update_user_active(request, user_id, active):
         user.active = active
         user.save()
         if red:
-            if red == "patients":
+            if red == "clients":
                 return redirect(reverse('musictherapy:list'))
             elif red == "program":
                 return redirect(reverse('musictherapy:program_detail', kwargs={'program_id': int(user.program.id)}))
