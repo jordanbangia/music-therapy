@@ -10,11 +10,11 @@
             <div class="col-md-6">
                 {% with response=data.session_goal_measurables_response|getattrib:measurable.pk %}
                 <select class="select form-control" name="{{measurable.pk}}" value>
-                    <option value=-1 {% if response.value == -1 %} selected="selected" {% endif %}>Not Measured</option>
-                    <option value=0  {% if response.value == 0  %} selected="selected" {% endif %}>None/Never</option>
-                    <option value=1  {% if response.value == 1  %} selected="selected" {% endif %}>Low/Rarely/Poor</option>
-                    <option value=2  {% if response.value == 2  %} selected="selected" {% endif %}>Medium/Sometimes/Good</option>
-                    <option value=3  {% if response.value == 3  %} selected="selected" {% endif %}>High/Always/Very Good</option>
+                    <option value=-1 {% if response and response.value == -1 %} selected="selected" {% endif %}>Not Measured</option>
+                    <option value=0  {% if response and response.value == 0  %} selected="selected" {% endif %}>None/Never</option>
+                    <option value=1  {% if response and response.value == 1  %} selected="selected" {% endif %}>Low/Rarely/Poor</option>
+                    <option value=2  {% if response and response.value == 2  %} selected="selected" {% endif %}>Medium/Sometimes/Good</option>
+                    <option value=3  {% if response and response.value == 3  %} selected="selected" {% endif %}>High/Always/Very Good</option>
                 </select>
                 {% endwith %}
             </div>

@@ -1,8 +1,7 @@
+import django.contrib.auth.views as auth
 from django.conf.urls import url
 
 from musictherapy import views
-import django.contrib.auth.views as auth
-
 from musictherapy.export import MusicTherapyAssessment
 
 urlpatterns = [

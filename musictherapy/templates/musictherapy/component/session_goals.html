@@ -7,7 +7,7 @@
             {% if domain_data.has_goals == True %}
             <h3>{{domain_data.domain}} Goals</h3>
             {% endif %}
-            {% include 'musictherapy/component/session_goal_observable.html' with data=domain_data redirect=redirect pre=domain%}
+            {% include 'musictherapy/component/session_goal_observable.html' with data=domain_data redirect=redirect pre=domain_data.prefix %}
         {% endfor %}
 
         <input type="submit" name="submit" class="btn btn-primary" value="Save Measurables"/>

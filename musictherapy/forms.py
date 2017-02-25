@@ -1,13 +1,13 @@
+from datetime import date
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.forms import ModelForm, ChoiceField, IntegerField, CheckboxSelectMultiple
 
-from musictherapy.extras import SelectDateWidget
 import musictherapy.models as models
-from datetime import date
+from musictherapy.extras import SelectDateWidget
 
 
 class ProgramForm(ModelForm):

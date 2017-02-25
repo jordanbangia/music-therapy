@@ -6,9 +6,9 @@ from annoying.functions import get_object_or_None
 from django.utils.functional import cached_property
 
 import musictherapy.models as models
-from musictherapy.sessions import get_current_session, get_latest_session, get_all_sessions
+import musictherapy.utils as utils
 
-PREFIX_DICT = {
+SKILLS_PREFIX_DICT = {
     'Communication': 'com',
     'Psycho-Social': 'pss',
     'Physical': 'phys',
@@ -18,6 +18,12 @@ PREFIX_DICT = {
 }
 
 
+def prefix_to_domain(prefix):
+    if prefix in SKILLS_PREFIX_DICT.values():
+        return [domain for domain, domain_prefix in SKILLS_PREFIX_DICT.iteritems() if domain_prefix == prefix][0]
+    return None
+
+
 class SkillsData(object):
     def __init__(self, domain, user, session):
         self.user = user
@@ -25,7 +31,7 @@ class SkillsData(object):
         self.domain = domain
         self.domain_model = get_object_or_None(models.Domains, name=self.domain)
         self.goals = models.Goals.objects.filter(domain__in=self.domains, enabled=1)
-        self.prefix = PREFIX_DICT[domain]
+        self.prefix = SKILLS_PREFIX_DICT[domain]
 
     @cached_property
     def measurables(self):
@@ -144,8 +150,8 @@ class SkillsData(object):
             if len(data[goal.name]) > 0:
                 data[goal.name] = data[goal.name][0]
 
-        notes = models.UserGoalNoteMeasurable.objects.filter(session=get_latest_session(self.user), domain=self.domain_model)
-        return {'data': data, 'notes': notes,} if len(data) > 0 or len(notes) > 0 else None
+        notes = models.UserGoalNoteMeasurable.objects.filter(session=utils.latest_session(self.user), domain=self.domain_model)
+        return {'data': data, 'notes': notes} if len(data) > 0 or len(notes) > 0 else None
 
     def chart(self):
         if self.has_goal:
@@ -194,4 +200,5 @@ class SkillsData(object):
             summary_measurable=self.summary_measurable(),
             session_goal_measurables_response=self.session_goal_measurable_responses(),
             session_goal_measurables_note=self.session_goal_measurable_note(),
+            prefix=self.prefix,
         )

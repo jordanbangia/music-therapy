@@ -29,13 +29,10 @@
                 <li {% if tab == "goals" %} class="active" {% endif %}><a data-toggle="tab" data-target="#sessiongoals">Treatment Plan</a></li>
                 {% endif %}
                 {% if data %}
-                <li {% if tab == "summary" %} class="active" {% endif %}><a data-toggle="tab" data-target="#summary">Summary</a></li>
-                <li {% if tab == "com" %} class="active" {% endif %}><a data-toggle="tab" data-target="#com">Communication Skills</a></li>
-                <li {% if tab == "pss" %} class="active" {% endif %}><a data-toggle="tab" data-target="#pss">Psycho-Social Skills</a></li>
-                <li {% if tab == "phy" %} class="active" {% endif %}><a data-toggle="tab" data-target="#phy">Physical Skills</a></li>
-                <li {% if tab == "cog" %} class="active" {% endif %}><a data-toggle="tab" data-target="#cog">Cognitive and Memory Skills</a></li>
-                <li {% if tab == "aff" %} class="active" {% endif %}><a data-toggle="tab" data-target="#aff">Affective Skills</a></li>
-                <li {% if tab == "mus" %} class="active" {% endif %}><a data-toggle="tab" data-target="#mus">Music Skills</a></li>
+                    <li {% if tab == "summary" %} class="active" {% endif %}><a data-toggle="tab" data-target="#summary">Summary</a></li>
+                    {% for domain, domain_data in data.items %}
+                        <li {% if tab == domain %} class="active" {%endif%}><a data-toggle="tab" data-target="#{{domain}}">{{domain_data.domain|capfirst}} Skills</a></li>
+                    {% endfor %}
                 {% endif %}
             </ul>
 
