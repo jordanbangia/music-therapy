@@ -4,6 +4,7 @@
 <form action="{% url 'musictherapy:save_goals' user.id %}" method="post">
     {% csrf_token %}
     {% for domain in goals.order %}
+    <div class="col-md-12" style="margin-bottom: 10px; padding-bottom: 10px">
         <div class="col-md-12">
             <h3>{{domain}} Goals</h3>
         </div>
@@ -16,12 +17,8 @@
         <div class="col-md-12">
             <input name="{{domain}}_custom" type="text" style="width: 100%" placeholder="Custom {{domain}} goal" id="{{domain}}_goal_custom"/>
         </div>
-        <br>
-        <br>
+    </div>
     {% endfor %}
-
-    <br>
-
     <input type="hidden" name="redirect" value="{{redirect}}"/>
-    <input type="submit" name="submit" value="Save Goals" />
+    <input type="submit" name="submit" class="btn btn-primary" value="Save Goals" />
 </form>

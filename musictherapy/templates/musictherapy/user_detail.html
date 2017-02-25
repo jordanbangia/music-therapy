@@ -7,7 +7,7 @@
     </head>
 
     <body>
-        <div class="row" style="padding-left: 2%">
+        <div class="row" style="margin-left: 2%; margin-right: 2%">
             <div class="col-md-10">
                 <h1>{{userinfo.name}} - Session: {{session.date.date}}</h1>
             </div>
@@ -82,41 +82,4 @@
             </div>
         </div>
     </body>
-
-<script type="text/javascript">
-$("#new-program-form").submit(function(e) {
-    e.preventDefault();
-    $form = $(this);
-    var url = $form.attr('action');
-    var errorText = $("#new-program-form-error");
-    errorText.html('');
-
-    $.ajax({
-        type: "POST",
-        url: url,
-        dataType: 'json',
-        data: $("#new-program-form").serialize(),
-        success: function(data) {
-            if (data == 404) {
-                toastr.error("There was a problem saving the program, try again later.");
-            } else {
-                var label = $('<label class="checkbox"></label>');
-                var input = $('<input type="checkbox" name="program">');
-                input.attr('value', data["pk"]);
-                input.attr('id', "id_program_" + data["pk"]);
-                input.attr('checked', 'checked');
-
-                var element = $('#div_id_program div');
-                label.append(input);
-                label.append(data["display"]);
-                element.append(label);
-                $('#new-program-modal').modal('toggle');
-                toastr.success("Saved new program " + data["display"])
-            }
-        }
-    });
-});
-</script>
-
-
 </html>
