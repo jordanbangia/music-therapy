@@ -130,53 +130,29 @@
 
             <div id="measurables">
                 {% for domain, domain_data in domain_measurables.items %}
-                    {% if domain_data.goals_measurables or domain_data.measurables %}
+                    {% if domain_data %}
                     <div id="{{domain}}">
-                        <h1 class="header-margin">{{domain}} Measurables - {{domain_data.measurables.date}}</h1>
-                        {% if domain_data.measurables %}
+                        <h1 class="header-margin">{{domain}} Assessment - {{domain_data.date}}</h1>
                             <div id="{{domain}}_measurables">
-                                {% for subdomain, measurables in domain_data.measurables.items %}
+                                {% for subdomain, measurables in domain_data.items %}
                                     {% if subdomain != "Notes" and subdomain != "date" %}
                                         <h3>{{subdomain.name}}</h3>
                                         <div class="tab">
                                             {% for measurable in measurables %}
-                                                {# if measurable.value != -1 #}
-                                                {% if measurable.measurable.name %}
+                                                {% if measurable.measurable.name and measurable.value != -1 %}
                                                     <b>{{measurable.measurable.name}}</b>: {{measurable.get_value_display}}<br>
                                                 {% endif %}
-                                                {# endif #}
                                             {% endfor %}
                                         </div>
                                     {% endif %}
                                 {% endfor %}
-                                {% if domain_data.measurables.notes %}
+                                {% if domain_data.notes %}
                                     <b>Notes</b>:
-                                    {% for note in domain_data.measurables.notes %}
+                                    {% for note in domain_data.notes %}
                                         {{note.note}}<br>
                                     {% endfor %}
                                 {% endif %}
                             </div>
-                        {% endif %}
-
-                        <!--
-                        {% if domain_data.goals_measurables %}
-                            <h2>{{domain}} Goal Measurables</h2>
-                                <div id="{{domain}}_goal_measurables" class="tab">
-                                {% if domain_data.goals_measurables.data %}
-                                    {% for goal, value in domain_data.goals_measurables.data.items %}
-                                        <b>{{goal}}</b>: {{value.get_value_display}}<br>
-                                    {% endfor %}
-                                {% endif %}
-
-                                {% if domain_data.goals_measurables.notes %}
-                                    <b>Notes</b>:
-                                    {% for note in domain_data.goals_measurables.notes %}
-                                        {{note.note}}
-                                    {% endfor %}
-                                {% endif %}
-                                </div>
-                        {% endif %}
-                        -->
                     </div>
                     {% endif %}
                 {% endfor %}
