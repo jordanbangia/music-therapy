@@ -87,7 +87,8 @@ class MusicTherapyTreatmentPlan(PDFTemplateView):
 
             if len(tmp) > 0:
                 goals_data[data.domain] = dict(tmp)
-                notes_data[data.domain] = data.session_goal_measurable_note().note
+                note = data.session_goal_measurable_note()
+                notes_data[data.domain] = note.note if note is not None else None
 
         return super(MusicTherapyTreatmentPlan, self).get_context_data(
             pagesize="A4",
