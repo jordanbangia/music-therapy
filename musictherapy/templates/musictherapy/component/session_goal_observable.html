@@ -21,6 +21,28 @@
         </div>
     {% endfor %}
 
+    {% if data.custom_goals %}
+        {% for goal in data.custom_goals %}
+            <div class="col-md-12" style="padding: 2px">
+                <div class="col-md-2">
+                    <label class="control-label" style="padding-left: 5px">{{goal.name}}</label>
+                </div>
+                <div class="col-md-4">
+                    <input name="customtext_{{goal.pk}}" type="text" value="" id="custom_goal_measurable_{{goal.pk}}"/>
+                </div>
+                <div class="col-md-6">
+                    <select class="select form-control" name="customvalue_{{goal.pk}}">
+                        <option value=-1>Not Measured</option>
+                        <option value=0>None/Never</option>
+                        <option value=1>Low/Rarely/Poor</option>
+                        <option value=2>Medium/Sometimes/Good</option>
+                        <option value=3>High/Always/Very Good</option>
+                    </select>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <div class="controls col-lg-6">
         <label class="control-label" style="padding-top: 5px">Notes</label>
     </div>

@@ -201,4 +201,5 @@ class SkillsData(object):
             session_goal_measurables_response=self.session_goal_measurable_responses(),
             session_goal_measurables_note=self.session_goal_measurable_note(),
             prefix=self.prefix,
+            custom_goals=self.custom_goals()
         )
