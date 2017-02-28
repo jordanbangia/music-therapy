@@ -1,6 +1,5 @@
 import datetime
 from collections import defaultdict
-from pprint import pprint
 
 from annoying.functions import get_object_or_None
 from django.shortcuts import get_object_or_404
