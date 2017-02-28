@@ -10,7 +10,7 @@ def replace_user_with_session_user(apps, schema_editor):
     existing_ugs = set()
     for user_goal in user_goals_model.objects.all():
         try:
-            session_user = user_goal.session
+            session_user = user_goal.session.user
             if session_user:
                 user_goal.user = session_user
                 if (user_goal.goal, user_goal.user) not in existing_ugs:
