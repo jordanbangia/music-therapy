@@ -46,7 +46,7 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        {% include "musictherapy/component/session_goals.html" with data=data|getattrib:user.id user=user %}
+                                        {% include "musictherapy/component/session_goals.html" with data=data|getattrib:user.id user=user session=sessions|getattrib:user.id%}
                                     </div>
                                 </div>
                             </div>

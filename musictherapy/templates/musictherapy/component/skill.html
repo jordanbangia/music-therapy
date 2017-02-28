@@ -19,7 +19,7 @@
         </div>
         <div id="{{pre}}-goals" class="panel-collapse collapse in" aria-expanded="true">
             <div class="panel-body">
-                <form action="{% url 'musictherapy:save_goalmeasurables' user.id %}" method="post">
+                <form action="{% url 'musictherapy:save_goalmeasurables' user.id session.id%}" method="post">
                     {% csrf_token %}
                     {% include 'musictherapy/component/session_goal_observable.html' with data=data redirect=pre pre=pre show_save=True%}
                 </form>

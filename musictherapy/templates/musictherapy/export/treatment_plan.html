@@ -27,6 +27,10 @@
             margin: 0 0 0 40px;
         }
 
+        .double-tab {
+            margin: 0 0 0 60px;
+        }
+
         .right-space {
             margin: 0 10px 0 0;
         }
@@ -70,7 +74,41 @@
 
             {{ context }}
 
-            <div id="treatment">
+            <div id="treatment-plan">
+                {% if general_goals %}
+                <h1>General Goals</h1>
+                <div>
+                    <p class="tab">
+                        {% for goal in general_goals %}
+                            {{ goal.goal.name }}<br/>
+                        {% endfor %}
+                    </p>
+                </div>
+                {% endif %}
+
+
+                {% for domain, domain_data in goals.items %}
+                <h1>{{ domain }} Goals</h1>
+                    {% for goal, user_goal_measurables in domain_data.items %}
+                    <div>
+                        <h3 class="tab">{{ goal.name }}</h3>
+                            <p class="double-tab">
+                                {% for ugm in user_goal_measurables %}
+                                {{ ugm.goal_measurable.name }}: {{ugm.get_value_display}}<br/>
+                                {% endfor %}
+                            </p>
+
+                        {% with note=notes|getattrib:domain%}
+                        {% if note %}
+                            <h4>Notes:</h4>
+                                <p class="double-tab">
+                                    {{note}}
+                                </p>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    {% endfor %}
+                {% endfor %}
             </div>
 
 

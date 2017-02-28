@@ -30,7 +30,7 @@ def latest_session(user):
 def session_for_id(user, session_id):
     # make sure that the latest session exists
     current_session(user)
-    return get_object_or_404(Session, pk=session_id)
+    return get_object_or_404(Session, pk=session_id, user=user)
 
 
 def users_goals(user):

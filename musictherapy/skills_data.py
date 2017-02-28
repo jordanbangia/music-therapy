@@ -25,13 +25,13 @@ def prefix_to_domain(prefix):
 
 
 class SkillsData(object):
-    def __init__(self, domain, user, session):
+    def __init__(self, domain, user, session, prefix=None):
         self.user = user
         self.session = session
         self.domain = domain
         self.domain_model = get_object_or_None(models.Domains, name=self.domain)
         self.goals = models.Goals.objects.filter(domain__in=self.domains, enabled=1)
-        self.prefix = SKILLS_PREFIX_DICT[domain]
+        self.prefix = SKILLS_PREFIX_DICT[domain] if not prefix else prefix
 
     @cached_property
     def measurables(self):

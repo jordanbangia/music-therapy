@@ -1,7 +1,7 @@
 {% load template_getattr %}
 
 <div class="col-md-12">
-    <form action="{% url 'musictherapy:save_goalmeasurables' user.id %}" method="post" id="goals-measurables-form-{{user.id}}">
+    <form action="{% url 'musictherapy:save_goalmeasurables' user.id session.id%}" method="post" id="goals-measurables-form-{{user.id}}">
         {% csrf_token %}
         {% for domain, domain_data in data.items %}
             {% if domain_data.has_goals == True %}

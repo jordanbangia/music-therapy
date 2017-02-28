@@ -260,11 +260,11 @@ def save_measurables(request, user_id):
 
 
 @login_required(login_url='/musictherapy/login')
-def save_goalmeasurables(request, user_id):
+def save_goalmeasurables(request, user_id, session_id):
     if request.method == 'POST':
         data = request.POST.dict()
         user = get_object_or_404(models.UserInfo, pk=user_id)
-        session = utils.current_session(user)
+        session = utils.session_for_id(user, session_id)
         custom_gm = defaultdict(dict)
 
         for measurable_id, measurable_value in data.iteritems():

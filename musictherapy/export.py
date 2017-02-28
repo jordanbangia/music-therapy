@@ -1,5 +1,6 @@
 import datetime
 from collections import defaultdict
+from pprint import pprint
 
 from annoying.functions import get_object_or_None
 from django.shortcuts import get_object_or_404
@@ -7,7 +8,6 @@ from easy_pdf.views import PDFTemplateView
 
 import musictherapy.models as models
 import musictherapy.utils as utils
-from musictherapy.models import UserDomainNoteMeasurables
 from musictherapy.skills_data import SkillsData
 
 
@@ -67,7 +67,7 @@ class MusicTherapyTreatmentPlan(PDFTemplateView):
 
     def get_context_data(self, **kwargs):
         user = get_object_or_404(models.UserInfo, pk=kwargs['user_id'])
-        session = utils.current_session(user)
+        session = utils.session_for_id(user, kwargs['session_id'])
 
         self.domain_data = {
             'com': SkillsData("Communication", user, session),
@@ -77,13 +77,29 @@ class MusicTherapyTreatmentPlan(PDFTemplateView):
             'music': SkillsData("Music", user, session),
             'aff': SkillsData("Affective", user, session),
         }
-        programs = get_user_programs(user)
+
+        goals_data = dict()
+        notes_data = dict()
+        for domain, data in self.domain_data.iteritems():
+            tmp = defaultdict(list)
+            session_gms = data.session_goal_measurable_responses()
+            for gm in data.goal_measurables:
+                tmp[gm.goal] += [session_gms.get(gm.id, None)]
+
+            if len(tmp) > 0:
+                goals_data[data.domain] = dict(tmp)
+                notes_data[data.domain] = data.session_goal_measurable_note().note
 
         return super(MusicTherapyTreatmentPlan, self).get_context_data(
             pagesize="A4",
             userinfo=user,
-            programs=programs,
+            programs=get_user_programs(user),
+            data=self.domain_data,
             date=datetime.datetime.now().date(),
+            session=session,
+            general_goals=SkillsData("General", user, session, prefix="general").user_goals,
+            goals=goals_data,
+            notes=notes_data,
             **kwargs
         )
 
@@ -104,10 +120,9 @@ def format_data(measurables):
     for measurable in measurables:
         if not date:
             date = measurable.updated
-        if isinstance(measurable, UserDomainNoteMeasurables):
+        if isinstance(measurable, models.UserDomainNoteMeasurables):
             data["notes"] += [measurable]
         elif measurable.measurable.name is not None and measurable.value != -1:
-            print(measurable.measurable.name, measurable.value)
             data[measurable.measurable.domain] += [measurable]
     data = dict(data)
     data['date'] = date
