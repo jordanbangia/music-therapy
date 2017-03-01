@@ -9,7 +9,11 @@
     <body>
         <div class="row" style="margin-left: 2%; margin-right: 2%">
             <div class="col-md-10">
+                {% if userinfo and session %}
                 <h1>{{userinfo.name}} - Session: {{session.date.date}}</h1>
+                {% else %}
+                <h1>New Client</h1>
+                {% endif %}
             </div>
             <div class="col-md-2">
                 <a class="btn btn-info pull-right" href="{% url 'musictherapy:logout' %}" style="margin:5px">Logout</a>
