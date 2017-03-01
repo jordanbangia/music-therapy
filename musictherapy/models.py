@@ -54,7 +54,7 @@ class UserInfo(models.Model):
     location = MultiSelectField(max_length=100, choices=LOCATION_CHOICES, verbose_name="Location")
     date_of_birth = models.DateField(verbose_name="Date of Birth")
     diagnosis = models.CharField(max_length=500, blank=True, verbose_name="Diagnosis")
-    history = models.TextField(max_length=500, verbose_name="Life Experiences/History")
+    history = models.TextField(verbose_name="Life Experiences/History")
     country_of_origin = models.CharField(max_length=100, verbose_name="Country of Origin")
     language_spoken = models.CharField(max_length=100, verbose_name="Language Spoken")
     musical_history = models.CharField(max_length=500, verbose_name="Musical History")
