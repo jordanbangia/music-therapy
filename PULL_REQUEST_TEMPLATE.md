@@ -24,13 +24,13 @@ Make sure that all the following work without throwing a Django error/ doing som
 - [ ] can edit user info
 - [ ] can edit music preferences
 - [ ] can add a new measurable form
-- [ ] can set session goals
+- [ ] can set goals
 - [ ] can set goals measurables for sessions
 - [ ] can add note to goal measurables
 - [ ] can create a custom goal for a domain
 - [ ] can create a custom goal measurable for the custom goal
 - [ ] can see chart with note for recent addition
-- [ ] can see past measurables at the top of the domain
+- [ ] can see past assessments at the top of the domain
 - [ ] can see summary of recent measurables
 - [ ] can create a new user
 - [ ] can browse a program
