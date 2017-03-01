@@ -8,18 +8,25 @@
 
     <body>
         <div class="row" style="margin-left: 2%; margin-right: 2%">
-            <div class="col-md-10">
+            <div class="col-md-8">
                 {% if userinfo and session %}
                 <h1>{{userinfo.name}} - Session: {{session.date.date}}</h1>
                 {% else %}
                 <h1>New Client</h1>
                 {% endif %}
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <a class="btn btn-info pull-right" href="{% url 'musictherapy:logout' %}" style="margin:5px">Logout</a>
                 <a class="btn btn-info pull-right" href="{% url 'musictherapy:list' %}" style="margin:5px">Home</a>
+                {% if userinfo %}
+                <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_assessment' userinfo.id %}"  style="margin:5px">Export Assessment</a>
+                    {% if session %}
+                    <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_treatment' userinfo.id session.id %}"  style="margin:5px">Export Objectives</a>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
+
         <div class="page-wrapper">
             <ul class ="nav nav-tabs" id="tabs">
                 <li {% if tab == "info" %} class="active" {% endif %}><a data-toggle="tab" data-target="#basicinfo">Basic Information</a></li>
