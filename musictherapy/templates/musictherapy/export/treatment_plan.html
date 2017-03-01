@@ -72,11 +72,11 @@
         <div class="main">
             <h1 style="text-align:center">Alzhemier Society Peel's Music Therapy Treatment Plan</h1>
 
-            {{ context }}
+            <h1>Session Date: {{session.date.date}}</h1>
 
             <div id="treatment-plan">
                 {% if general_goals %}
-                <h1>General Goals</h1>
+                <h2>General Goals</h2>
                 <div>
                     <p class="tab">
                         {% for goal in general_goals %}

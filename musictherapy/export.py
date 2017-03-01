@@ -83,7 +83,8 @@ class MusicTherapyTreatmentPlan(PDFTemplateView):
             tmp = defaultdict(list)
             session_gms = data.session_goal_measurable_responses()
             for gm in data.goal_measurables:
-                tmp[gm.goal] += [session_gms.get(gm.id, None)]
+                if gm.id in session_gms:
+                    tmp[gm.goal] += [session_gms[gm.id]]
 
             if len(tmp) > 0:
                 goals_data[data.domain] = dict(tmp)
