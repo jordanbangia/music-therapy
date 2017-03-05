@@ -82,3 +82,23 @@ class StaffForm(UserCreationForm):
                                required=True,
                                label='Staff level',
                                initial='Admin')
+
+
+class SessionStatusForm(ModelForm):
+    class Meta:
+        model = models.Session
+        fields = ('status', 'note')
+
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('user_id')
+        session_id = kwargs.pop('session_id')
+        super(SessionStatusForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-sessionstatusform'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-6'
+        self.helper.form_post = 'post'
+        self.helper.form_tag = False
+        self.helper.form_action = reverse('musictherapy:save_session_status', kwargs={'user_id': int(user_id), 'session_id': int(session_id)})
+        # self.helper.add_input(Submit('submit', 'Save'))

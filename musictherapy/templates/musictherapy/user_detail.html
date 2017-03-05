@@ -8,21 +8,24 @@
 
     <body>
         <div class="row" style="margin-left: 2%; margin-right: 2%">
-            <div class="col-md-8">
+            <div class="col-md-6">
                 {% if userinfo and session %}
                 <h1>{{userinfo.name}} - Session: {{session.date.date}}</h1>
                 {% else %}
                 <h1>New Client</h1>
                 {% endif %}
             </div>
-            <div class="col-md-4">
-                <a class="btn btn-info pull-right" href="{% url 'musictherapy:logout' %}" style="margin:5px">Logout</a>
+            <div class="col-md-6">
+                <a class="btn btn-danger pull-right" href="{% url 'musictherapy:logout' %}" style="margin:5px">Logout</a>
                 <a class="btn btn-info pull-right" href="{% url 'musictherapy:list' %}" style="margin:5px">Home</a>
                 {% if userinfo %}
                 <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_assessment' userinfo.id %}"  style="margin:5px">Export Assessment</a>
                     {% if session %}
                     <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_treatment' userinfo.id session.id %}"  style="margin:5px">Export Objectives</a>
                     {% endif %}
+                {% endif %}
+                {% if session_form %}
+                <a class="btn btn-info pull-right" href="" style="margin: 5px" data-toggle="modal" data-target="#session-status-modal">Mark as Absent</a>
                 {% endif %}
             </div>
         </div>
@@ -47,8 +50,8 @@
                 {% endif %}
             </ul>
 
-            <div class="tab-content forms-wrapper">
-                <div id="sessiongoals" class="tab-pane fade {% if tab == "goals" %} in active {% endif %}">
+            <div class="tab-content forms-wrapper" id="tab-content">
+                <div id="sessiongoals" class="tab-pane fade {% if tab == 'goals'%} in active {% endif %}">
                     {% if goals %}
                     <div class="col-lg-4">
                         {% include "musictherapy/component/goals.html" with goals=goals user=userinfo redirect="goals" %}
@@ -59,7 +62,7 @@
                     {% endif %}
                 </div>
 
-                <div id ="musicpref" class="tab-pane fade {% if tab == "musicpref" %} in active {% endif %}">
+                <div id ="musicpref" class="tab-pane fade {% if tab == 'musicpref' %} in active {% endif %}">
                     {% if musical_pref_form %}
                         {% crispy musical_pref_form %}
 
@@ -70,15 +73,15 @@
                     {% endif %}
                 </div>
 
-                <div id="basicinfo" class="tab-pane fade {% if tab == "info" %} in active {% endif %}">
+                <div id="basicinfo" class="tab-pane fade {% if tab == 'info' %} in active {% endif %}">
                     {% include 'musictherapy/component/user_info.html' with user=userinfo user_info_form=user_info_form program_form=program_form user_last_updated=user_last_updated %}
                 </div>
 
-                <div id="pastsessions" class="tab-pane fade {% if tab == "sessions" %} in active {% endif %}">
+                <div id="pastsessions" class="tab-pane fade {% if tab == 'sessions' %} in active {% endif %}">
                     {% include 'musictherapy/component/session_list.html' with sessions=sessions userinfo=userinfo %}
                 </div>
 
-                <div id="summary" class="tab-pane fade {% if tab == "summary" %} in active {% endif %}">
+                <div id="summary" class="tab-pane fade {% if tab == 'summary' %} in active {% endif %}">
                     {% include 'musictherapy/component/summary.html' with data=data %}
                 </div>
 
@@ -87,6 +90,51 @@
                     {% include "musictherapy/component/skill.html" with type=domain_data.domain pre=domain data=domain_data user=userinfo %}
                 </div>
                 {% endfor %}
+            </div>
+
+            <div  id="session-status-modal-div">
+                <div class="modal fade" id="session-status-modal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+                                <h4 class="modal-title" id="statsModalLabel">Session: {{session.date.date}} Status</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{% url 'musictherapy:save_session_status' userinfo.id session.id %}" class="form-horizontal" method="post" id="session-status-form">
+                                    <h4 id="session-status-form-error" style="color: red"></h4>
+                                    {% crispy session_form %}
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" name="submit" value="Save" class="btn btn-primary" form="session-status-form"/>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script type="text/javascript">
+                    $("#session-status-form").submit(function(e) {
+                        e.preventDefault();
+                        $form = $(this);
+                        var url = $form.attr('action');
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            dataType: 'json',
+                            data: $("#session-status-form").serialize(),
+                            success: function(data) {
+                                if (data == 200) {
+                                    $("#session-status-modal").modal('toggle');
+                                    toastr.success("Saved Session {{session.id}} ({{session.date.date}})");
+                                } else {
+                                    toastr.error("There was a problem saving the Session {{session.id}} ({{session.date.date}}, try again later");
+                                }
+                            }
+                        })
+                    })
+                </script>
             </div>
         </div>
     </body>

@@ -69,8 +69,15 @@ class UserInfo(models.Model):
 
 
 class Session(models.Model):
+    STATUS_CHOICES = (
+        (0, 'Attended'),
+        (1, 'Missed')
+    )
+
     user = models.ForeignKey(UserInfo, related_name="sessions", null=False)
     date = models.DateTimeField(auto_now=True, verbose_name="Session Date")
+    note = models.TextField(null=True)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=0)
 
     class Meta:
         unique_together = ('user', 'date')

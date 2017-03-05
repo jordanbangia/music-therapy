@@ -7,11 +7,13 @@ from annoying.functions import get_object_or_None
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core import serializers
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods, require_GET
 
-from musictherapy.forms import *
+import musictherapy.forms as forms
+import musictherapy.models as models
 import musictherapy.utils as utils
 from musictherapy.skills_data import SkillsData, SKILLS_PREFIX_DICT, prefix_to_domain
 
@@ -76,10 +78,11 @@ def user_detail(request, user_id):
 def user_session_detail(request, user_id, session_id):
     user = get_object_or_404(models.UserInfo, pk=user_id)
     session = utils.session_for_id(user, session_id)
-    user_form = UserInfoForm(instance=user)
-    program_form = ProgramForm()
+    user_form = forms.UserInfoForm(instance=user)
+    program_form = forms.ProgramForm()
     musicpref = get_object_or_None(models.MusicalPreference, pk=user_id)
-    musicpref_form = MusicalPrefForm(instance=musicpref, user_id=user_id)
+    musicpref_form = forms.MusicalPrefForm(instance=musicpref, user_id=user_id)
+    session_form = forms.SessionStatusForm(instance=session, user_id=user_id, session_id=session_id)
 
     return render(request, 'musictherapy/user_detail.html', {
         'userinfo': user,
@@ -90,6 +93,7 @@ def user_session_detail(request, user_id, session_id):
         'musical_pref': musicpref,
         'tab': request.GET.get('tab', 'info'),
         'session': session,
+        'session_form': session_form,
         'goals': utils.users_goals(user),
         'data': {prefix: SkillsData(domain, user, session).to_dict() for domain, prefix in SKILLS_PREFIX_DICT.iteritems()},
     })
@@ -97,8 +101,8 @@ def user_session_detail(request, user_id, session_id):
 
 @login_required(login_url='/musictherapy/login')
 def create_user(request):
-    user_form = UserInfoForm()
-    program_form = ProgramForm()
+    user_form = forms.UserInfoForm()
+    program_form = forms.ProgramForm()
     return render(request, 'musictherapy/user_detail.html', {
         'user_info_form': user_form,
         'program_form': program_form,
@@ -110,7 +114,7 @@ def create_user(request):
 @login_required(login_url='/musictherapy/login')
 def save_program(request):
     if request.method == 'POST':
-        program_form = ProgramForm(request.POST)
+        program_form = forms.ProgramForm(request.POST)
         if program_form.is_valid():
             program = program_form.save()
             serialized = serializers.serialize('json', [program])
@@ -126,7 +130,7 @@ def save_program(request):
 @login_required(login_url='/musictherapy/login')
 def save_new_basic(request):
     if request.method == 'POST':
-        user_form = UserInfoForm(request.POST)
+        user_form = forms.UserInfoForm(request.POST)
         if user_form.is_valid():
             user = user_form.save()
             return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user.pk)}) + "?tab=info")
@@ -138,7 +142,7 @@ def save_new_basic(request):
 def save_basic_info(request, user_id):
     user = get_object_or_None(models.UserInfo, pk=user_id)
     if request.method == 'POST':
-        user_form = UserInfoForm(request.POST, instance=user)
+        user_form = forms.UserInfoForm(request.POST, instance=user)
         if user_form.is_valid():
             user_form.save()
             return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}) + "?tab=info")
@@ -206,11 +210,11 @@ def save_user_goals(request, user_id):
 def create_staff(request):
     if request.method == 'GET':
         context = {
-            'staff_form': StaffForm()
+            'staff_form': forms.StaffForm()
         }
         return render(request, 'musictherapy/staff.html', context)
     elif request.method == 'POST':
-        staff_form = StaffForm(request.POST)
+        staff_form = forms.StaffForm(request.POST)
         if staff_form.is_valid():
             staff_form.save()
             return redirect('/musictherapy/users?status=staff_added')
@@ -224,7 +228,7 @@ def create_staff(request):
 def save_music_pref(request, user_id):
     musicpref = get_object_or_None(models.MusicalPreference, pk=user_id)
     if request.method == 'POST':
-        musicpref_form = MusicalPrefForm(request.POST, instance=musicpref, user_id=user_id)
+        musicpref_form = forms.MusicalPrefForm(request.POST, instance=musicpref, user_id=user_id)
         if musicpref_form.is_valid():
             if musicpref is None:
                 musicpref = musicpref_form.save(commit=False)
@@ -349,4 +353,21 @@ def update_user_active(request, user_id, active):
                 return redirect(reverse('musictherapy:all_users'))
             else:
                 return HttpResponse(200)
+    return HttpResponse(404)
+
+
+@login_required(login_url='/musictherapy/login')
+def save_session_info(request, user_id, session_id):
+    if request.method == 'POST':
+        user = get_object_or_404(models.UserInfo, pk=user_id)
+        session = utils.session_for_id(user, session_id)
+        session_form = forms.SessionStatusForm(request.POST, instance=session, user_id=user_id, session_id=session_id)
+
+        if session_form.is_valid():
+            session = session_form.save()
+            print(session.id, session.status, session.note)
+            session.save()
+            return HttpResponse(200)
+        else:
+            print(session_form.errors)
     return HttpResponse(404)
