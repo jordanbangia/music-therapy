@@ -75,40 +75,49 @@
             <h1>Session Date: {{session.date.date}}</h1>
 
             <div id="treatment-plan">
-                {% if general_goals %}
-                <h2>General Goals</h2>
-                <div>
-                    <p class="tab">
-                        {% for goal in general_goals %}
-                            {{ goal.goal.name }}<br/>
-                        {% endfor %}
-                    </p>
-                </div>
-                {% endif %}
-
-
-                {% for domain, domain_data in goals.items %}
-                <h1>{{ domain }} Goals</h1>
-                    {% for goal, user_goal_measurables in domain_data.items %}
+                {% if session.status == 0 %}
+                    <h2>Session was missed.</h2>
+                    {% if session.note %}
+                        <p class="tab">
+                            {{session.note}}
+                        </p>
+                    {% endif %}
+                {% else %}
+                    {% if general_goals %}
+                    <h2>General Goals</h2>
                     <div>
-                        <h3 class="tab">{{ goal.name }}</h3>
-                            <p class="double-tab">
-                                {% for ugm in user_goal_measurables %}
-                                {{ ugm.goal_measurable.name }}: {{ugm.get_value_display}}<br/>
-                                {% endfor %}
-                            </p>
-
-                        {% with note=notes|getattrib:domain%}
-                        {% if note %}
-                            <h4>Notes:</h4>
-                                <p class="double-tab">
-                                    {{note}}
-                                </p>
-                        {% endif %}
-                        {% endwith %}
+                        <p class="tab">
+                            {% for goal in general_goals %}
+                                {{ goal.goal.name }}<br/>
+                            {% endfor %}
+                        </p>
                     </div>
+                    {% endif %}
+
+
+                    {% for domain, domain_data in goals.items %}
+                    <h1>{{ domain }} Goals</h1>
+                        {% for goal, user_goal_measurables in domain_data.items %}
+                        <div>
+                            <h3 class="tab">{{ goal.name }}</h3>
+                                <p class="double-tab">
+                                    {% for ugm in user_goal_measurables %}
+                                    {{ ugm.goal_measurable.name }}: {{ugm.get_value_display}}<br/>
+                                    {% endfor %}
+                                </p>
+
+                            {% with note=notes|getattrib:domain%}
+                            {% if note %}
+                                <h4>Notes:</h4>
+                                    <p class="double-tab">
+                                        {{note}}
+                                    </p>
+                            {% endif %}
+                            {% endwith %}
+                        </div>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
+                {% endif %}
             </div>
 
 
