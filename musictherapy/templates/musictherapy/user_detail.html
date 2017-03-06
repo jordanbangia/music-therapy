@@ -10,7 +10,7 @@
         <div class="row" style="margin-left: 2%; margin-right: 2%">
             <div class="col-md-6">
                 {% if userinfo and session %}
-                <h1>{{userinfo.name}} - Session: {{session.date.date}}</h1>
+                    <h1>{{userinfo.name}} - Session: {{session.date.date}}</h1>{% if session.status == 0 %}<h3 style="color: red;">Missed</h3>{% endif %}
                 {% else %}
                 <h1>New Client</h1>
                 {% endif %}
