@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # migrations.RunSQL('SET CONSTRAINTS ALL IMMEDIATE', reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL('SET CONSTRAINTS ALL IMMEDIATE', reverse_sql=migrations.RunSQL.noop),
         migrations.RunPython(replace_user_with_session_user),
         migrations.AlterField(
             model_name='usergoals',
@@ -44,5 +44,5 @@ class Migration(migrations.Migration):
             model_name='usergoals',
             name='session',
         ),
-        # migrations.RunSQL(migrations.RunSQL.noop, reverse_sql='SET CONSTRAINTS ALL IMMEDIATE')
+        migrations.RunSQL(migrations.RunSQL.noop, reverse_sql='SET CONSTRAINTS ALL IMMEDIATE')
     ]
