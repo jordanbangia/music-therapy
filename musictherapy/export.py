@@ -66,7 +66,7 @@ class MusicTherapyTreatmentPlan(PDFTemplateView):
 
     def get_context_data(self, **kwargs):
         user = get_object_or_404(models.UserInfo, pk=kwargs['user_id'])
-        session = utils.session_for_id(user, kwargs['session_id'])
+        session = utils.current_session(user)
 
         self.domain_data = {
             'com': SkillsData("Communication", user, session),
@@ -77,19 +77,14 @@ class MusicTherapyTreatmentPlan(PDFTemplateView):
             'aff': SkillsData("Affective", user, session),
         }
 
-        goals_data = dict()
-        notes_data = dict()
+        export_data = dict()
         for domain, data in self.domain_data.iteritems():
-            tmp = defaultdict(list)
-            session_gms = data.session_goal_measurable_responses()
-            for gm in data.goal_measurables:
-                if gm.id in session_gms:
-                    tmp[gm.goal] += [session_gms[gm.id]]
-
-            if len(tmp) > 0:
-                goals_data[data.domain] = dict(tmp)
-                note = data.session_goal_measurable_note()
-                notes_data[data.domain] = note.note if note is not None else None
+            goals_data = defaultdict(list)
+            for goal_measurable in data.goal_measurables:
+                goals_data[goal_measurable.goal] += [goal_measurable]
+            print(goals_data)
+            if len(goals_data) > 0:
+                export_data[data.domain] = dict(goals_data)
 
         return super(MusicTherapyTreatmentPlan, self).get_context_data(
             pagesize="A4",
@@ -99,8 +94,7 @@ class MusicTherapyTreatmentPlan(PDFTemplateView):
             date=datetime.datetime.now().date(),
             session=session,
             general_goals=SkillsData("General", user, session, prefix="general").user_goals,
-            goals=goals_data,
-            notes=notes_data,
+            goals=export_data,
             **kwargs
         )
 

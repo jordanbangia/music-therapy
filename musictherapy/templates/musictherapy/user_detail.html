@@ -21,7 +21,7 @@
                 {% if userinfo %}
                 <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_assessment' userinfo.id %}"  style="margin:5px">Export Assessment</a>
                     {% if session %}
-                    <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_treatment' userinfo.id session.id %}"  style="margin:5px">Export Objectives</a>
+                    <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_treatment' userinfo.id %}"  style="margin:5px">Export Objectives</a>
                     {% endif %}
                 {% endif %}
                 {% if session_form %}
