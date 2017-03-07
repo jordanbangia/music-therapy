@@ -365,7 +365,6 @@ def save_session_info(request, user_id, session_id):
 
         if session_form.is_valid():
             session = session_form.save()
-            print(session.id, session.status, session.note)
             session.save()
             return HttpResponse(200)
         else:

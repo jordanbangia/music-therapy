@@ -70,14 +70,14 @@ class UserInfo(models.Model):
 
 class Session(models.Model):
     STATUS_CHOICES = (
-        (0, 'Attended'),
-        (1, 'Missed')
+        (0, 'Missed'),
+        (1, 'Attended')
     )
 
     user = models.ForeignKey(UserInfo, related_name="sessions", null=False)
-    date = models.DateTimeField(auto_now=True, verbose_name="Session Date")
-    note = models.TextField(null=True)
-    status = models.IntegerField(choices=STATUS_CHOICES, default=0)
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Session Date")
+    note = models.TextField(null=True, blank=True)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
 
     class Meta:
         unique_together = ('user', 'date')

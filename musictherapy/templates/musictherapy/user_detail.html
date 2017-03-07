@@ -24,6 +24,7 @@
                     <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_treatment' userinfo.id %}"  style="margin:5px">Export Objectives</a>
                     {% endif %}
                 {% endif %}
+
                 {% if session_form %}
                 <a class="btn btn-info pull-right" href="" style="margin: 5px" data-toggle="modal" data-target="#session-status-modal">Mark as Absent</a>
                 {% endif %}
@@ -93,6 +94,7 @@
             </div>
 
             <div  id="session-status-modal-div">
+                {% if session_form %}
                 <div class="modal fade" id="session-status-modal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -135,6 +137,7 @@
                         })
                     })
                 </script>
+                {% endif %}
             </div>
         </div>
     </body>
