@@ -26,7 +26,7 @@
                 {% endif %}
 
                 {% if session_form %}
-                <a class="btn btn-info pull-right" href="" style="margin: 5px" data-toggle="modal" data-target="#session-status-modal">Mark as Absent</a>
+                <a class="btn btn-info pull-right" href="" style="margin: 5px" data-toggle="modal" data-target="#session-{{session.id}}-status-modal">Mark as Absent</a>
                 {% endif %}
             </div>
         </div>
@@ -94,50 +94,7 @@
             </div>
 
             <div  id="session-status-modal-div">
-                {% if session_form %}
-                <div class="modal fade" id="session-status-modal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
-                                <h4 class="modal-title" id="statsModalLabel">Session: {{session.date.date}} Status</h4>
-                            </div>
-                            <div class="modal-body">
-                                <form action="{% url 'musictherapy:save_session_status' userinfo.id session.id %}" class="form-horizontal" method="post" id="session-status-form">
-                                    <h4 id="session-status-form-error" style="color: red"></h4>
-                                    {% crispy session_form %}
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <input type="submit" name="submit" value="Save" class="btn btn-primary" form="session-status-form"/>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <script type="text/javascript">
-                    $("#session-status-form").submit(function(e) {
-                        e.preventDefault();
-                        $form = $(this);
-                        var url = $form.attr('action');
-
-                        $.ajax({
-                            type: "POST",
-                            url: url,
-                            dataType: 'json',
-                            data: $("#session-status-form").serialize(),
-                            success: function(data) {
-                                if (data == 200) {
-                                    $("#session-status-modal").modal('toggle');
-                                    toastr.success("Saved Session {{session.id}} ({{session.date.date}})");
-                                } else {
-                                    toastr.error("There was a problem saving the Session {{session.id}} ({{session.date.date}}, try again later");
-                                }
-                            }
-                        })
-                    })
-                </script>
-                {% endif %}
+                {% include "musictherapy/component/mark_as_absent.html" with session_form=session_form session=session user=userinfo %}
             </div>
         </div>
     </body>

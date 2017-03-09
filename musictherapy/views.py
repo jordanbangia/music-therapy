@@ -315,11 +315,13 @@ def program_detail(request, program_id):
     clients = models.UserInfo.objects.filter(program=program, active=1)
     sessions = {user.id: utils.current_session(user) for user in clients}
     session_goals = {user.id: {domain: SkillsData(domain, user, utils.current_session(user)).to_dict() for domain in SKILLS_PREFIX_DICT.keys()} for user in clients}
+    session_forms = {user.id: forms.SessionStatusForm(instance=sessions[user.id], user_id=user.id, session_id=sessions[user.id].id) for user in clients}
     return render(request, 'musictherapy/program_details.html', {
         'program': program,
         'users': clients,
         'data': session_goals,
         'sessions': sessions,
+        'forms': session_forms,
     })
 
 
