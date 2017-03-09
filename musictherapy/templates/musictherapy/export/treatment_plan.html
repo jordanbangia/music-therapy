@@ -88,6 +88,7 @@
                     {% for goal, goal_objectives in domain_data.items %}
                     <div>
                         <h3 class="tab">{{ goal.name }}</h3>
+                        <h4 class="tab">As measured by:</h4>
                         <p class="double-tab">
                             {% for objective in goal_objectives %}
                                 {{ objective.name }}<br/>
