@@ -3,7 +3,7 @@
     <div class="row" style="padding:2%">
         <div class="col-md-6">
             {% if domain_data.summary_measurable %}
-                {% include "musictherapy/summary_data.html" with summary=domain_data.summary_measurable type=domain_data.domain %}
+                {% include "musictherapy/summary_data.html" with summary=domain_data.summary_measurable type=domain_data.domain pre=domain %}
             {% else %}
                 <h3>No measurables have been recored yet for {{domain_data.domain}} Domain</h3>
             {% endif %}
@@ -11,7 +11,7 @@
     {% else %}
         <div class="col-md-6">
             {% if domain_data.summary_measurable %}
-                {% include "musictherapy/summary_data.html" with summary=domain_data.summary_measurable type=domain_data.domain %}
+                {% include "musictherapy/summary_data.html" with summary=domain_data.summary_measurable type=domain_data.domain pre=domain%}
             {% else %}
                 <h3>No measurables have been recored yet for {{domain_data.domain}} Domain</h3>
             {% endif %}

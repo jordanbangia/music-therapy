@@ -47,6 +47,9 @@ class SkillsData(object):
             domains += models.Domains.objects.filter(parent=self.domain_model, enabled=1)
         return domains
 
+    def sub_domains(self):
+        return [domain for domain in self.domains if domain.parent == self.domain_model]
+
     @cached_property
     def user_goals(self):
         return models.UserGoals.objects.filter(goal__in=self.goals, user=self.user)
@@ -85,56 +88,44 @@ class SkillsData(object):
         dates = sorted(measurables.keys(), reverse=True)
         return measurables[dates[0]] if len(dates) > 0 else None
 
-    def past_measurables(self):
+    def past_measurables(self, is_summary=False):
         past_measurables = self.all_user_measurables()
 
-        data = dict(fields=[], data=[])
+        data = dict(data=[])
         for date, data_list in past_measurables.iteritems():
             sub_domain_value = defaultdict(list)
+            note = None
             for um in data_list:
                 if isinstance(um, models.UserDomainNoteMeasurables):
-                    sub_domain_value['Note'] = um.note
-                elif um.value == -1:
-                    sub_domain_value[um.measurable.domain.name] += ['--']
-                else:
+                    note = um.note
+                elif um.value != -1:
                     sub_domain_value[um.measurable.domain.name] += [um.value*um.measurable.pos_neg]
 
-            for domain in sub_domain_value.keys():
-                if domain == 'Note':
-                    continue
-                cleaned_data = [float(v)/3 for v in sub_domain_value[domain] if v != '--']
-                sub_domain_value[domain] = sum(cleaned_data)*100 / len(cleaned_data) if len(cleaned_data) > 0 else '--'
-            sub_domain_value['Updated'] = date
+            all_values = []
+            for sub_domain, values in sub_domain_value.iteritems():
+                if is_summary and self.domain != 'Affective':
+                    all_values += values
+                sub_domain_value[sub_domain] = sum(values) * 100 / float(len(values) * 3) if len(values) > 0 else None
+            if is_summary:
+                sub_domain_value['Total'] = sum(all_values) * 100 / float(len(all_values) * 3) if len(all_values) > 0 else '--'
             sub_domain_value['id'] = str(uuid.uuid4())
+            sub_domain_value['Note'] = note
+            sub_domain_value['Updated'] = date
             data['data'].append(dict(sub_domain_value))
 
         if len(data['data']) > 0:
-            data['fields'] = [k for k in data['data'][0].keys() if k.lower() not in ['updated', 'note', 'id']] + ['Updated', 'Note']
+            data['fields'] = [sub_domain.name for sub_domain in self.sub_domains()] + ['Updated', 'Note']
+            if is_summary and self.domain != 'Affective':
+                data['fields'] += ['Total']
             data['data'] = sorted(data['data'], key=lambda field: field['Updated'], reverse=True)
             return data
-        else:
-            return None
-
-    def summary_measurable(self):
-        past_measurables = self.past_measurables()
-        if past_measurables:
-            data = []
-            for measurables in past_measurables['data']:
-                values = [value for key, value in measurables.iteritems() if key not in ['Updated', 'Note', 'id'] and value != '--']
-                measurables['Total'] = sum(values)/len(values) if len(values) > 0 else '--'
-                data.append(measurables)
-            return {
-                'fields': past_measurables['fields'] + ['Total'],
-                'data': sorted(data, key=lambda measurable: measurable['Updated'], reverse=True),
-            }
-        else:
-            return None
+        return None
 
     def latest_summary_measurable(self):
-        past_measruables = self.summary_measurable()
-        if past_measruables:
-            past_measruables['data'] = past_measruables['data'][:1]
-        return past_measruables
+        past_measurables = self.past_measurables(is_summary=True)
+        if past_measurables:
+            past_measurables['data'] = past_measurables['data'][:1]
+        return past_measurables
 
     def latest_goals_measurables(self, return_model=False):
         goals = self.goal_measurables
@@ -197,7 +188,7 @@ class SkillsData(object):
             goals_measurables=self.goal_measurables,
             chart=self.chart(),
             goal_notes=self.goal_notes,
-            summary_measurable=self.summary_measurable(),
+            summary_measurable=self.past_measurables(is_summary=True),
             session_goal_measurables_response=self.session_goal_measurable_responses(),
             session_goal_measurables_note=self.session_goal_measurable_note(),
             prefix=self.prefix,
