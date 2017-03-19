@@ -82,7 +82,6 @@ class MusicTherapyTreatmentPlan(PDFTemplateView):
             goals_data = defaultdict(list)
             for goal_measurable in data.goal_measurables:
                 goals_data[goal_measurable.goal] += [goal_measurable]
-            print(goals_data)
             if len(goals_data) > 0:
                 export_data[data.domain] = dict(goals_data)
 

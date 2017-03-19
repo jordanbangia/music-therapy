@@ -37,16 +37,18 @@ DAYS_OF_WEEK = (
 class Program(models.Model):
     name = models.CharField(max_length=200, verbose_name="Name")
     date = models.CharField(max_length=1, verbose_name="Program Dates", choices=PROGRAM_DATES)
-    location = models.CharField(max_length=100, choices=LOCATION_CHOICES, verbose_name="Location")
-    day_of_week = models.CharField(max_length=3, verbose_name="Day of Week", choices=DAYS_OF_WEEK)
-    time = models.TimeField(verbose_name="Time")
+    location = models.CharField(max_length=100, choices=LOCATION_CHOICES, verbose_name="Location", null=True, blank=True)
+    day_of_week = models.CharField(max_length=3, verbose_name="Day of Week", choices=DAYS_OF_WEEK, null=True, blank=True)
+    time = models.TimeField(verbose_name="Time", null=True, blank=True)
     description = models.TextField(default="", verbose_name="Description", null=True, blank=True)
 
     class Meta:
         unique_together = ('name', 'date', 'day_of_week', 'location', 'time')
 
     def __unicode__(self):
-        return '{}, {}, {}, {}, {}'.format(self.location, self.name, self.get_date_display(), self.get_day_of_week_display(), self.time)
+        return ', '.join([str(field) for field in
+                         [self.location, self.name, self.get_date_display(), self.get_day_of_week_display(), self.time]
+                         if field is not None])
 
 
 class UserInfo(models.Model):
