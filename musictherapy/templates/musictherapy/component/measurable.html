@@ -1,3 +1,5 @@
+{% load template_getattr %}
+
 <div class="panel-group" id="accordion-{{pre}}assessment">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -19,13 +21,15 @@
                                 <label class="control-label" style="padding-top: 5px">{{measurable.name}}</label>
                             </div>
                             <div class="col-md-6">
+                                {% with response=latest|getattrib:measurable.pk %}
                                 <select class="select form-control" name="{{measurable.pk}}">
-                                    <option value=-1>Not Measured</option>
-                                    <option value=0>None/Never</option>
-                                    <option value=1>Low/Rarely/Poor</option>
-                                    <option value=2>Medium/Sometimes/Good</option>
-                                    <option value=3>High/Always/Very Good</option>
+                                    <option value=-1 {% if response and response.value == -1 %} selected="selected" {% endif %}>Not Measured</option>
+                                    <option value=0 {% if response and response.value == 0 %} selected="selected" {% endif %}>None/Never</option>
+                                    <option value=1 {% if response and response.value == 1 %} selected="selected" {% endif %}>Low/Rarely/Poor</option>
+                                    <option value=2 {% if response and response.value == 2 %} selected="selected" {% endif %}>Medium/Sometimes/Good</option>
+                                    <option value=3 {% if response and response.value == 3 %} selected="selected" {% endif %}>High/Always/Very Good</option>
                                 </select>
+                                {% endwith %}
                             </div>
                         </div>
                         {% endfor %}
@@ -34,7 +38,7 @@
                         <label class="control-label" style="padding-top: 5px">Notes</label>
                     </div>
                     <div class="controls col-lg-6">
-                        <textarea class="textarea form-control" cols="40" name="{{pre}}_measurablesnotes" rows="10" spellcheck="true" style="z-index: auto; position: relative; line-height: 20px; font-size: 14px; transition: none; background: transparent !important;"></textarea>
+                        <textarea class="textarea form-control" cols="40" name="{{pre}}_measurablesnotes" rows="10" spellcheck="true" style="z-index: auto; position: relative; line-height: 20px; font-size: 14px; transition: none; background: transparent !important;">{{ latest.note.note }}</textarea>
                     </div>
                     <input type="submit" name="submit" value="Save" />
                     <input type="hidden" name="redirect" value="{{pre}}"/>

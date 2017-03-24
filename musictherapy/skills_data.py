@@ -83,10 +83,18 @@ class SkillsData(object):
 
         return dict(past_measurables)
 
-    def latest_user_measurables(self):
+    def latest_user_measurables(self, as_dict=False):
         measurables = self.all_user_measurables()
         dates = sorted(measurables.keys(), reverse=True)
-        return measurables[dates[0]] if len(dates) > 0 else None
+        measurables = measurables[dates[0]] if len(dates) > 0 else None
+        if as_dict:
+            if measurables is None:
+                return dict()
+            note = measurables[-1]      # note will be the last element if its included
+            measurables = {um.measurable.id: um for um in measurables if isinstance(um, models.UserMeasurables)}
+            if isinstance(note, models.UserDomainNoteMeasurables):
+                measurables['note'] = note
+        return measurables
 
     def past_measurables(self, is_summary=False):
         past_measurables = self.all_user_measurables()
@@ -180,6 +188,7 @@ class SkillsData(object):
         return session_notes[0] if len(session_notes) > 0 else None
 
     def to_dict(self):
+        print(self.latest_user_measurables(as_dict=True))
         return dict(
             domain=self.domain,
             measurables=self.measurables,
@@ -192,5 +201,6 @@ class SkillsData(object):
             session_goal_measurables_response=self.session_goal_measurable_responses(),
             session_goal_measurables_note=self.session_goal_measurable_note(),
             prefix=self.prefix,
-            custom_goals=self.custom_goals()
+            custom_goals=self.custom_goals(),
+            latest_measurables=self.latest_user_measurables(as_dict=True)
         )

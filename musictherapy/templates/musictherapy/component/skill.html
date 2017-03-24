@@ -6,7 +6,7 @@
 {% endif %}
 
 {% if data.measurables %}
-    {% include 'musictherapy/component/measurable.html' with measurables=data.measurables pre=pre user=user%}
+    {% include 'musictherapy/component/measurable.html' with measurables=data.measurables pre=pre user=user latest=data.latest_measurables%}
 {% endif %}
 
 {% if data.has_goals and data.goals_measurables%}
