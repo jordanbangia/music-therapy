@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'annoying',
     'easy_pdf',
     'widget_tweaks',
+    'silk',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -52,6 +53,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'silk.middleware.SilkyMiddleware',
 )
 
 ROOT_URLCONF = 'hellodjango.urls'
@@ -130,3 +132,5 @@ STATICFILES_DIRS = (
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+SILKY_PYTHON_PROFILE = True
