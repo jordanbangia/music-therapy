@@ -1,7 +1,10 @@
+import base64
+import calendar
 import datetime
 from collections import defaultdict
 
 from annoying.functions import get_object_or_None
+from cairosvg import svg2png
 from django.shortcuts import get_object_or_404
 from easy_pdf.views import PDFTemplateView
 
@@ -66,7 +69,10 @@ class MusicTherapyTreatmentPlan(PDFTemplateView):
 
     def get_context_data(self, **kwargs):
         user = get_object_or_404(models.UserInfo, pk=kwargs['user_id'])
-        session = utils.current_session(user)
+        if 'session_id' in kwargs:
+            session = get_object_or_404(models.Session, pk=kwargs['session_id'])
+        else:
+            session = utils.current_session(user)
 
         self.domain_data = {
             'com': SkillsData("Communication", user, session),
@@ -94,6 +100,57 @@ class MusicTherapyTreatmentPlan(PDFTemplateView):
             session=session,
             general_goals=SkillsData("General", user, session, prefix="general").user_goals,
             goals=export_data,
+            **kwargs
+        )
+
+
+class MusicTherapyReport(PDFTemplateView):
+    template_name = 'musictherapy/export/report.html'
+    domain_data = None
+
+    def get_context_data(self, **kwargs):
+        user = get_object_or_404(models.UserInfo, pk=kwargs['user_id'])
+        month = int(kwargs['month'])
+        year = int(kwargs['year'])
+        date = datetime.date(year=year, month=month, day=calendar.monthrange(year, month)[1])
+        session = utils.current_session(user)
+
+        self.domain_data = {
+            'com': SkillsData("Communication", user, session),
+            'pss': SkillsData("Psycho-Social", user, session),
+            'phys': SkillsData("Physical", user, session),
+            'cog': SkillsData("Cognitive", user, session),
+            'music': SkillsData("Music", user, session),
+            'aff': SkillsData("Affective", user, session),
+        }
+
+        goals = dict()
+        for domain, data in self.domain_data.iteritems():
+            goals_data = defaultdict(list)
+            for goal_measurable in data.goal_measurables:
+                goals_data[goal_measurable.goal] += [goal_measurable]
+            if len(goals_data) > 0:
+                goals[data.domain] = dict(goals_data)
+
+        graphs = dict()
+        for domain, data in self.domain_data.iteritems():
+            chart = data.chart()
+            binary = svg2png(chart)
+            graphs[domain] = base64.b64encode(binary)
+
+        notes = dict()
+        for domain, data in self.domain_data.iteritems():
+            notes[domain] = data.user_goal_note_measurables
+
+        return super(MusicTherapyReport, self).get_context_data(
+            pagesize="A4",
+            userinfo=user,
+            programs=get_user_programs(user),
+            goals=goals,
+            graphs=graphs,
+            notes=notes,
+            date=date,
+            today=datetime.date.today(),
             **kwargs
         )
 

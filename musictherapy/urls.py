@@ -2,7 +2,7 @@ import django.contrib.auth.views as auth
 from django.conf.urls import url
 
 from musictherapy import views
-from musictherapy.export import MusicTherapyAssessment, MusicTherapyTreatmentPlan
+from musictherapy.export import MusicTherapyAssessment, MusicTherapyTreatmentPlan, MusicTherapyReport
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -22,7 +22,8 @@ urlpatterns = [
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/archive/$', views.archive_user, name="archive_user"),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/unarchive/$', views.unarchive_user, name="unarchive_user"),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/export/assessment/$', MusicTherapyAssessment.as_view(), name="export_assessment"),
-    url(r'^musictherapy/users/(?P<user_id>[0-9]+)/export/treatment_plan/$', MusicTherapyTreatmentPlan.as_view(), name="export_treatment"),
+    url(r'^musictherapy/users/(?P<user_id>[0-9]+)/export/sessions/(?P<session_id>[0-9]+)/treatment_plan/$', MusicTherapyTreatmentPlan.as_view(), name="export_treatment"),
+    url(r'^musictherapy/users/(?P<user_id>[0-9]+)/export/year/(?P<year>[0-9]+)/month/(?P<month>[0-9]+)/$', MusicTherapyReport.as_view(), name="export_report"),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/sessions/(?P<session_id>[0-9]+)/save_session_status/$', views.save_session_info, name='save_session_status'),
 
     url(r'^musictherapy/staff/$', views.create_staff, name='create_staff'),

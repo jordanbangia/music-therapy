@@ -21,7 +21,7 @@
                 {% if userinfo %}
                 <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_assessment' userinfo.id %}"  style="margin:5px">Export Assessment</a>
                     {% if session %}
-                    <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_treatment' userinfo.id %}"  style="margin:5px">Export Objectives</a>
+                    <a class="btn btn-info pull-right" href="{% url 'musictherapy:export_treatment' userinfo.id session.id%}"  style="margin:5px">Export Objectives</a>
                     {% endif %}
                 {% endif %}
 
@@ -48,6 +48,9 @@
                     {% for domain, domain_data in data.items %}
                         <li {% if tab == domain %} class="active" {%endif%}><a data-toggle="tab" data-target="#{{domain}}">{{domain_data.domain|capfirst}} Skills</a></li>
                     {% endfor %}
+                {% endif %}
+                {% if userinfo %}
+                <li><a data-toggle="tab" data-target="#export">Export to PDF</a></li>
                 {% endif %}
             </ul>
 
@@ -91,6 +94,10 @@
                     {% include "musictherapy/component/skill.html" with type=domain_data.domain pre=domain data=domain_data user=userinfo %}
                 </div>
                 {% endfor %}
+
+                <div id="export" class="tab-pane fade">
+                    {% include "musictherapy/component/export.html" %}
+                </div>
             </div>
 
             <div  id="session-status-modal-div">
