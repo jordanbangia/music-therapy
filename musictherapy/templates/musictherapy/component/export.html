@@ -14,8 +14,47 @@
         {% endif %}
     </div>
     <div class="row" style="margin-bottom: 2%">
-        // month selector
-        // date selector
-        <a class="btn btn-info" href="{% url 'musictherapy:export_report' userinfo.id session.date.date.year session.date.date.month %}">Export Monthly Report</a>
+        <div class="row">
+            <div class="col-md-4 col-md-offset-0">
+                <div class="row">
+                    <label for="year">Year</label>
+                    <select class="selectdatewidget form-control" name="year" id="year">
+                        {% for year in export_years %}
+                        <option value={{year}} {% if session.date.date.year == year %} selected="selected" {% endif %}>{{year}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="row">
+                    <label for="month">Month</label>
+                    <select class="selectdatewidget form-control" name="month" id="month">
+                        <option value="1" {% if session.date.date.month == 1 %} selected="selected" {% endif %}>January</option>
+                        <option value="2" {% if session.date.date.month == 2 %} selected="selected" {% endif %}>February</option>
+                        <option value="3" {% if session.date.date.month == 3 %} selected="selected" {% endif %}>March</option>
+                        <option value="4" {% if session.date.date.month == 4 %} selected="selected" {% endif %}>April</option>
+                        <option value="5" {% if session.date.date.month == 5 %} selected="selected" {% endif %}>May</option>
+                        <option value="6" {% if session.date.date.month == 6 %} selected="selected" {% endif %}>June</option>
+                        <option value="7" {% if session.date.date.month == 7 %} selected="selected" {% endif %}>July</option>
+                        <option value="8" {% if session.date.date.month == 8 %} selected="selected" {% endif %}>August</option>
+                        <option value="9" {% if session.date.date.month == 9 %} selected="selected" {% endif %}>September</option>
+                        <option value="10" {% if session.date.date.month == 10 %} selected="selected" {% endif %}>October</option>
+                        <option value="11" {% if session.date.date.month == 11 %} selected="selected" {% endif %}>November</option>
+                        <option value="12" {% if session.date.date.month == 12 %} selected="selected" {% endif %}>December</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 2%">
+            <a id="report" class="btn btn-info" onclick="reportClick()">Export Monthly Report</a>
+        </div>
     </div>
+
+    <script>
+        function reportClick() {
+            var year = $("#year").val();
+            var month = $("#month").val();
+
+            var url = "/musictherapy/users/{{userinfo.id}}/export/year/" + year + "/month/" + month + "/";
+            window.location.href=url;
+        }
+    </script>
 </div>

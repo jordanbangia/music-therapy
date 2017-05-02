@@ -98,6 +98,7 @@ def user_session_detail(request, user_id, session_id):
         'session_form': session_form,
         'goals': utils.users_goals(user),
         'data': {prefix: SkillsData(domain, user, session).to_dict() for domain, prefix in SKILLS_PREFIX_DICT.iteritems()},
+        'export_years': [x for x in xrange(2015, datetime.today().year + 1)],
     })
 
 
