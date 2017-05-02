@@ -1,107 +1,110 @@
-{% extends "easy_pdf/base.html" %}
 {% load template_getattr %}
 
-{% block layout_style %}
-    <style type="text/css">
-        @page {
-            size: {{ pagesize|default:"A4" }};
-            margin-left: 2.5cm;
-            margin-right: 2.5cm;
-            margin-top: 3cm;
-            margin-bottom: 2cm;
-
-            @frame header {
-                -pdf-frame-content: page-header;
-                margin-top: 1.2cm;
-                margin-right: 1.2cm;
-                margin-bottom: 1.2cm;
-                margin-left: 1.2cm;
+<html>
+    <head>
+        <title>Alzhemier Society Peel's Music Report</title>
+        <style type="text/css">
+            @page {
+                size: A4;
+                margin: 1.8cm;
             }
-        }
-    </style>
-{% endblock %}
 
-{% block extra_style %}
-    <style type="text/css">
-        .tab {
-            margin: 0 0 0 40px;
-        }
+            body {
+                font-family: Helvetica, Arial, sans-serif;
+                font-size: 20px;
+            }
 
-        .right-space {
-            margin: 0 10px 0 0;
-        }
+            @media print {
+                /*@page  {*/
+                    /*margin: 0;*/
+                /*}*/
 
-        .signature-border {
-            border-top: solid;
-            border-color: black;
-            padding-top: 0.5cm;
-        }
+                /*body {*/
+                    /*margin: 1.8cm;*/
+                /*}*/
+            }
+        </style>
+        <style type="text/css">
+            .tab {
+                margin: 0 0 0 40px;
+            }
 
-        .right {
-            text-align: right;
-        }
+            .right-space {
+                margin: 0 10px 0 0;
+            }
 
-        #signature {
-            margin-top: 1cm;
-        }
-    </style>
-{% endblock %}
+            .signature-border {
+                border-top: solid;
+                border-color: black;
+                padding-top: 0.5cm;
+            }
 
-{% block page_header %}
-<div id="page-header">
-    <div class="header">
-        <div class="tab">
+            .right {
+                text-align: right;
+            }
+
+            #signature {
+                margin-top: 1cm;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="page-header">
+            <div class="header">
+                <div class="tab">
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-{% endblock %}
 
+        <div id="content">
+            <div class="main">
+                <h1 style="text-align:center">Alzhemier Society Peel's Music Therapy Monthly Report</h1>
 
-{% block content %}
-    <div id="content">
-        <div class="main">
-            <h1 style="text-align:center">Alzhemier Society Peel's Music Therapy Monthly Report</h1>
+                <h2>{{userinfo.name}} - {{date|date:"F"}} {{date.year}}</h2>
 
-            <h2>{{userinfo.name}} - {{date|date:"F"}} {{date.year}}</h2>
+                <div id="goals">
+                    {% for domain, data in goals.items %}
+                        <h4>{{domain}}</h4>
+                        {% for goal, objective in data.items %}
+                            {{goal.name}}<br>
+                            <div class="tab">
+                                {% for obj in objective %}
+                                    {{ obj.name }}<br>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
 
-            <div id="goals">
-                {% for domain, data in goals.items %}
-                    <h4>{{domain}}</h4>
-                    {% for goal, objective in data.items %}
-                        {{goal.name}}<br>
-                        <div class="tab">
-                            {% for obj in objective %}
-                                {{ obj.name }}<br>
-                            {% endfor %}
+                <div id="graphs">
+                    <h4>Monthly Graphs</h4>
+                    {% for domain, chart in graphs.items %}
+                        <div>
+                        {% if chart %}
+                            <h4>{{ domain }}</h4>
+                            <figure style="width:60%;height:30%">{{ chart|safe }}</figure>
+                        {% endif %}
                         </div>
                     {% endfor %}
-                {% endfor %}
-            </div>
+                </div>
 
-            <div id="graphs">
-                <h4>Monthly Graphs</h4>
-                {% for domain, chart in graphs.items %}
-                    {% if chart %}
-                    <img src="data:image/png;base64,{{chart}}"/>
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-            <div id="notes">
-                <h4>Notes</h4>
-                {% for domain, note in notes.items %}
-                    {% for n in note %}
-                        <p>{{n.note}}</p>
+                <div id="notes">
+                    <h4>Notes</h4>
+                    {% for domain, note in notes.items %}
+                        {% for n in note %}
+                            <p>{{n.note}}</p>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-            </div>
+                </div>
 
-            <div id="signature">
-                <h3 class="signature-border">Music Therapist Signature:</h3>
-                <p class="right">Date: {{ today }}</p>
-                <h3 style="margin-top: 40px">Prime Program Woker Signature:</h3>
-                <p class="right">Date: {{ today }}</p></p>
+                <div id="signature">
+                    <h3 class="signature-border">Music Therapist Signature:</h3>
+                    <p class="right">Date: {{ today }}</p>
+                    <h3 style="margin-top: 40px">Prime Program Woker Signature:</h3>
+                    <p class="right">Date: {{ today }}</p></p>
+                </div>
             </div>
         </div>
-    </div>
-{% endblock %}}
+    </body>
+</html>

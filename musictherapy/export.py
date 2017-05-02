@@ -1,158 +1,139 @@
-import base64
 import calendar
 import datetime
 from collections import defaultdict
 
 from annoying.functions import get_object_or_None
-from cairosvg import svg2png
-from django.shortcuts import get_object_or_404
-from easy_pdf.views import PDFTemplateView
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render
+from django.views.decorators.http import require_GET
 
 import musictherapy.models as models
 import musictherapy.utils as utils
 from musictherapy.skills_data import SkillsData
+from musictherapy.views import LOGIN_URL
 
 
-class MusicTherapyAssessment(PDFTemplateView):
-    template_name = 'musictherapy/export/assessment.html'
-    domain_data = None
+@require_GET
+@login_required(login_url=LOGIN_URL)
+def assessment(request, user_id):
+    user = get_object_or_404(models.UserInfo, pk=user_id)
+    music_pref = get_object_or_None(models.MusicalPreference, user=user)
+    session = utils.current_session(user)
 
-    def get_context_data(self, **kwargs):
-        user = get_object_or_404(models.UserInfo, pk=kwargs['user_id'])
-        music_pref = get_object_or_None(models.MusicalPreference, user=user)
+    domain_data = {
+        'com': SkillsData("Communication", user, session),
+        'pss': SkillsData("Psycho-Social", user, session),
+        'phys': SkillsData("Physical", user, session),
+        'cog': SkillsData("Cognitive", user, session),
+        'music': SkillsData("Music", user, session),
+        'aff': SkillsData("Affective", user, session),
+    }
+
+    return render(request, 'musictherapy/export/assessment.html', dict(
+        userinfo=user,
+        programs=get_user_programs(user),
+        musical_preferences=music_pref,
+        summary=get_summary_data(domain_data),
+        domain_measurables=get_domain_measurables_and_goals(domain_data),
+        date=datetime.datetime.now().date(),
+    ))
+
+
+@require_GET
+@login_required(login_url=LOGIN_URL)
+def treatment_plan(request, user_id,session_id):
+    user = get_object_or_404(models.UserInfo, pk=user_id)
+    session = get_object_or_None(models.Session, pk=session_id)
+    if not session:
         session = utils.current_session(user)
 
-        self.domain_data = {
-            'com': SkillsData("Communication", user, session),
-            'pss': SkillsData("Psycho-Social", user, session),
-            'phys': SkillsData("Physical", user, session),
-            'cog': SkillsData("Cognitive", user, session),
-            'music': SkillsData("Music", user, session),
-            'aff': SkillsData("Affective", user, session),
-        }
+    domain_data = {
+        'com': SkillsData("Communication", user, session),
+        'pss': SkillsData("Psycho-Social", user, session),
+        'phys': SkillsData("Physical", user, session),
+        'cog': SkillsData("Cognitive", user, session),
+        'music': SkillsData("Music", user, session),
+        'aff': SkillsData("Affective", user, session),
+    }
 
-        summary = self.get_summary_data()
-        domain_measurables = self.get_domain_measurables_and_goals()
-        programs = get_user_programs(user)
+    export_data = dict()
+    for domain, data in domain_data.iteritems():
+        goals_data = defaultdict(list)
+        for goal_measurable in data.goal_measurables:
+            goals_data[goal_measurable.goal] += [goal_measurable]
+        if len(goals_data) > 0:
+            export_data[data.domain] = dict(goals_data)
 
-        return super(MusicTherapyAssessment, self).get_context_data(
-            pagesize="A4",
-            userinfo=user,
-            programs=programs,
-            musical_preferences=music_pref,
-            summary=summary,
-            domain_measurables=domain_measurables,
-            date=datetime.datetime.now().date(),
-            **kwargs
-        )
-
-    def get_summary_data(self):
-        summary_data = {data.domain: data.latest_summary_measurable() for data in self.domain_data.values()}
-
-        for domain, summaries in summary_data.items():
-            if summaries and 'fields' in summaries:
-                summaries['fields'] = [field for field in summaries['fields'] if field not in ['Note', 'Updated']]
-                summaries['data'] = list(reversed(summaries['data'][:4]))
-
-        return summary_data
-
-    def get_domain_measurables_and_goals(self):
-        data = defaultdict(dict)
-        for skill in self.domain_data.values():
-            data[skill.domain] = format_data(skill.latest_user_measurables())
-        return dict(data)
+    return render(request, 'musictherapy/export/treatment_plan.html', dict(
+        pagesize="A4",
+        userinfo=user,
+        programs=get_user_programs(user),
+        data=domain_data,
+        date=datetime.datetime.now().date(),
+        session=session,
+        general_goals=SkillsData("General", user, session, prefix="general").user_goals,
+        goals=export_data,
+    ))
 
 
-class MusicTherapyTreatmentPlan(PDFTemplateView):
-    template_name = 'musictherapy/export/treatment_plan.html'
-    domain_data = None
+@require_GET
+@login_required(login_url=LOGIN_URL)
+def report(request, user_id, month, year):
+    user = get_object_or_404(models.UserInfo, pk=user_id)
 
-    def get_context_data(self, **kwargs):
-        user = get_object_or_404(models.UserInfo, pk=kwargs['user_id'])
-        if 'session_id' in kwargs:
-            session = get_object_or_404(models.Session, pk=kwargs['session_id'])
-        else:
-            session = utils.current_session(user)
+    month = int(month)
+    year = int(year)
+    date = datetime.date(year=year, month=month, day=calendar.monthrange(year, month)[1])
+    session = utils.current_session(user)
 
-        self.domain_data = {
-            'com': SkillsData("Communication", user, session),
-            'pss': SkillsData("Psycho-Social", user, session),
-            'phys': SkillsData("Physical", user, session),
-            'cog': SkillsData("Cognitive", user, session),
-            'music': SkillsData("Music", user, session),
-            'aff': SkillsData("Affective", user, session),
-        }
+    domain_data = {
+        'com': SkillsData("Communication", user, session),
+        'pss': SkillsData("Psycho-Social", user, session),
+        'phys': SkillsData("Physical", user, session),
+        'cog': SkillsData("Cognitive", user, session),
+        'music': SkillsData("Music", user, session),
+        'aff': SkillsData("Affective", user, session),
+    }
 
-        export_data = dict()
-        for domain, data in self.domain_data.iteritems():
-            goals_data = defaultdict(list)
-            for goal_measurable in data.goal_measurables:
-                goals_data[goal_measurable.goal] += [goal_measurable]
-            if len(goals_data) > 0:
-                export_data[data.domain] = dict(goals_data)
+    goals = dict()
+    graphs = dict()
+    notes = dict()
+    for domain, data in domain_data.iteritems():
+        goals_data = defaultdict(list)
+        for goal_measurable in data.goal_measurables:
+            goals_data[goal_measurable.goal] += [goal_measurable]
+        if len(goals_data) > 0:
+            goals[data.domain] = dict(goals_data)
+        graphs[data.domain] = data.chart()
+        notes[data.domain] = data.user_goal_note_measurables
 
-        return super(MusicTherapyTreatmentPlan, self).get_context_data(
-            pagesize="A4",
-            userinfo=user,
-            programs=get_user_programs(user),
-            data=self.domain_data,
-            date=datetime.datetime.now().date(),
-            session=session,
-            general_goals=SkillsData("General", user, session, prefix="general").user_goals,
-            goals=export_data,
-            **kwargs
-        )
+    return render(request, 'musictherapy/export/report.html', dict(
+        userinfo=user,
+        programs=get_user_programs(user),
+        goals=goals,
+        graphs=graphs,
+        notes=notes,
+        date=date,
+        today=datetime.date.today(),
+    ))
 
 
-class MusicTherapyReport(PDFTemplateView):
-    template_name = 'musictherapy/export/report.html'
-    domain_data = None
+def get_summary_data(domain_data):
+    summary_data = {data.domain: data.latest_summary_measurable() for data in domain_data.values()}
 
-    def get_context_data(self, **kwargs):
-        user = get_object_or_404(models.UserInfo, pk=kwargs['user_id'])
-        month = int(kwargs['month'])
-        year = int(kwargs['year'])
-        date = datetime.date(year=year, month=month, day=calendar.monthrange(year, month)[1])
-        session = utils.current_session(user)
+    for domain, summaries in summary_data.items():
+        if summaries and 'fields' in summaries:
+            summaries['fields'] = [field for field in summaries['fields'] if field not in ['Note', 'Updated']]
+            summaries['data'] = list(reversed(summaries['data'][:4]))
 
-        self.domain_data = {
-            'com': SkillsData("Communication", user, session),
-            'pss': SkillsData("Psycho-Social", user, session),
-            'phys': SkillsData("Physical", user, session),
-            'cog': SkillsData("Cognitive", user, session),
-            'music': SkillsData("Music", user, session),
-            'aff': SkillsData("Affective", user, session),
-        }
+    return summary_data
 
-        goals = dict()
-        for domain, data in self.domain_data.iteritems():
-            goals_data = defaultdict(list)
-            for goal_measurable in data.goal_measurables:
-                goals_data[goal_measurable.goal] += [goal_measurable]
-            if len(goals_data) > 0:
-                goals[data.domain] = dict(goals_data)
 
-        graphs = dict()
-        for domain, data in self.domain_data.iteritems():
-            chart = data.chart()
-            binary = svg2png(chart)
-            graphs[domain] = base64.b64encode(binary)
-
-        notes = dict()
-        for domain, data in self.domain_data.iteritems():
-            notes[domain] = data.user_goal_note_measurables
-
-        return super(MusicTherapyReport, self).get_context_data(
-            pagesize="A4",
-            userinfo=user,
-            programs=get_user_programs(user),
-            goals=goals,
-            graphs=graphs,
-            notes=notes,
-            date=date,
-            today=datetime.date.today(),
-            **kwargs
-        )
+def get_domain_measurables_and_goals(domain_data):
+    data = defaultdict(dict)
+    for skill in domain_data.values():
+        data[skill.domain] = format_data(skill.latest_user_measurables())
+    return dict(data)
 
 
 def get_user_programs(user):

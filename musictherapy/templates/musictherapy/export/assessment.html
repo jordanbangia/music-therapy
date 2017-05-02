@@ -1,169 +1,170 @@
-{% extends "easy_pdf/base.html" %}
 {% load template_getattr %}
 
-{% block layout_style %}
-    <style type="text/css">
-        @page {
-            size: {{ pagesize|default:"A4" }};
-            margin-left: 2.5cm;
-            margin-right: 2.5cm;
-            margin-top: 3cm;
-            margin-bottom: 2cm;
-
-            @frame header {
-                -pdf-frame-content: page-header;
-                margin-top: 1.2cm;
-                margin-right: 1.2cm;
-                margin-bottom: 1.2cm;
-                margin-left: 1.2cm;
+<html>
+    <head>
+        <title>Alzhemier Society Peel's Music Therapy Assessment</title>
+        <style type="text/css">
+            @page {
+                size: A4;
+                margin: 1.8cm;
             }
-        }
-    </style>
-{% endblock %}
 
-{% block extra_style %}
-    <style type="text/css">
-        .tab {
-            margin: 0 0 0 40px;
-        }
+            body {
+                font-family: Helvetica, Arial, sans-serif;
+                font-size: 20px;
+            }
 
-        .right-space {
-            margin: 0 10px 0 0;
-        }
+            @media print {
+                /*@page  {*/
+                    /*margin: 0;*/
+                /*}*/
 
-        .signature-border {
-            border-top: solid;
-            border-color: black;
-            padding-top: 0.5cm;
-        }
+                /*body {*/
+                    /*margin: 1.8cm;*/
+                /*}*/
+            }
+        </style>
+        <style type="text/css">
+            .tab {
+                margin: 0 0 0 40px;
+            }
 
-        .right {
-            text-align: right;
-        }
+            .right-space {
+                margin: 0 10px 0 0;
+            }
 
-        #signature {
-            margin-top: 1cm;
-        }
-    </style>
-{% endblock %}
+            .signature-border {
+                border-top: solid;
+                border-color: black;
+                padding-top: 0.5cm;
+            }
 
-{% block page_header %}
-<div id="page-header">
-    <div class="header">
-        <div class="tab">
-            <b>Name: {{userinfo.name}}</b><br/>
-            <b>Programs:
-            {% for program in programs %}
-                {{program}};
-            {% endfor %}
-            </b>
+            .right {
+                text-align: right;
+            }
+
+            #signature {
+                margin-top: 1cm;
+            }
+        </style>
+    </head>
+
+
+    <body>
+        <div id="page-header">
+            <div class="header">
+                <div class="tab">
+                    <b>Name: {{userinfo.name}}</b><br/>
+                    <b>Programs:
+                    {% for program in programs %}
+                        {{program}};
+                    {% endfor %}
+                    </b>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-{% endblock %}
+
+        <div id="content">
+            <div class="main">
+                <h1 style="text-align:center">Alzhemier Society Peel's Music Therapy Assessment</h1>
+
+                <div id="life-experiences">
+                    <h2>Life Experiences/History</h2>
+                    Name: {{userinfo.name}}<br>
+                    Date of Birth: {{userinfo.date_of_birth}}<br>
+                    Locations: {{userinfo.location|join:", "}}<br>
+                    Country of Origin: {{userinfo.country_of_origin}}<br>
+                    Language Spoken: {{userinfo.language_spoken}}<br>
+                    Care Plan: {{userinfo.care_plan}}<br>
+                    ASP Level: {{userinfo.asp_level}}<br>
+                    Diagnosis: {{userinfo.diagnosis}}<br>
+                    History: {{userinfo.history}}<br>
+                    Musical History: {{userinfo.musical_history}}<br>
+                </div>
+
+                <div id="music-preferences">
+                    <h2>Music Preferences</h2>
+                        Favourite Composer: {{musical_preferences.fav_composer}}<br>
+                        Favourite Song: {{musical_preferences.fav_song}}<br>
+                        Favourite Instrument: {{musical_preferences.favourite_instrument}}<br>
+                        Preferred Styles:
+                        <div class="tab">
+                            {%if musical_preferences.preferred_style%}{{musical_preferences.preferred_style|join:", "}}<br>{% endif %}
+                            Other Styles: {{musical_preferences.other_style}}<br>
+                            Ethnic Music: {{musical_preferences.ethnic}}<br>
+                            Sacred Music: {{musical_preferences.sacred_music}}<br>
+                        </div>
+                </div>
 
 
-{% block content %}
-    <div id="content">
-        <div class="main">
-            <h1 style="text-align:center">Alzhemier Society Peel's Music Therapy Assessment</h1>
-
-            <div id="life-experiences">
-                <h2>Life Experiences/History</h2>
-                Name: {{userinfo.name}}<br>
-                Date of Birth: {{userinfo.date_of_birth}}<br>
-                Locations: {{userinfo.location|join:", "}}<br>
-                Country of Origin: {{userinfo.country_of_origin}}<br>
-                Language Spoken: {{userinfo.language_spoken}}<br>
-                Care Plan: {{userinfo.care_plan}}<br>
-                ASP Level: {{userinfo.asp_level}}<br>
-                Diagnosis: {{userinfo.diagnosis}}<br>
-                History: {{userinfo.history}}<br>
-                Musical History: {{userinfo.musical_history}}<br>
-            </div>
-
-            <div id="music-preferences">
-                <h2>Music Preferences</h2>
-                    Favourite Composer: {{musical_preferences.fav_composer}}<br>
-                    Favourite Song: {{musical_preferences.fav_song}}<br>
-                    Favourite Instrument: {{musical_preferences.favourite_instrument}}<br>
-                    Preferred Styles:
-                    <div class="tab">
-                        {%if musical_preferences.preferred_style%}{{musical_preferences.preferred_style|join:", "}}<br>{% endif %}
-                        Other Styles: {{musical_preferences.other_style}}<br>
-                        Ethnic Music: {{musical_preferences.ethnic}}<br>
-                        Sacred Music: {{musical_preferences.sacred_music}}<br>
-                    </div>
-            </div>
-
-
-            <div id="summaries">
-                <h2>Domain Measurable Summaries</h2>
-                {%for domain, domain_data in summary.items%}
-                    {% if domain_data %}
-                        <h3>{{domain}}</h3>
-                        <table>
-                            <thead>
-                                <th></th>
-                                {% for assessment in domain_data.data %}
-                                <th>{{assessment.Updated}}</th>
-                                {% endfor %}
-                            </thead>
-                            <tbody>
-                                {% for field in domain_data.fields %}
-                                <tr>
-                                    <th style="text-align: left">{{field}}</th>
+                <div id="summaries">
+                    <h2>Domain Measurable Summaries</h2>
+                    {%for domain, domain_data in summary.items%}
+                        {% if domain_data %}
+                            <h3>{{domain}}</h3>
+                            <table>
+                                <thead>
+                                    <th></th>
                                     {% for assessment in domain_data.data %}
-                                        {% if assessment|getattrib:field == '--' or field == 'Updated'%}
-                                        <td style="text-align: center">{{assessment|getattrib:field}}</td>
-                                        {% else %}
-                                        <td style="text-align: center">{{assessment|getattrib:field|floatformat:2}}</td>
+                                    <th>{{assessment.Updated}}</th>
+                                    {% endfor %}
+                                </thead>
+                                <tbody>
+                                    {% for field in domain_data.fields %}
+                                    <tr>
+                                        <th style="text-align: left">{{field}}</th>
+                                        {% for assessment in domain_data.data %}
+                                            {% if assessment|getattrib:field == '--' or field == 'Updated'%}
+                                            <td style="text-align: center">{{assessment|getattrib:field}}</td>
+                                            {% else %}
+                                            <td style="text-align: center">{{assessment|getattrib:field|floatformat:2}}</td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div id="measurables">
+                    {% for domain, domain_data in domain_measurables.items %}
+                        {% if domain_data %}
+                        <div id="{{domain}}">
+                            <h1 class="header-margin">{{domain}} Assessment - {{domain_data.date}}</h1>
+                                <div id="{{domain}}_measurables">
+                                    {% for subdomain, measurables in domain_data.items %}
+                                        {% if subdomain != "Notes" and subdomain != "date" %}
+                                            <h3>{{subdomain.name}}</h3>
+                                            <div class="tab">
+                                                {% for measurable in measurables %}
+                                                    {% if measurable.measurable.name and measurable.value != -1 %}
+                                                        <b>{{measurable.measurable.name}}</b>: {{measurable.get_value_display}}<br>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
                                         {% endif %}
                                     {% endfor %}
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-            <div id="measurables">
-                {% for domain, domain_data in domain_measurables.items %}
-                    {% if domain_data %}
-                    <div id="{{domain}}">
-                        <h1 class="header-margin">{{domain}} Assessment - {{domain_data.date}}</h1>
-                            <div id="{{domain}}_measurables">
-                                {% for subdomain, measurables in domain_data.items %}
-                                    {% if subdomain != "Notes" and subdomain != "date" %}
-                                        <h3>{{subdomain.name}}</h3>
-                                        <div class="tab">
-                                            {% for measurable in measurables %}
-                                                {% if measurable.measurable.name and measurable.value != -1 %}
-                                                    <b>{{measurable.measurable.name}}</b>: {{measurable.get_value_display}}<br>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
+                                    {% if domain_data.notes %}
+                                        <b>Notes</b>:
+                                        {% for note in domain_data.notes %}
+                                            {{note.note}}<br>
+                                        {% endfor %}
                                     {% endif %}
-                                {% endfor %}
-                                {% if domain_data.notes %}
-                                    <b>Notes</b>:
-                                    {% for note in domain_data.notes %}
-                                        {{note.note}}<br>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
+                                </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
 
-            <div id="signature">
-                <h3 class="signature-border">Music Therapist Signature:</h3>
-                <p class="right">Date: {{ date }}</p>
-                <h3 style="margin-top: 40px">Prime Program Woker Signature:</h3>
-                <p class="right" style="margin-right: 70px">Date: </p></p>
+                <div id="signature">
+                    <h3 class="signature-border">Music Therapist Signature:</h3>
+                    <p class="right">Date: {{ date }}</p>
+                    <h3 style="margin-top: 40px">Prime Program Woker Signature:</h3>
+                    <p class="right">Date: {{ date }}</p></p>
+                </div>
             </div>
         </div>
-    </div>
-{% endblock %}}
+    </body>
+</html>

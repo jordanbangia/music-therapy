@@ -1,111 +1,107 @@
-{% extends "easy_pdf/base.html" %}
 {% load template_getattr %}
 
-{% block layout_style %}
-    <style type="text/css">
-        @page {
-            size: {{ pagesize|default:"A4" }};
-            margin-left: 2.5cm;
-            margin-right: 2.5cm;
-            margin-top: 3cm;
-            margin-bottom: 2cm;
-
-            @frame header {
-                -pdf-frame-content: page-header;
-                margin-top: 1.2cm;
-                margin-right: 1.2cm;
-                margin-bottom: 1.2cm;
-                margin-left: 1.2cm;
+<html>
+    <head>
+        <title>Alzhemier Society Peel's Music Treatment Plan</title>
+        <style type="text/css">
+            @page {
+                size: A4;
+                margin: 1.8cm;
             }
-        }
-    </style>
-{% endblock %}
 
-{% block extra_style %}
-    <style type="text/css">
-        .tab {
-            margin: 0 0 0 40px;
-        }
+            body {
+                font-family: Helvetica, Arial, sans-serif;
+                font-size: 20px;
+            }
 
-        .double-tab {
-            margin: 0 0 0 60px;
-        }
+            @media print {
+                /*@page  {*/
+                    /*margin: 0;*/
+                /*}*/
 
-        .right-space {
-            margin: 0 10px 0 0;
-        }
+                /*body {*/
+                    /*margin: 1.8cm;*/
+                /*}*/
+            }
+        </style>
+        <style type="text/css">
+            .tab {
+                margin: 0 0 0 40px;
+            }
 
-        .signature-border {
-            border-top: solid;
-            border-color: black;
-            padding-top: 0.5cm;
-        }
+            .right-space {
+                margin: 0 10px 0 0;
+            }
 
-        .right {
-            text-align: right;
-        }
+            .signature-border {
+                border-top: solid;
+                border-color: black;
+                padding-top: 0.5cm;
+            }
 
-        #signature {
-            margin-top: 1cm;
-        }
-    </style>
-{% endblock %}
+            .right {
+                text-align: right;
+            }
 
-{% block page_header %}
-<div id="page-header">
-    <div class="header">
-        <div class="tab">
-            <b>Name: {{userinfo.name}}</b><br/>
-            <b>Programs:
-            {% for program in programs %}
-                {{program}};
-            {% endfor %}
-            </b>
+            #signature {
+                margin-top: 1cm;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="page-header">
+            <div class="header">
+                <div class="tab">
+                    <b>Name: {{userinfo.name}}</b><br/>
+                    <b>Programs:
+                    {% for program in programs %}
+                        {{program}};
+                    {% endfor %}
+                    </b>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-{% endblock %}
+
+        <div id="content">
+            <div class="main">
+                <h1 style="text-align:center">Alzhemier Society Peel's Music Therapy Treatment Plan</h1>
+
+                <div id="treatment-plan">
+                    {% if general_goals %}
+                    <h2>General Goals</h2>
+                    <div>
+                        {% for goal in general_goals %}
+                            <h3 class="tab">{{ goal.goal.name }}</h3>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
 
 
-{% block content %}
-    <div id="content">
-        <div class="main">
-            <h1 style="text-align:center">Alzhemier Society Peel's Music Therapy Treatment Plan</h1>
-
-            <div id="treatment-plan">
-                {% if general_goals %}
-                <h2>General Goals</h2>
-                <div>
-                    {% for goal in general_goals %}
-                        <h3 class="tab">{{ goal.goal.name }}</h3>
+                    {% for domain, domain_data in goals.items %}
+                    <h1>{{ domain }} Goals</h1>
+                        {% for goal, goal_objectives in domain_data.items %}
+                        <div>
+                            <h3 class="tab">{{ goal.name }}</h3>
+                            <h4 class="tab">As measured by:</h4>
+                            <p class="double-tab">
+                                {% for objective in goal_objectives %}
+                                    {{ objective.name }}<br/>
+                                {% endfor %}
+                            </p>
+                        </div>
+                        {% endfor %}
                     {% endfor %}
                 </div>
-                {% endif %}
 
 
-                {% for domain, domain_data in goals.items %}
-                <h1>{{ domain }} Goals</h1>
-                    {% for goal, goal_objectives in domain_data.items %}
-                    <div>
-                        <h3 class="tab">{{ goal.name }}</h3>
-                        <h4 class="tab">As measured by:</h4>
-                        <p class="double-tab">
-                            {% for objective in goal_objectives %}
-                                {{ objective.name }}<br/>
-                            {% endfor %}
-                        </p>
-                    </div>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-
-
-            <div id="signature">
-                <h3 class="signature-border">Music Therapist Signature:</h3>
-                <p class="right">Date: {{ date }}</p>
-                <h3 style="margin-top: 40px">Prime Program Woker Signature:</h3>
-                <p class="right" style="margin-right: 70px">Date: </p></p>
+                <div id="signature">
+                    <h3 class="signature-border">Music Therapist Signature:</h3>
+                    <p class="right">Date: {{ date }}</p>
+                    <h3 style="margin-top: 40px">Prime Program Woker Signature:</h3>
+                    <p class="right">Date: {{ date }}</p></p>
+                </div>
             </div>
         </div>
-    </div>
-{% endblock %}}
+    </body>
+</html>

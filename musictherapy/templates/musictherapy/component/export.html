@@ -1,18 +1,21 @@
 {% load template_getattr %}
 
-<div class="row" style="margin-bottom: 2%">
-    Export the user's basic information, musical preferences, and assessments.<br>
+<h4>The following buttons will generate web pages that can be printed to PDFs using your browser (such as Chrome, using File -> Print or Ctrl/Cmd + P ).</h4>
+<div style="margin-left: 2%">
+    <div class="row" style="margin-bottom: 2%">
+        Export the user's basic information, musical preferences, and assessments.<br>
 
-    <a class="btn btn-info" href="{% url 'musictherapy:export_assessment' userinfo.id %}"  style="margin:5px">Export Assessment</a>
-</div>
-<div class="row" style="margin-bottom: 2%">
-    {% if session %}
-    Export the current sessions objectives results.<br>
-        <a class="btn btn-info" href="{% url 'musictherapy:export_treatment' userinfo.id session.id %}"  style="margin:5px">Export Objectives</a>
-    {% endif %}
-</div>
-<div class="row" style="margin-bottom: 2%">
-    // month selector
-    // date selector
-    <a class="btn btn-info" href="{% url 'musictherapy:export_report' userinfo.id session.date.date.year session.date.date.month %}">Export Monthly Report</a>
+        <a class="btn btn-info" href="{% url 'musictherapy:export_assessment' userinfo.id %}"  style="margin:5px">Export Assessment</a>
+    </div>
+    <div class="row" style="margin-bottom: 2%">
+        {% if session %}
+        Export the current sessions objectives results.<br>
+            <a class="btn btn-info" href="{% url 'musictherapy:export_treatment' userinfo.id session.id %}"  style="margin:5px">Export Objectives</a>
+        {% endif %}
+    </div>
+    <div class="row" style="margin-bottom: 2%">
+        // month selector
+        // date selector
+        <a class="btn btn-info" href="{% url 'musictherapy:export_report' userinfo.id session.date.date.year session.date.date.month %}">Export Monthly Report</a>
+    </div>
 </div>

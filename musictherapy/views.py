@@ -17,6 +17,8 @@ import musictherapy.models as models
 import musictherapy.utils as utils
 from musictherapy.skills_data import SkillsData, SKILLS_PREFIX_DICT, prefix_to_domain
 
+LOGIN_URL = '/musictherapy/login'
+
 STATUS_MESSAGES = {
     'no_permission': 'You do not have permission to use this function.  Talk to an administrator if you have further questions.',
     'pass_change_success': 'Password changed successfully.',
@@ -39,7 +41,7 @@ def login(request):
 
 
 @require_GET
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def users(request):
     status = request.GET.get('status', None)
     user_info_list = models.UserInfo.objects.all().filter(active=1).order_by('location')
@@ -51,7 +53,7 @@ def users(request):
     return render(request, 'musictherapy/clients.html', context)
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def all_users(request):
     status = request.GET.get('status', None)
     user_info_list = models.UserInfo.objects.all().order_by('location')
@@ -63,7 +65,7 @@ def all_users(request):
     return render(request, 'musictherapy/base/all_users.html', context)
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def user_detail(request, user_id):
     user = get_object_or_404(models.UserInfo, pk=user_id)
     session = utils.current_session(user)
@@ -74,7 +76,7 @@ def user_detail(request, user_id):
     }))
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def user_session_detail(request, user_id, session_id):
     user = get_object_or_404(models.UserInfo, pk=user_id)
     session = utils.session_for_id(user, session_id)
@@ -99,7 +101,7 @@ def user_session_detail(request, user_id, session_id):
     })
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def create_user(request):
     user_form = forms.UserInfoForm()
     program_form = forms.ProgramForm()
@@ -111,7 +113,7 @@ def create_user(request):
     })
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def save_program(request):
     if request.method == 'POST':
         program_form = forms.ProgramForm(request.POST)
@@ -127,7 +129,7 @@ def save_program(request):
     return HttpResponse(404)
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def save_new_basic(request):
     if request.method == 'POST':
         user_form = forms.UserInfoForm(request.POST)
@@ -138,7 +140,7 @@ def save_new_basic(request):
     return HttpResponse(404)
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def save_basic_info(request, user_id):
     user = get_object_or_None(models.UserInfo, pk=user_id)
     if request.method == 'POST':
@@ -151,7 +153,7 @@ def save_basic_info(request, user_id):
 
 
 @permission_required(perm='musictherapy.delete_userinfo')
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def delete_user(request, user_id):
     if request.user.has_perm('muscitherapy.userinfo.can_delete'):
         user = get_object_or_404(models.UserInfo, pk=user_id)
@@ -161,7 +163,7 @@ def delete_user(request, user_id):
         return redirect('/musictherapy/users?status=no_permission')
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def save_user_goals(request, user_id):
     user = get_object_or_404(models.UserInfo, pk=user_id)
     if request.method == 'POST':
@@ -206,7 +208,7 @@ def save_user_goals(request, user_id):
 
 @permission_required(perm='auth.add_user')
 @require_http_methods(["GET", "POST"])
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def create_staff(request):
     if request.method == 'GET':
         context = {
@@ -224,7 +226,7 @@ def create_staff(request):
             })
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def save_music_pref(request, user_id):
     musicpref = get_object_or_None(models.MusicalPreference, pk=user_id)
     if request.method == 'POST':
@@ -237,7 +239,7 @@ def save_music_pref(request, user_id):
             return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}) + "?tab=musicpref")
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def save_measurables(request, user_id):
     if request.method == 'POST':
         data = request.POST.dict()
@@ -263,7 +265,7 @@ def save_measurables(request, user_id):
         return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}) + "?tab={}".format(red))
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def save_goalmeasurables(request, user_id, session_id):
     if request.method == 'POST':
         data = request.POST.dict()
@@ -309,7 +311,7 @@ def save_goalmeasurables(request, user_id, session_id):
     return HttpResponse(404)
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def program_detail(request, program_id):
     program = get_object_or_None(models.Program, pk=program_id)
     clients = models.UserInfo.objects.filter(program=program, active=1)
@@ -325,12 +327,12 @@ def program_detail(request, program_id):
     })
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def archive_user(request, user_id):
     return update_user_active(request, user_id, active=0)
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def unarchive_user(request, user_id):
     return update_user_active(request, user_id, active=1)
 
@@ -358,7 +360,7 @@ def update_user_active(request, user_id, active):
     return HttpResponse(404)
 
 
-@login_required(login_url='/musictherapy/login')
+@login_required(login_url=LOGIN_URL)
 def save_session_info(request, user_id, session_id):
     if request.method == 'POST':
         user = get_object_or_404(models.UserInfo, pk=user_id)
