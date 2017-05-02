@@ -83,7 +83,8 @@ def report(request, user_id, month, year):
 
     month = int(month)
     year = int(year)
-    date = datetime.date(year=year, month=month, day=calendar.monthrange(year, month)[1])
+    start, end = calendar.monthrange(year, month)
+    date = datetime.date(year=year, month=month, day=end)
     session = utils.current_session(user)
 
     domain_data = {
@@ -104,8 +105,8 @@ def report(request, user_id, month, year):
             goals_data[goal_measurable.goal] += [goal_measurable]
         if len(goals_data) > 0:
             goals[data.domain] = dict(goals_data)
-        graphs[data.domain] = data.chart()
-        notes[data.domain] = data.user_goal_note_measurables
+        graphs[data.domain] = data.chart(start=datetime.date(year=year, month=month, day=start), end=datetime.date(year=year, month=month, day=end))
+        notes[data.domain] = [note for note in data.user_goal_note_measurables if start <= note.updated <= end]
 
     return render(request, 'musictherapy/export/report.html', dict(
         userinfo=user,

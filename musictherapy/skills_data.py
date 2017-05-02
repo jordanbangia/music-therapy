@@ -190,7 +190,7 @@ class SkillsData(object):
             notes = [note for note in self.user_goal_note_measurables if note.session == utils.latest_session(self.user) and note.domain == self.domain_model]
             return {'data': data, 'notes': notes} if len(data) > 0 or len(notes) > 0 else None
 
-    def chart(self):
+    def chart(self, start=None, end=None):
         with silk_profile(name='Get charts {}, {}'.format(self.user.pk, self.domain)):
             if self.has_goal:
                 line_chart = pygal.Line(truncate_legend=30)
@@ -204,13 +204,20 @@ class SkillsData(object):
                 all_dates = set()
                 for updates in data.itervalues():
                     for date in updates.iterkeys():
+                        if start is None or date.date() <= start:
+                            continue
+                        if end is None or date.date() >= end:
+                            continue
                         all_dates.add(date)
                 all_dates = sorted(all_dates)
 
                 for goal in data.iterkeys():
-                    updates = [data[goal][date] if date in data[goal] else None for date in all_dates]
-                    line_chart.add(goal, updates)
+                    updates = [data[goal][date] if date in data[goal] else None for date in all_dates ]
+                    if len(updates) > 0:
+                        line_chart.add(goal, updates)
 
+                if len(line_chart.raw_series) == 0:
+                    return None
                 line_chart.x_labels = map(str, all_dates)
                 return line_chart.render(is_unicode=True, disable_xml_declaration=True)
             else:
