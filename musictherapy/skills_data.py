@@ -172,23 +172,6 @@ class SkillsData(object):
                 past_measurables['data'] = past_measurables['data'][:1]
             return past_measurables
 
-    def latest_goals_measurables(self, return_model=False):
-        with silk_profile(name='Get latest goal measurables {}, {}'.format(self.user.pk, self.domain)):
-            goals = self.goal_measurables
-            data = dict()
-
-            for goal in goals:
-                updates = [measurable for measurable in self.user_goal_measurables if measurable.goal_measurable == goal]
-                updates = sorted(updates, key=lambda u: u.session.date, reverse=True)
-                if return_model:
-                    data[goal.name] = [update for update in updates if update.session]
-                else:
-                    data[goal.name] = [update.value if update.value != -1 else None for update in updates if update.session]
-                if len(data[goal.name]) > 0:
-                    data[goal.name] = data[goal.name][0]
-
-            notes = [note for note in self.user_goal_note_measurables if note.session == utils.latest_session(self.user) and note.domain == self.domain_model]
-            return {'data': data, 'notes': notes} if len(data) > 0 or len(notes) > 0 else None
 
     def chart(self, start=None, end=None):
         with silk_profile(name='Get charts {}, {}'.format(self.user.pk, self.domain)):
