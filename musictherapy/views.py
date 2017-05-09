@@ -10,6 +10,7 @@ from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_GET
 
 import musictherapy.forms as forms
@@ -82,6 +83,7 @@ def user_session_detail(request, user_id, session_id):
     session = utils.session_for_id(user, session_id)
     user_form = forms.UserInfoForm(instance=user)
     program_form = forms.ProgramForm()
+    create_session_form = forms.SessionForm(instance=models.Session(user=user, date=timezone.now()))
     musicpref = get_object_or_None(models.MusicalPreference, pk=user_id)
     musicpref_form = forms.MusicalPrefForm(instance=musicpref, user_id=user_id)
     session_form = forms.SessionStatusForm(instance=session, user_id=user_id, session_id=session_id)
@@ -99,6 +101,7 @@ def user_session_detail(request, user_id, session_id):
         'goals': utils.users_goals(user),
         'data': {prefix: SkillsData(domain, user, session).to_dict() for domain, prefix in SKILLS_PREFIX_DICT.iteritems()},
         'export_years': [x for x in xrange(2015, datetime.today().year + 1)],
+        'create_session_form': create_session_form,
     })
 
 
@@ -127,6 +130,20 @@ def save_program(request):
             return HttpResponse(json.dumps(data))
         else:
             print(program_form.errors)
+    return HttpResponse(404)
+
+
+@login_required(login_url=LOGIN_URL)
+def create_session(request, user_id):
+    if request.method == 'POST':
+        user = get_object_or_404(models.UserInfo, pk=user_id)
+        print(request.POST)
+        session_form = forms.SessionForm(request.POST, instance=models.Session(user=user))
+        if session_form.is_valid():
+            session = session_form.save()
+            return redirect(reverse('musictherapy:user_session_detail', kwargs={'user_id': int(user_id), 'session_id': int(session.pk)}))
+        else:
+            return HttpResponse(session_form.errors)
     return HttpResponse(404)
 
 

@@ -212,13 +212,13 @@ class SkillsData(object):
                 all_dates = sorted(all_dates)
 
                 for goal in data.iterkeys():
-                    updates = [data[goal][date] if date in data[goal] else None for date in all_dates ]
+                    updates = [data[goal][date] if date in data[goal] else None for date in all_dates]
                     if len(updates) > 0:
                         line_chart.add(goal, updates)
 
                 if len(line_chart.raw_series) == 0:
                     return None
-                line_chart.x_labels = map(str, all_dates)
+                line_chart.x_labels = map(str, [date.date() for date in all_dates])
                 return line_chart.render(is_unicode=True, disable_xml_declaration=True)
             else:
                 return None

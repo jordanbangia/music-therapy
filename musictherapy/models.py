@@ -1,5 +1,6 @@
 from django.core import exceptions
 from django.db import models
+from django.utils import timezone
 from multiselectfield import MultiSelectField
 
 SKILLS_SCALE = (
@@ -77,9 +78,15 @@ class Session(models.Model):
     )
 
     user = models.ForeignKey(UserInfo, related_name="sessions", null=False)
-    date = models.DateTimeField(auto_now_add=True, verbose_name="Session Date")
+    date = models.DateTimeField(verbose_name="Session Date")
     note = models.TextField(null=True, blank=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+
+    def save(self, *args, **kwargs):
+        # On create, set the date if one isn't provided
+        if not self.id and not self.date:
+            self.date = timezone.now().date()
+        return super(Session, self).save(*args, **kwargs)
 
     class Meta:
         unique_together = ('user', 'date')

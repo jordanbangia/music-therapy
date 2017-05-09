@@ -7,11 +7,10 @@ from django.core.urlresolvers import reverse
 from django.forms import ModelForm, ChoiceField, IntegerField, CheckboxSelectMultiple
 
 import musictherapy.models as models
-from musictherapy.extras import SelectDateWidget
+from musictherapy.extras import SelectDateWidget, BirthDateWidget
 
 
 class ProgramForm(ModelForm):
-
     class Meta:
         model = models.Program
         fields = ('name', 'location', 'date', 'day_of_week', 'time', 'description')
@@ -29,6 +28,27 @@ class ProgramForm(ModelForm):
         # self.helper.add_input(Submit('submit', 'Save'))
 
 
+class SessionForm(ModelForm):
+    class Meta:
+        model = models.Session
+        fields = ('date',)
+        widgets = {
+            'date': SelectDateWidget
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(SessionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-createsessionform'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-md-2'
+        self.helper.field_class = 'col-md-6'
+        self.helper.form_post = 'post'
+        if self.instance.user is not None:
+            self.helper.form_action = reverse('musictherapy:create_session', kwargs={'user_id': int(self.instance.user.pk)})
+        self.helper.add_input(Submit('submit', 'Create'))
+
+
 class UserInfoForm(ModelForm):
     age = IntegerField(label="Age", required=False)
 
@@ -37,7 +57,7 @@ class UserInfoForm(ModelForm):
         fields = ('name', 'location', 'date_of_birth', 'age', 'diagnosis', 'history', 'country_of_origin', 'language_spoken',
                   'musical_history', 'care_plan', 'asp_level', 'program')
         widgets = {
-            'date_of_birth': SelectDateWidget,
+            'date_of_birth': BirthDateWidget,
             'program': CheckboxSelectMultiple,
         }
 

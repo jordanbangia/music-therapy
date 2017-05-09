@@ -56,7 +56,7 @@ class SelectDateWidget(Widget):
             self.years = years
         else:
             this_year = datetime.date.today().year
-            self.years = range(this_year-100, this_year)
+            self.years = range(this_year - 5, this_year + 5)
 
         # Optional dict of months to use in the "month" select box.
         if months:
@@ -150,3 +150,11 @@ class SelectDateWidget(Widget):
         s = Select(choices=choices)
         select_html = s.render(field % name, val, local_attrs)
         return select_html
+
+
+class BirthDateWidget(SelectDateWidget):
+    def __init__(self, *args, **kwargs):
+        this_year = datetime.date.today().year
+        if 'years' not in kwargs:
+            kwargs['years'] = range(this_year - 100, this_year + 5)
+        super(BirthDateWidget, self).__init__(*args, **kwargs)
