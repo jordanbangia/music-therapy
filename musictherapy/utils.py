@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from collections import defaultdict
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from musictherapy.models import Session, Goals, UserGoals
 
@@ -11,20 +10,15 @@ def all_sessions(user):
 
 
 def current_session(user):
-    sessions = all_sessions(user)
-    if len(sessions) > 0 and sessions[0].date.date() == datetime.utcnow().date():
-        session = sessions[0]
+    today = timezone.now().date()
+    current = [session for session in all_sessions(user) if session.date.date() == today]
+
+    if len(current) > 0:
+        session = current[0]
     else:
-        session = Session(user=user)
+        session = Session(user=user, date=today)
         session.save()
     return session
-
-
-def latest_session(user):
-    sessions = all_sessions(user)
-    if len(sessions) > 0:
-        return sessions[0]
-    return None
 
 
 def session_for_id(user, session_id):
