@@ -89,7 +89,7 @@ class Session(models.Model):
         return super(Session, self).save(*args, **kwargs)
 
     class Meta:
-        unique_together = ('user', 'date2')
+        unique_together = ('user', 'date')
 
     def __unicode__(self):
         return '{}-{}-{}'.format(self.user.name, self.date, self.date)
