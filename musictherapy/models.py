@@ -79,6 +79,7 @@ class Session(models.Model):
 
     user = models.ForeignKey(UserInfo, related_name="sessions", null=False)
     date = models.DateTimeField(verbose_name="Session Date")
+    date2 = models.DateField(verbose_name="Session Date 2", null=True)
     note = models.TextField(null=True, blank=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
 
@@ -86,6 +87,8 @@ class Session(models.Model):
         # On create, set the date if one isn't provided
         if not self.id and not self.date:
             self.date = timezone.now().date()
+        if not self.id and not self.date2:
+            self.date2 = timezone.now().date()
         return super(Session, self).save(*args, **kwargs)
 
     class Meta:
