@@ -6,7 +6,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
-                <h4 class="modal-title" id="statsModalLabel">{{user.name}} - Session  {{session.id}}: Status ({{session.date.date}})</h4>
+                <h4 class="modal-title" id="statsModalLabel">{{user.name}} - Session  {{session.id}}: Status ({{session.date}})</h4>
             </div>
             <div class="modal-body">
                 <form action="{% url 'musictherapy:save_session_status' user.id session.id %}" class="form-horizontal" method="post" id="session-{{session.id}}-status-form">
@@ -35,9 +35,9 @@
             data: $(formId).serialize(),
             success: function(data) {
                 if (data == 200) {
-                    toastr.success("Saved {{user.name}} Session {{session.id}} ({{session.date.date}})");
+                    toastr.success("Saved {{user.name}} Session {{session.id}} ({{session.date}})");
                 } else {
-                    toastr.error("There was a problem saving the Session {{session.id}} ({{session.date.date}}, try again later");
+                    toastr.error("There was a problem saving the Session {{session.id}} ({{session.date}}, try again later");
                 }
                 $('#session-{{session.id}}-status-modal').modal('toggle');
             }
