@@ -11,11 +11,9 @@ def all_sessions(user):
 
 def current_session(user):
     today = timezone.now().date()
-    current = [session for session in all_sessions(user) if session.date.date() == today]
-
-    if len(current) > 0:
-        session = current[0]
-    else:
+    try:
+        session = Session.objects.get(user=user, date=today)
+    except Session.DoesNotExist:
         session = Session(user=user, date=today)
         session.save()
     return session
