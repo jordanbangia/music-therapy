@@ -94,6 +94,9 @@ class Session(models.Model):
     class Meta:
         unique_together = ('user', 'date')
 
+    def __unicode__(self):
+        return '{}-{}-{}'.format(self.user.name, self.date, self.date2)
+
 
 class Domains(models.Model):
     name = models.CharField(max_length=100, null=False)
