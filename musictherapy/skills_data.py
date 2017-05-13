@@ -124,7 +124,7 @@ class SkillsData(object):
             if as_dict:
                 if measurables is None:
                     return dict()
-                note = measurables[-1]      # note will be the last element if its included
+                note = measurables[-1]  # note will be the last element if its included
                 measurables = {um.measurable.id: um for um in measurables if isinstance(um, models.UserMeasurables)}
                 if isinstance(note, models.UserDomainNoteMeasurables):
                     measurables['note'] = note
@@ -142,7 +142,7 @@ class SkillsData(object):
                     if isinstance(um, models.UserDomainNoteMeasurables):
                         note = um.note
                     elif um.value != -1:
-                        sub_domain_value[um.measurable.domain.name] += [um.value*um.measurable.pos_neg]
+                        sub_domain_value[um.measurable.domain.name] += [um.value * um.measurable.pos_neg]
 
                 all_values = []
                 for sub_domain, values in sub_domain_value.iteritems():
@@ -172,11 +172,10 @@ class SkillsData(object):
                 past_measurables['data'] = past_measurables['data'][:1]
             return past_measurables
 
-
     def chart(self, start=None, end=None):
         with silk_profile(name='Get charts {}, {}'.format(self.user.pk, self.domain)):
             if self.has_goal:
-                line_chart = pygal.Line(truncate_legend=30)
+                line_chart = pygal.Line(truncate_legend=30, range=(0, 3), max_scale=3, min_scale=3)
                 goals = self.goal_measurables
                 data = dict()
                 for goal in goals:
@@ -202,6 +201,12 @@ class SkillsData(object):
                 if len(line_chart.raw_series) == 0:
                     return None
                 line_chart.x_labels = map(str, all_dates)
+                line_chart.y_labels = [
+                    {'value': 0, 'label': 'None'},
+                    {'value': 1, 'label': 'Low'},
+                    {'value': 2, 'label': 'Medium'},
+                    {'value': 3, 'label': 'High'},
+                ]
                 return line_chart.render(is_unicode=True, disable_xml_declaration=True)
             else:
                 return None
