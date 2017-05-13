@@ -187,9 +187,9 @@ class SkillsData(object):
                 all_dates = set()
                 for updates in data.itervalues():
                     for date in updates.iterkeys():
-                        if start is None or date.date() <= start:
+                        if start is None or date <= start:
                             continue
-                        if end is None or date.date() >= end:
+                        if end is None or date >= end:
                             continue
                         all_dates.add(date)
                 all_dates = sorted(all_dates)
@@ -201,7 +201,7 @@ class SkillsData(object):
 
                 if len(line_chart.raw_series) == 0:
                     return None
-                line_chart.x_labels = map(str, [date.date() for date in all_dates])
+                line_chart.x_labels = map(str, all_dates)
                 return line_chart.render(is_unicode=True, disable_xml_declaration=True)
             else:
                 return None

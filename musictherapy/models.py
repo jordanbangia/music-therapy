@@ -78,18 +78,21 @@ class Session(models.Model):
     )
 
     user = models.ForeignKey(UserInfo, related_name="sessions", null=False)
-    date2 = models.DateField(verbose_name="Session Date 2")
+    date = models.DateField(verbose_name="Session Date")
     note = models.TextField(null=True, blank=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
 
     def save(self, *args, **kwargs):
         # On create, set the date if one isn't provided
-        if not self.id and not self.date2:
-            self.date2 = timezone.now().date()
+        if not self.id and not self.date:
+            self.date = timezone.now().date()
         return super(Session, self).save(*args, **kwargs)
 
     class Meta:
-        unique_together = ('user', 'date2')
+        unique_together = ('user', 'date')
+
+    def __unicode__(self):
+        return '{}-{}-{}'.format(self.user.name, self.date, self.date)
 
 
 class Domains(models.Model):
