@@ -181,19 +181,12 @@ class SkillsData(object):
                 goals = self.goal_measurables
                 data = dict()
                 for goal in goals:
-                    updates = [measurable for measurable in self.user_goal_measurables if measurable.goal_measurable == goal]
+                    updates = [measurable for measurable in self.user_goal_measurables if measurable.goal_measurable == goal and
+                               utils.is_date_in_range(measurable.session.date, start=start, end=end)]
                     updates = sorted(updates, key=lambda u: u.session.date, reverse=True)
                     data[goal.name] = {update.session.date: update.value if update.value != -1 else None for update in updates if update.session}
 
-                all_dates = set()
-                for updates in data.itervalues():
-                    for date in updates.iterkeys():
-                        if start is None or date <= start:
-                            continue
-                        if end is None or date >= end:
-                            continue
-                        all_dates.add(date)
-                all_dates = sorted(all_dates)
+                all_dates = sorted(set([d for u in data.itervalues() for d in u.iterkeys ]))
 
                 for goal in data.iterkeys():
                     updates = [data[goal][date] if date in data[goal] else None for date in all_dates]

@@ -37,3 +37,19 @@ def users_goals(user):
         goals['order'] += ['Custom']
     goals['user'] = [ug.goal.pk for ug in UserGoals.objects.filter(user=user)]
     return goals
+
+
+def is_date_in_range(date, start=None, end=None):
+    """
+    Checks that a given date is between the start and the end date.  Assumes all three are comparable objects (ideally datetime or date).
+    :param date:  The date to check.
+    :param start: The start date, can be None.
+    :param end: The end date, can be None.
+    :return: boolean stating whether date is between start and end.  If both start and end are None, it will return true by default. 
+    """
+    date_is_in_range = True
+    if start:
+        date_is_in_range = date_is_in_range and date_is_in_range >= start
+    if end:
+        date_is_in_range = date_is_in_range and date_is_in_range <= end
+    return date_is_in_range
