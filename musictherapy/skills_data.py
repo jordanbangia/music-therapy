@@ -186,7 +186,7 @@ class SkillsData(object):
                     updates = sorted(updates, key=lambda u: u.session.date, reverse=True)
                     data[goal.name] = {update.session.date: update.value if update.value != -1 else None for update in updates if update.session}
 
-                all_dates = sorted(set([d for u in data.itervalues() for d in u.iterkeys ]))
+                all_dates = sorted(set([d for u in data.itervalues() for d in u.iterkeys()]))
 
                 for goal in data.iterkeys():
                     updates = [data[goal][date] if date in data[goal] else None for date in all_dates]
