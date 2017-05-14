@@ -87,7 +87,7 @@ def report(request, user_id, month, year):
     start_date = datetime.date(year=year, month=month, day=start + 1)
     end_date = datetime.date(year=year, month=month, day=end)
 
-    sessions = models.Session.objects.filter(date__gte=start_date, date__lte=end_date)
+    sessions = models.Session.objects.filter(date__gte=start_date, date__lte=end_date, user=user)
 
     notes = defaultdict(list)
     for session in sessions:
