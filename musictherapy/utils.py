@@ -49,7 +49,7 @@ def is_date_in_range(date, start=None, end=None):
     """
     date_is_in_range = True
     if start:
-        date_is_in_range = date_is_in_range and date_is_in_range >= start
+        date_is_in_range = date_is_in_range and date >= start
     if end:
-        date_is_in_range = date_is_in_range and date_is_in_range <= end
+        date_is_in_range = date_is_in_range and date <= end
     return date_is_in_range
