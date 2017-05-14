@@ -84,29 +84,39 @@ def report(request, user_id, month, year):
     month = int(month)
     year = int(year)
     start, end = calendar.monthrange(year, month)
-    date = datetime.date(year=year, month=month, day=end)
-    session = utils.current_session(user)
+    start_date = datetime.date(year=year, month=month, day=start + 1)
+    end_date = datetime.date(year=year, month=month, day=end)
+
+    sessions = models.Session.objects.filter(date__gte=start_date, date__lte=end_date)
+
+    notes = defaultdict(list)
+    for session in sessions:
+        if session.note is not None:
+            notes[session.date].append(session.note)
+        if session.status != 0:
+            session_notes = [note.note for note in models.UserGoalNoteMeasurable.objects.filter(session=session) if note.note != '']
+            if len(session_notes) > 0:
+                notes[session.date] += session_notes
+    notes = dict(notes)
 
     domain_data = {
-        'com': SkillsData("Communication", user, session),
-        'pss': SkillsData("Psycho-Social", user, session),
-        'phys': SkillsData("Physical", user, session),
-        'cog': SkillsData("Cognitive", user, session),
-        'music': SkillsData("Music", user, session),
-        'aff': SkillsData("Affective", user, session),
+        'com': SkillsData("Communication", user),
+        'pss': SkillsData("Psycho-Social", user),
+        'phys': SkillsData("Physical", user),
+        'cog': SkillsData("Cognitive", user),
+        'music': SkillsData("Music", user),
+        'aff': SkillsData("Affective", user),
     }
 
     goals = dict()
     graphs = dict()
-    notes = dict()
     for domain, data in domain_data.iteritems():
         goals_data = defaultdict(list)
         for goal_measurable in data.goal_measurables:
             goals_data[goal_measurable.goal] += [goal_measurable]
         if len(goals_data) > 0:
             goals[data.domain] = dict(goals_data)
-        graphs[data.domain] = data.chart(start=datetime.date(year=year, month=month, day=start+1), end=datetime.date(year=year, month=month, day=end))
-        notes[data.domain] = [note for note in data.user_goal_note_measurables if start <= note.updated <= end]
+        graphs[data.domain] = data.chart(start=start_date, end=end_date)
 
     return render(request, 'musictherapy/export/report.html', dict(
         userinfo=user,
@@ -114,7 +124,7 @@ def report(request, user_id, month, year):
         goals=goals,
         graphs=graphs,
         notes=notes,
-        date=date,
+        date=end_date,
         today=datetime.date.today(),
     ))
 

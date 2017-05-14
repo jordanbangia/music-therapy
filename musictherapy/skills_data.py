@@ -26,7 +26,7 @@ def prefix_to_domain(prefix):
 
 
 class SkillsData(object):
-    def __init__(self, domain, user, session, prefix=None):
+    def __init__(self, domain, user, session=None, prefix=None):
         self.user = user
         self.session = session
         self.domain = domain
@@ -93,6 +93,8 @@ class SkillsData(object):
     @cached_property
     def session_goal_measurable_responses(self):
         with silk_profile(name='Get goal measurable responses for session {}, {}'.format(self.user.pk, self.domain)):
+            if not self.session:
+                return {}
             return {measurable.goal_measurable.id: measurable for measurable in self.user_goal_measurables if self.session == measurable.session and measurable.goal_measurable in self.goal_measurables}
 
     @cached_property
@@ -214,11 +216,12 @@ class SkillsData(object):
     @cached_property
     def goal_notes(self):
         with silk_profile(name='Get goal notes {}, {}'.format(self.user.pk, self.domain)):
-            notes = [note for note in self.user_goal_note_measurables if note.user == self.user and note.domain == self.domain_model]
-            return sorted(notes, key=lambda n: n.session.date, reverse=True)
+            return sorted(self.user_goal_note_measurables, key=lambda n: n.session.date, reverse=True)
 
     def session_goal_measurable_note(self):
         with silk_profile(name='Get session goal measurable notes {}, {}'.format(self.user.pk, self.domain)):
+            if not self.session:
+                return None
             notes = self.goal_notes
             session_notes = [note for note in notes if note.session == self.session]
             return session_notes[0] if len(session_notes) > 0 else None

@@ -91,9 +91,10 @@
 
                 <div id="notes">
                     <h4>Notes</h4>
-                    {% for domain, note in notes.items %}
+                    {% for date, note in notes.items %}
+                        <h4>{{ date }} Notes</h4>
                         {% for n in note %}
-                            <p>{{n.note}}</p>
+                            <p>{{n}}</p>
                         {% endfor %}
                     {% endfor %}
                 </div>
