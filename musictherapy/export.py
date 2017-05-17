@@ -83,9 +83,8 @@ def report(request, user_id, month, year):
 
     month = int(month)
     year = int(year)
-    start, end = calendar.monthrange(year, month)
-    print(month, year, start, end)
-    start_date = datetime.date(year=year, month=month, day=start + 1)
+    _, end = calendar.monthrange(year, month)
+    start_date = datetime.date(year=year, month=month, day=1)
     end_date = datetime.date(year=year, month=month, day=end)
 
     sessions = models.Session.objects.filter(date__gte=start_date, date__lte=end_date, user=user)
