@@ -179,6 +179,7 @@ class SkillsData(object):
             if self.has_goal:
                 line_chart = pygal.Line(truncate_legend=30, range=(0, 3), max_scale=3, min_scale=3)
                 goals = self.goal_measurables
+                print("Start: {}, End: {}, Goal Measurables: {}".format(start, end, len(self.goal_measurables)))
                 data = dict()
                 for goal in goals:
                     updates = [measurable for measurable in self.user_goal_measurables if measurable.goal_measurable == goal and
@@ -187,6 +188,7 @@ class SkillsData(object):
                     data[goal.name] = {update.session.date: update.value if update.value != -1 else None for update in updates if update.session}
 
                 all_dates = sorted(set([d for u in data.itervalues() for d in u.iterkeys()]))
+                print("Considered dates: {}".format(all_dates))
 
                 for goal in data.iterkeys():
                     updates = [data[goal][date] if date in data[goal] else None for date in all_dates]
