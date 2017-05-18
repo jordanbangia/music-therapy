@@ -3,30 +3,64 @@
 <h4>The following buttons will generate web pages that can be printed to PDFs using your browser (such as Chrome, using File -> Print or Ctrl/Cmd + P ).</h4>
 <div style="margin-left: 2%">
     <div class="row" style="margin-bottom: 2%">
-        Export the user's basic information, musical preferences, and assessments.<br>
-
+        <p>Export the user's basic information, musical preferences, and assessments.</p>
         <a class="btn btn-info" href="{% url 'musictherapy:export_assessment' userinfo.id %}"  style="margin:5px">Export Assessment</a>
     </div>
     <div class="row" style="margin-bottom: 2%">
         {% if session %}
-        Export the current sessions objectives results.<br>
+            <p>Export the current sessions objectives results.</p>
             <a class="btn btn-info" href="{% url 'musictherapy:export_treatment' userinfo.id session.id %}"  style="margin:5px">Export Objectives</a>
         {% endif %}
     </div>
     <div class="row" style="margin-bottom: 2%">
-        <div class="row">
-            <div class="col-md-4 col-md-offset-0">
+        <p>Export a report for the months specified below.  To do one month, set the same date in both parts.</p>
+        <a id="report" class="btn btn-info" onclick="reportClick()" style="margin: 5px">Export Monthly Report</a>
+        <div class="row" style="margin: 5px">
+            <div class="col-md-4 col-md-offset-0" style="margin-right: 2%">
                 <div class="row">
-                    <label for="year">Year</label>
-                    <select class="selectdatewidget form-control" name="year" id="year">
+                    <h3>From:</h3>
+                </div>
+                <div class="row">
+                    <label for="from_year">Year</label>
+                    <select class="selectdatewidget form-control" name="year" id="from_year">
                         {% for year in export_years %}
-                        <option value={{year}} {% if session.dateyear == year %} selected="selected" {% endif %}>{{year}}</option>
+                        <option value={{year}} {% if session.date.year == year %} selected="selected" {% endif %}>{{year}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="row">
-                    <label for="month">Month</label>
-                    <select class="selectdatewidget form-control" name="month" id="month">
+                    <label for="from_month">Month</label>
+                    <select class="selectdatewidget form-control" name="month" id="from_month">
+                        <option value="1" {% if session.date.month == 1 %} selected="selected" {% endif %}>January</option>
+                        <option value="2" {% if session.date.month == 2 %} selected="selected" {% endif %}>February</option>
+                        <option value="3" {% if session.date.month == 3 %} selected="selected" {% endif %}>March</option>
+                        <option value="4" {% if session.date.month == 4 %} selected="selected" {% endif %}>April</option>
+                        <option value="5" {% if session.date.month == 5 %} selected="selected" {% endif %}>May</option>
+                        <option value="6" {% if session.date.month == 6 %} selected="selected" {% endif %}>June</option>
+                        <option value="7" {% if session.date.month == 7 %} selected="selected" {% endif %}>July</option>
+                        <option value="8" {% if session.date.month == 8 %} selected="selected" {% endif %}>August</option>
+                        <option value="9" {% if session.date.month == 9 %} selected="selected" {% endif %}>September</option>
+                        <option value="10" {% if session.date.month == 10 %} selected="selected" {% endif %}>October</option>
+                        <option value="11" {% if session.date.month == 11 %} selected="selected" {% endif %}>November</option>
+                        <option value="12" {% if session.date.month == 12 %} selected="selected" {% endif %}>December</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4 col-md-offset-0">
+                <div class="row">
+                    <h3>To:</h3>
+                </div>
+                <div class="row">
+                    <label for="to_year">Year</label>
+                    <select class="selectdatewidget form-control" name="year" id="to_year">
+                        {% for year in export_years %}
+                        <option value={{year}} {% if session.date.year == year %} selected="selected" {% endif %}>{{year}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="row">
+                    <label for="to_month">Month</label>
+                    <select class="selectdatewidget form-control" name="month" id="to_month">
                         <option value="1" {% if session.date.month == 1 %} selected="selected" {% endif %}>January</option>
                         <option value="2" {% if session.date.month == 2 %} selected="selected" {% endif %}>February</option>
                         <option value="3" {% if session.date.month == 3 %} selected="selected" {% endif %}>March</option>
@@ -43,18 +77,17 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="margin-top: 2%">
-            <a id="report" class="btn btn-info" onclick="reportClick()">Export Monthly Report</a>
-        </div>
     </div>
 
     <script>
         function reportClick() {
-            var year = $("#year").val();
-            var month = $("#month").val();
-
-            var url = "/musictherapy/users/{{userinfo.id}}/export/year/" + year + "/month/" + month + "/";
-            window.location.href=url;
+            var from_year = $("#from_year").val();
+            var from_month = $("#from_month").val();
+            var to_year = $("#to_year").val();
+            var to_month = $("#to_month").val();
+            window.location.href = "/musictherapy/users/{{userinfo.id}}/export/from/" +
+                from_year + "/" + from_month + "/to/" +
+                to_year + "/" + to_month;
         }
     </script>
 </div>

@@ -78,14 +78,16 @@ def treatment_plan(request, user_id,session_id):
 
 @require_GET
 @login_required(login_url=LOGIN_URL)
-def report(request, user_id, month, year):
+def report(request, user_id, from_year, from_month, to_year, to_month):
     user = get_object_or_404(models.UserInfo, pk=user_id)
 
-    month = int(month)
-    year = int(year)
-    _, end = calendar.monthrange(year, month)
-    start_date = datetime.date(year=year, month=month, day=1)
-    end_date = datetime.date(year=year, month=month, day=end)
+    from_month = int(from_month)
+    from_year = int(from_year)
+    to_month = int(to_month)
+    to_year = int(to_year)
+    _, end = calendar.monthrange(to_year, to_month)
+    start_date = datetime.date(year=from_year, month=from_month, day=1)
+    end_date = datetime.date(year=to_year, month=to_month, day=end)
 
     sessions = models.Session.objects.filter(date__gte=start_date, date__lte=end_date, user=user)
 
@@ -124,7 +126,8 @@ def report(request, user_id, month, year):
         goals=goals,
         graphs=graphs,
         notes=notes,
-        date=end_date,
+        start_date=start_date,
+        end_date=end_date,
         today=datetime.date.today(),
     ))
 

@@ -61,7 +61,11 @@
             <div class="main">
                 <h1 style="text-align:center">Alzhemier Society Peel's Music Therapy Monthly Report</h1>
 
-                <h2>{{userinfo.name}} - {{date|date:"F"}} {{date.year}}</h2>
+                {% if start_date == end_date %}
+                    <h2>{{userinfo.name}} - {{end_date|date:"F"}} {{end_date.year}}</h2>
+                {% else %}
+                    <h2>{{userinfo.name}} - {{start_date|date:"F"}} {{start_date.year}} - {{end_date|date:"F"}} {{end_date.year}}</h2>
+                {% endif %}
 
                 <div id="goals">
                     {% for domain, data in goals.items %}
