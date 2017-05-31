@@ -99,7 +99,7 @@ def report(request, user_id, from_year, from_month, to_year, to_month):
             session_notes = [note.note for note in models.UserGoalNoteMeasurable.objects.filter(session=session) if note.note != '']
             if len(session_notes) > 0:
                 notes[session.date] += session_notes
-    notes = dict(notes)
+    notes = [(date, notes[date]) for date in sorted(notes.iterkeys(), reverse=True)]
 
     domain_data = {
         'com': SkillsData("Communication", user),
