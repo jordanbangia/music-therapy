@@ -137,7 +137,6 @@ def save_program(request):
 def create_session(request, user_id):
     if request.method == 'POST':
         user = get_object_or_404(models.UserInfo, pk=user_id)
-        print(request.POST)
         session_form = forms.SessionForm(request.POST, instance=models.Session(user=user))
         if session_form.is_valid():
             session = session_form.save()
@@ -288,60 +287,78 @@ def save_goalmeasurables(request, user_id, session_id):
     if request.method == 'POST':
         data = request.POST.dict()
         user = get_object_or_404(models.UserInfo, pk=user_id)
-        session = utils.session_for_id(user, session_id)
+        if session_id is not None:
+            session = utils.session_for_id(user, session_id)
+        else:
+            session_date = datetime.strptime(data.pop('session_date'), '%Y/%m/%d')
+            session_status = int(data.pop('session_status'))
+            session_note = data.pop('session_note')
+
+            session = utils.session_for_date(user, session_date)
+            if session is None:
+                session = models.Session(user=user, date=session_date, status=session_status, note=session_note)
+                session.save()
+                print("Created session for user: {}".format(user.id))
+            else:
+                print("Using session {} for user: {}".format(session.id, user.id))
         custom_gm = defaultdict(dict)
 
-        for measurable_id, measurable_value in data.iteritems():
-            if measurable_id.lower() in ['save', 'csrfmiddlewaretoken', 'submit', 'redirect', 'session']:
-                continue
-            elif 'goalsnotes' in measurable_id.lower():
-                domain_prefix = measurable_id.lower().split('_')[0]
-                domain = get_object_or_404(models.Domains, name=prefix_to_domain(domain_prefix))
-                notes = get_object_or_None(models.UserGoalNoteMeasurable, session=session, domain=domain)
-                if not notes:
-                    notes = models.UserGoalNoteMeasurable(session=session, domain=domain, note=measurable_value)
+        try:
+            for measurable_id, measurable_value in data.iteritems():
+                if measurable_id.lower() in ['save', 'csrfmiddlewaretoken', 'submit', 'redirect', 'session']:
+                    continue
+                elif 'goalsnotes' in measurable_id.lower():
+                    domain_prefix = measurable_id.lower().split('_')[0]
+                    domain = get_object_or_404(models.Domains, name=prefix_to_domain(domain_prefix))
+                    notes = get_object_or_None(models.UserGoalNoteMeasurable, session=session, domain=domain)
+                    if not notes:
+                        notes = models.UserGoalNoteMeasurable(session=session, domain=domain, note=measurable_value)
+                    else:
+                        notes.note = measurable_value
+                    notes.save()
+                elif 'custom' in measurable_id.lower():
+                    customtag, goal = measurable_id.lower().split('_')
+                    tag = 'text' if 'text' in customtag else 'value'
+                    custom_gm[goal][tag] = measurable_value
                 else:
-                    notes.note = measurable_value
-                notes.save()
-            elif 'custom' in measurable_id.lower():
-                customtag, goal = measurable_id.lower().split('_')
-                tag = 'text' if 'text' in customtag else 'value'
-                custom_gm[goal][tag] = measurable_value
-            else:
-                measurable = models.GoalsMeasurables.objects.get(pk=measurable_id)
-                user_measurable = models.UserGoalMeasurables(session=session, goal_measurable=measurable, value=measurable_value)
-                user_measurable.save()
+                    measurable = models.GoalsMeasurables.objects.get(pk=measurable_id)
+                    user_measurable = models.UserGoalMeasurables(session=session, goal_measurable=measurable, value=measurable_value)
+                    user_measurable.save()
 
-        for goal_id, measurable in custom_gm.iteritems():
-            if 'text' in measurable and measurable['text'] != '':
-                goal = get_object_or_None(models.Goals, pk=goal_id)
-                if not goal:
-                    return HttpResponse(404)
-                gm = models.GoalsMeasurables(goal=goal, name=measurable['text'], enabled=1, is_custom=1, user=user)
-                gm.save()
-                user_measurable = models.UserGoalMeasurables(session=session, goal_measurable=gm, value=measurable['value'])
-                user_measurable.save()
+            for goal_id, measurable in custom_gm.iteritems():
+                if 'text' in measurable and measurable['text'] != '':
+                    goal = get_object_or_None(models.Goals, pk=goal_id)
+                    if not goal:
+                        return HttpResponse(404)
+                    gm = models.GoalsMeasurables(goal=goal, name=measurable['text'], enabled=1, is_custom=1, user=user)
+                    gm.save()
+                    user_measurable = models.UserGoalMeasurables(session=session, goal_measurable=gm, value=measurable['value'])
+                    user_measurable.save()
 
-        red = data.get('redirect')
-        if red:
-            return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}) + "?tab={}".format(red[:3]))
-        return HttpResponse(200)
+            red = data.get('redirect')
+            if red:
+                return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}) + "?tab={}".format(red[:3]))
+            return HttpResponse(200)
+        except Exception as e:
+            print(e)
     return HttpResponse(404)
+
+
+@login_required(login_url=LOGIN_URL)
+def save_goalmeasurables_no_session(request, user_id):
+    return save_goalmeasurables(request, user_id, None)
 
 
 @login_required(login_url=LOGIN_URL)
 def program_detail(request, program_id):
     program = get_object_or_None(models.Program, pk=program_id)
     clients = models.UserInfo.objects.filter(program=program, active=1)
-    sessions = {user.id: utils.current_session(user) for user in clients}
     session_goals = {user.id: {domain: SkillsData(domain, user, utils.current_session(user)).to_dict(program_data_only=True) for domain in SKILLS_PREFIX_DICT.keys()} for user in clients}
-    session_forms = {user.id: forms.SessionStatusForm(instance=sessions[user.id], user_id=user.id, session_id=sessions[user.id].id) for user in clients}
     return render(request, 'musictherapy/program_details.html', {
         'program': program,
         'users': clients,
         'data': session_goals,
-        'sessions': sessions,
-        'forms': session_forms,
+        'date': timezone.now().date().isoformat().replace('-', '/')
     })
 
 

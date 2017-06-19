@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/delete_user/$', views.delete_user, name='delete_user'),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/submit_measurables/$', views.save_measurables, name="save_measurables"),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/sessions/(?P<session_id>[0-9]+)/submit_goalmeasurables/$', views.save_goalmeasurables, name="save_goalmeasurables"),
+    url(r'^musictherapy/users/(?P<user_id>[0-9]+)/submit_goalmeasurables/$', views.save_goalmeasurables_no_session, name="save_goalmeasurables_no_session"),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/submit_goals/$', views.save_user_goals, name="save_goals"),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/archive/$', views.archive_user, name="archive_user"),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/unarchive/$', views.unarchive_user, name="unarchive_user"),

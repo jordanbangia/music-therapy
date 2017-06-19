@@ -1,8 +1,38 @@
 {% load template_getattr %}
 
 <div class="col-md-12">
-    <form action="{% url 'musictherapy:save_goalmeasurables' user.id session.id%}" method="post" id="goals-measurables-form-{{user.id}}">
+    <form action="{% if session != None %} {% url 'musictherapy:save_goalmeasurables' user.id session.id%} {% else %} {% url 'musictherapy:save_goalmeasurables_no_session' user.id %} {% endif %}"
+          method="post" id="goals-measurables-form-{{user.id}}">
         {% csrf_token %}
+        <div style="padding: 2px">
+        {% if include_date == True %}
+            <div id="div_id_data" class="form-group row">
+                <label class="control-label col-md-2 requiredField">Session Date</label>
+                <div class="input-group date col-md-4" data-provide="datepicker" data-date-today-btn="linked" data-date-autoclose="true" data-date-format="yyyy/mm/dd">
+                    <input type="text" class="form-control" name="session_date" value="{{ date }}">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="control-label col-md-6">Session Status</label>
+                    <select class="select form-control col-md-6" name="session_status">
+                        <option value="0">Missed</option>
+                        <option value="1" selected="selected">Attended</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="control-label col-md-6">Session Status Note</label>
+                    <textarea class="textarea form-control col-md-6" cols="40" name="session_note" rows="5"></textarea>
+                </div>
+            </div>
+        {% endif %}
+        </div>
+
+
+
         {% for domain, domain_data in data.items %}
             {% if domain_data.has_goals == True %}
             <h3>{{domain_data.domain}} Goals</h3>

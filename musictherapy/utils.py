@@ -1,4 +1,6 @@
 from collections import defaultdict
+
+from annoying.functions import get_object_or_None
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -23,6 +25,10 @@ def session_for_id(user, session_id):
     # make sure that the latest session exists
     current_session(user)
     return get_object_or_404(Session, pk=session_id, user=user)
+
+
+def session_for_date(user, date):
+    return get_object_or_None(Session, user=user, date=date)
 
 
 def users_goals(user):

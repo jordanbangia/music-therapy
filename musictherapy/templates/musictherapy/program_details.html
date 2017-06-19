@@ -33,40 +33,24 @@
             </div>
             <div>
             {% for user in users %}
-                {% with session=sessions|getattrib:user.id %}
                 <div class="panel-group" id="accordion-gm-{{user.id}}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-gm-{{user.id}}" href="#gm-{{user.id}}" aria-expanded="true">{{user.name}} - Session: {{session.date}}</a>
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-gm-{{user.id}}" href="#gm-{{user.id}}" aria-expanded="true">{{user.name}}</a>
                             </h4>
                         </div>
                         <div id="gm-{{user.id}}" class="panel-collapse collapse in" aria-expanded="true">
                             <div class="panel-body">
-                                {% with session_form=forms|getattrib:user.id %}
-                                    <div class="row">
-                                        {% if session.status == 0 %}
-                                            <div class="col-md-6"><h4 style="color: red; padding-bottom: 10px; padding-top: 10px;">Session Missed</h4></div>
-                                            <div class="col-md-6">
-                                        {% else %}
-                                            <div class="col-md-6 col-md-offset-6">
-                                        {% endif %}
-                                            <a class="btn btn-info pull-right" href="" style="margin: 5px" data-toggle="modal" data-target="#session-{{session.id}}-status-modal">Mark as Absent</a>
-                                        </div>
-                                    </div>
-                                    {% include "musictherapy/component/mark_as_absent.html" with session_form=session_form session=session user=user%}
-                                {% endwith %}
-
                                 <div class="row">
                                     <div class="col-md-12">
-                                        {% include "musictherapy/component/session_goals.html" with data=data|getattrib:user.id user=user session=sessions|getattrib:user.id%}
+                                        {% include "musictherapy/component/session_goals.html" with data=data|getattrib:user.id user=user session=None include_date=True date=date %}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {% endwith %}
             {% endfor %}
             </div>
         </div>
