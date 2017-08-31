@@ -85,8 +85,8 @@ DATABASES = {
 }
 
 # Parse database configuration from $DATABASE_URL
-# import dj_database_url
-# DATABASES['default'] =  dj_database_url.config()
+import dj_database_url
+DATABASES['default'] =  dj_database_url.config()
 
 
 # Internationalization
@@ -132,9 +132,3 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 SILKY_PYTHON_PROFILE = False
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    }
-}
