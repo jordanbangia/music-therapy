@@ -40,5 +40,6 @@ urlpatterns = [
     }, name="password_change"),
     url(r'^musictherapy/programs/save_program', views.save_program, name='save_program'),
     url(r'^musictherapy/programs/(?P<program_id>[0-9]+)/$', views.program_detail, name='program_detail'),
+    url(r'^musictherapy/programs/user/(?P<user_id>[0-9]+)/$', views.user_program_detail, name='program_user_detail'),
 ]
 

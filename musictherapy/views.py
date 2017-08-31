@@ -362,11 +362,24 @@ def save_goalmeasurables_no_session(request, user_id):
 def program_detail(request, program_id):
     program = get_object_or_None(models.Program, pk=program_id)
     clients = models.UserInfo.objects.filter(program=program, active=1)
-    session_goals = {user.id: {domain: SkillsData(domain, user, utils.current_session(user)).to_dict(program_data_only=True) for domain in SKILLS_PREFIX_DICT.keys()} for user in clients}
     return render(request, 'musictherapy/program_details.html', {
         'program': program,
         'users': clients,
-        'data': session_goals,
+        # 'data': session_goals,
+        'date': timezone.now().date().isoformat().replace('-', '/')
+    })
+
+
+@login_required(login_url=LOGIN_URL)
+def user_program_detail(request, user_id):
+    user = get_object_or_404(models.UserInfo, pk=user_id)
+    print
+    data = {domain: SkillsData(domain, user, utils.current_session(user)).to_dict(program_data_only=True) for domain in SKILLS_PREFIX_DICT.keys()}
+    return render(request, 'musictherapy/component/session_goals.html', {
+        'data': data,
+        'user': user,
+        'session': None,
+        'include_date': True,
         'date': timezone.now().date().isoformat().replace('-', '/')
     })
 
