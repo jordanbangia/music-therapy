@@ -34,9 +34,8 @@ def session_for_date(user, date):
 def users_goals(user):
     goals = defaultdict(list)
     for g in Goals.objects.filter(parent=None, enabled=1).order_by('domain'):
-        if g.domain:
-            if not g.is_custom or (g.is_custom and g.user == user):
-                goals[g.domain.name if g.domain.parent is None else g.domain.parent.name] += [g]
+        if g.domain and (not g.is_custom or (g.is_custom and g.user == user)):
+            goals[g.domain.name if g.domain.parent is None else g.domain.parent.name] += [g]
     goals = dict(goals)
     goals['order'] = ['General'] + [domain for domain in goals.keys() if domain not in ('General', 'Custom')]
     if 'Custom' in goals:
