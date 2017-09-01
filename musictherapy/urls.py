@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/export/from/(?P<from_year>[0-9]+)/(?P<from_month>[0-9]+)/to/(?P<to_year>[0-9]+)/(?P<to_month>[0-9]+)/$', export.report, name="export_report"),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/sessions/(?P<session_id>[0-9]+)/save_session_status/$', views.save_session_info, name='save_session_status'),
     url(r'^musictherapy/users/(?P<user_id>[0-9]+)/create_session/$', views.create_session, name="create_session"),
+    url(r'^musictherapy/users/(?P<user_id>[0-9]+)/session/(?P<session_id>[0-9]+)/delete_session/$', views.delete_session, name="delete_session"),
 
     url(r'^musictherapy/staff/$', views.create_staff, name='create_staff'),
     url(r'^musictherapy/login/$', auth.login, {

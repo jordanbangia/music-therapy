@@ -156,6 +156,15 @@ def create_session(request, user_id):
 
 
 @login_required(login_url=LOGIN_URL)
+def delete_session(request, user_id, session_id):
+    if request.method == 'GET':
+        session = get_object_or_404(models.Session, pk=session_id)
+        session.delete()
+        return redirect(reverse('musictherapy:user_detail', kwargs={'user_id': int(user_id)}))
+    return redirect(reverse('musictherapy:user_session_detail', kwargs={'user_id': int(user_id), 'session_id': int(session_id)}))
+
+
+@login_required(login_url=LOGIN_URL)
 def save_new_basic(request):
     if request.method == 'POST':
         user_form = forms.UserInfoForm(request.POST)

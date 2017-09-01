@@ -20,8 +20,9 @@
         <table id="session-table" class="sort">
             <thead>
                 <tr>
-                    <th class="sort-header">Date</th>
+                    <th class="sort-header" data-sort-method="date">Date</th>
                     <th class="sort-header">Status</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +30,7 @@
                 <tr>
                     <td><a href="{% url 'musictherapy:user_session_detail' userinfo.id session.id %}">{{ session.date }}</a></td>
                     <td style="color: red">{% if session.status == 0 %} Missed / Absent {% endif %}</td>
+                    <td><a href="{% url 'musictherapy:delete_session' userinfo.id session.id %}" type="button" class="btn btn-danger">Delete</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
