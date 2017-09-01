@@ -139,7 +139,7 @@ class SkillsData(object):
             data['data'].append(dict(sub_domain_value))
 
         if len(data['data']) > 0:
-            data['fields'] = [sub_domain.name for sub_domain in self.sub_domains()] + ['Updated', 'Note']
+            data['fields'] = [sub_domain.name for sub_domain in self.sub_domains] + ['Updated', 'Note']
             if is_summary and self.domain != 'Affective':
                 data['fields'] += ['Total']
             data['data'] = sorted(data['data'], key=lambda field: field['Updated'], reverse=True)
