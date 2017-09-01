@@ -236,11 +236,3 @@ class MusicalPreference(models.Model):
     ethnic = models.CharField(max_length=200, null=True, blank=True)
     sacred_music = models.CharField(max_length=200, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
-
-
-class GoalsSelectField(MultiSelectField):
-    def validate(self, value, model_instance):
-        arr_choices = self.get_choices_selected(Goals.get_goals_flat())
-        for opt_select in value:
-            if opt_select not in arr_choices:
-                raise exceptions.ValidationError(self.error_messages['invalid_choice'] % {"value": value})

@@ -41,7 +41,7 @@ def assessment(request, user_id):
 
 @require_GET
 @login_required(login_url=LOGIN_URL)
-def treatment_plan(request, user_id,session_id):
+def treatment_plan(request, user_id, session_id):
     user = get_object_or_404(models.UserInfo, pk=user_id)
     session = get_object_or_None(models.Session, pk=session_id)
     if not session:
@@ -59,7 +59,7 @@ def treatment_plan(request, user_id,session_id):
     export_data = dict()
     for domain, data in domain_data.iteritems():
         goals_data = defaultdict(list)
-        for goal_measurable in data.goal_measurables:
+        for goal_measurable in data.goal_measurables_for_user:
             goals_data[goal_measurable.goal] += [goal_measurable]
         if len(goals_data) > 0:
             export_data[data.domain] = dict(goals_data)
@@ -114,7 +114,7 @@ def report(request, user_id, from_year, from_month, to_year, to_month):
     graphs = dict()
     for domain, data in domain_data.iteritems():
         goals_data = defaultdict(list)
-        for goal_measurable in data.goal_measurables:
+        for goal_measurable in data.goal_measurables_for_user:
             goals_data[goal_measurable.goal] += [goal_measurable]
         if len(goals_data) > 0:
             goals[data.domain] = dict(goals_data)

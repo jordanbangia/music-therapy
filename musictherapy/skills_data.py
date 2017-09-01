@@ -32,6 +32,7 @@ class SkillsData(object):
         self.prefix = SKILLS_PREFIX_DICT[domain] if not prefix else prefix
         self.domain_model = get_object_or_None(models.Domains, name=self.domain)
 
+    @cached_property
     def measurables(self):
         measurables = defaultdict(list)
         for measurable in models.DomainMeasurables.objects.filter(domain__in=self.domains, enabled=1):
@@ -49,12 +50,16 @@ class SkillsData(object):
             return domains
         return []
 
+    @cached_property
     def sub_domains(self):
         return models.Domains.objects.filter(parent=self.domain_model, enabled=1)
 
     @cached_property
-    def goal_measurables(self):
-        return models.GoalsMeasurables.objects.filter(goal__in=self.domain_goals, enabled=1)
+    def goal_measurables_for_user(self):
+        """
+        :return GoalMeasurable objects that a user has goals for
+        """
+        return models.GoalsMeasurables.objects.filter(goal__in=self.user_goals.values_list('goal'), enabled=1)
 
     @cached_property
     def user_measurables(self):
@@ -68,14 +73,21 @@ class SkillsData(object):
     def user_goal_measurables(self):
         return models.UserGoalMeasurables.objects.filter(session__user=self.user)
 
+    @cached_property
     def has_goal(self):
         return models.UserGoals.objects.filter(goal__in=self.domain_goals, user=self.user).count() > 0
 
+    @cached_property
+    def user_goals(self):
+        return models.UserGoals.objects.filter(goal__in=self.domain_goals, user=self.user)
+
+    @cached_property
     def session_goal_measurable_responses(self):
         if not self.session:
             return {}
-        return {measurable.goal_measurable.id: measurable for measurable in models.UserGoalMeasurables.objects.filter(session=self.session, goal_measurable__in=self.goal_measurables)}
+        return {measurable.goal_measurable.id: measurable for measurable in models.UserGoalMeasurables.objects.filter(session=self.session, goal_measurable__in=self.goal_measurables_for_user)}
 
+    @cached_property
     def custom_goals(self):
         return models.Goals.objects.filter(domain__in=self.domains, enabled=1, user=self.user, is_custom=1)
 
@@ -153,7 +165,7 @@ class SkillsData(object):
         if self.has_goal:
             line_chart = pygal.Line(truncate_legend=30, range=(0, 3), max_scale=3, min_scale=3)
             data = dict()
-            for goal in self.goal_measurables:
+            for goal in self.goal_measurables_for_user:
                 updates = [measurable for measurable in self.user_goal_measurables if measurable.goal_measurable == goal and
                            utils.is_date_in_range(measurable.session.date, start=start, end=end)]
                 updates = sorted(updates, key=lambda up: up.session.date, reverse=True)
@@ -190,18 +202,18 @@ class SkillsData(object):
     def to_dict(self, program_data_only=False):
         data = dict(
             domain=self.domain,
-            has_goals=self.has_goal(),
-            goals_measurables=self.goal_measurables,
+            has_goals=self.has_goal,
+            goals_measurables=self.goal_measurables_for_user,
             goal_notes=self.goal_notes(),
-            session_goal_measurables_response=self.session_goal_measurable_responses(),
+            session_goal_measurables_response=self.session_goal_measurable_responses,
             session_goal_measurables_note=self.session_goal_measurable_note(),
             prefix=self.prefix,
-            custom_goals=self.custom_goals(),
+            custom_goals=self.custom_goals,
         )
 
         if not program_data_only:
             data.update(dict(
-                measurables=self.measurables(),
+                measurables=self.measurables,
                 summary_measurable=self.past_summary_measurables,
                 past_measurables=self.past_measurables,
                 latest_measurables=self.latest_user_measurables(as_dict=True),

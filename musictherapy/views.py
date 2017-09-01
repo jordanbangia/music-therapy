@@ -365,7 +365,6 @@ def program_detail(request, program_id):
     return render(request, 'musictherapy/program_details.html', {
         'program': program,
         'users': clients,
-        # 'data': session_goals,
         'date': timezone.now().date().isoformat().replace('-', '/')
     })
 
