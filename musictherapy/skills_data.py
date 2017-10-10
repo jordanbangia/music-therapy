@@ -163,7 +163,7 @@ class SkillsData(object):
 
     def chart(self, start=None, end=None):
         if self.has_goal:
-            line_chart = pygal.Line(truncate_legend=30, range=(0, 3), max_scale=3, min_scale=3)
+            line_chart = pygal.Line(truncate_legend=30, range=(0, 3), max_scale=3, min_scale=3, x_label_rotation=40, x_labels_major_every=3)
             data = dict()
             for goal in self.goal_measurables_for_user:
                 updates = [measurable for measurable in self.user_goal_measurables if measurable.goal_measurable == goal and
